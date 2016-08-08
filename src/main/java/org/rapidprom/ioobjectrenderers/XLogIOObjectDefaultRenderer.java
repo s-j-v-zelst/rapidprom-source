@@ -2,6 +2,7 @@ package org.rapidprom.ioobjectrenderers;
 
 import javax.swing.JComponent;
 
+import org.processmining.plugins.log.ui.logdialog.LogDialogInitializer;
 import org.processmining.plugins.log.ui.logdialog.SlickerOpenLogSettings;
 import org.rapidprom.ioobjectrenderers.abstr.AbstractRapidProMIOObjectRenderer;
 import org.rapidprom.ioobjects.XLogIOObject;
@@ -17,7 +18,7 @@ public class XLogIOObjectDefaultRenderer extends AbstractRapidProMIOObjectRender
 	@Override
 	protected JComponent runVisualization(XLogIOObject ioObject) {
 
-		// LogDialogInitializer i = new LogDialogInitializer();
+		LogDialogInitializer i = new LogDialogInitializer();
 		SlickerOpenLogSettings o = new SlickerOpenLogSettings();
 
 		return o.showLogVis(ioObject.getPluginContext(), ioObject.getArtifact());
