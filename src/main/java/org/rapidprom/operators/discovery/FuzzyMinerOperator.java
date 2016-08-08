@@ -63,12 +63,12 @@ public class FuzzyMinerOperator extends AbstractRapidProMDiscoveryOperator {
 			PARAMETER_4_KEY = "Distance significance (Binary)",
 			PARAMETER_4_DESCR = "The distance significance metric is a derivative implementation of binary "
 					+ "significance. The more the significance of a relation differs from its source and "
-					+ "target nodes’ significances, the less its distance significance value. The "
+					+ "target nodes' significances, the less its distance significance value. The "
 					+ "rationale behind this metric is that globally important relations are also "
 					+ "always the most important relations for their endpoints. Distance significance "
 					+ "locally amplifies crucial key relations between event classes, and weakens "
 					+ "already insignificant relations. Thereby, it can clarify ambiguous situations "
-					+ "in edge abstraction, where many relations “compete” over being included in the "
+					+ "in edge abstraction, where many relations ï¿½competeï¿½ over being included in the "
 					+ "simplified process model. Especially in very unstructured execution logs, this"
 					+ " metric is an indispensible tool for isolating behavior of interest.",
 
@@ -91,7 +91,7 @@ public class FuzzyMinerOperator extends AbstractRapidProMDiscoveryOperator {
 					+ "interpreted as higher correlation. This is important for low-level logs including "
 					+ "a large amount of less significant events that are closely related. Most of "
 					+ "the time, events that reflect similar tasks also are given similar names "
-					+ "(e.g., “open valve13” and “close valve13”), and this metric can unveil these "
+					+ "(e.g., \"open valve13\" and \"close valve13\"), and this metric can unveil these "
 					+ "implicit dependencies.",
 
 			PARAMETER_7_KEY = "Originator correlation (Binary)",
@@ -100,8 +100,8 @@ public class FuzzyMinerOperator extends AbstractRapidProMDiscoveryOperator {
 					+ "correlation between event classes is determined from the names of the persons "
 					+ "that have triggered two subsequent events. The more similar these names, the "
 					+ "higher correlated the respective event classes. In real applications, user names "
-					+ "often include job titles or function identifiers (e.g.“sales John” and “sales "
-					+ "Paul”). Therefore, this metric implementation is a valuable tool also for "
+					+ "often include job titles or function identifiers (e.g.\"sales John\" and \"sales "
+					+ "Paul\"). Therefore, this metric implementation is a valuable tool also for "
 					+ "unveiling implicit correlation between events. ",
 
 			PARAMETER_8_KEY = "Data type correlation (Binary)",
