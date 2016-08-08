@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 import org.processmining.framework.plugin.PluginContext;
 import org.processmining.models.graphbased.directed.transitionsystem.ReachabilityGraph;
 import org.processmining.plugins.petrinet.behavioralanalysis.TSGenerator;
-import org.rapidprom.external.connectors.prom.ProMPluginContextManager;
+import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.PetriNetIOObject;
 import org.rapidprom.ioobjects.ReachabilityGraphIOObject;
 
@@ -20,35 +20,29 @@ import com.rapidminer.tools.LogService;
 
 public class PetriNetToReachabilityGraphConversionOperator extends Operator {
 
-	private InputPort input = getInputPorts().createPort(
-			"model (ProM Petri Net)", PetriNetIOObject.class);
+	private InputPort input = getInputPorts().createPort("model (ProM Petri Net)", PetriNetIOObject.class);
 
-	private OutputPort output = getOutputPorts().createPort(
-			"model (ProM Reachability Graph)");
+	private OutputPort output = getOutputPorts().createPort("model (ProM Reachability Graph)");
 
-	public PetriNetToReachabilityGraphConversionOperator(
-			OperatorDescription description) {
+	public PetriNetToReachabilityGraphConversionOperator(OperatorDescription description) {
 		super(description);
-		getTransformer().addRule(
-				new GenerateNewMDRule(output, ReachabilityGraphIOObject.class));
+		getTransformer().addRule(new GenerateNewMDRule(output, ReachabilityGraphIOObject.class));
 	}
 
 	public void doWork() throws OperatorException {
 		Logger logger = LogService.getRoot();
-		logger.log(Level.INFO,
-				"Start: Petri Net to Reachability Graph conversion");
+		logger.log(Level.INFO, "Start: Petri Net to Reachability Graph conversion");
 		long time = System.currentTimeMillis();
 
-		PluginContext pluginContext = ProMPluginContextManager.instance()
-				.getFutureResultAwareContext(TSGenerator.class);
+		PluginContext pluginContext = RapidProMGlobalContext.instance()
+				.getFutureResultAwarePluginContext(TSGenerator.class);
 
 		PetriNetIOObject petriNet = input.getData(PetriNetIOObject.class);
 
 		TSGenerator converter = new TSGenerator();
 		Object[] result = null;
 		try {
-			result = converter.calculateTS(pluginContext,
-					petriNet.getArtifact(), petriNet.getInitialMarking());
+			result = converter.calculateTS(pluginContext, petriNet.getArtifact(), petriNet.getInitialMarking());
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new OperatorException("The marking could not be found");
@@ -58,9 +52,7 @@ public class PetriNetToReachabilityGraphConversionOperator extends Operator {
 				(ReachabilityGraph) result[0], pluginContext);
 		output.deliver(reachabilityGraphIOObject);
 
-		logger.log(
-				Level.INFO,
-				"End: Petri Net to Reachability Graph conversion ("
-						+ (System.currentTimeMillis() - time) / 1000 + " sec)");
+		logger.log(Level.INFO, "End: Petri Net to Reachability Graph conversion ("
+				+ (System.currentTimeMillis() - time) / 1000 + " sec)");
 	}
 }

@@ -35,7 +35,7 @@ import org.processmining.plugins.petrinet.manifestreplayer.transclassifier.Trans
 import org.processmining.plugins.petrinet.manifestreplayresult.Manifest;
 import org.processmining.plugins.petrinet.replayer.PNLogReplayer;
 import org.processmining.plugins.petrinet.replayresult.PNRepResult;
-import org.rapidprom.external.connectors.prom.ProMPluginContextManager;
+import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.ManifestIOObject;
 import org.rapidprom.ioobjects.PetriNetIOObject;
 import org.rapidprom.operators.abstr.AbstractRapidProMDiscoveryOperator;
@@ -54,8 +54,7 @@ import com.rapidminer.tools.LogService;
 
 import javassist.tools.rmi.ObjectNotFoundException;
 
-public class PerformanceConformanceAnalysisOperator
-		extends AbstractRapidProMDiscoveryOperator {
+public class PerformanceConformanceAnalysisOperator extends AbstractRapidProMDiscoveryOperator {
 
 	private static final String PARAMETER_1_KEY = "Max Explored States (in Thousands)",
 			PARAMETER_1_DESCR = "The maximum number of states that are searched for a trace alignment.",
@@ -66,35 +65,28 @@ public class PerformanceConformanceAnalysisOperator
 			PARAMETER_3_DESCR = "Specify the number of threads used to calculate alignments in parallel."
 					+ " With each extra thread, more memory is used but less cpu time is required.";
 
-	private InputPort inputPN = getInputPorts()
-			.createPort("model (ProM Petri Net)", PetriNetIOObject.class);
-	private OutputPort outputManifest = getOutputPorts()
-			.createPort("model (ProM Manifest)");
+	private InputPort inputPN = getInputPorts().createPort("model (ProM Petri Net)", PetriNetIOObject.class);
+	private OutputPort outputManifest = getOutputPorts().createPort("model (ProM Manifest)");
 
-	public PerformanceConformanceAnalysisOperator(
-			OperatorDescription description) {
+	public PerformanceConformanceAnalysisOperator(OperatorDescription description) {
 		super(description);
-		getTransformer().addRule(
-				new GenerateNewMDRule(outputManifest, ManifestIOObject.class));
+		getTransformer().addRule(new GenerateNewMDRule(outputManifest, ManifestIOObject.class));
 		// getTransformer().addRule( new GenerateNewMDRule(outputFitness,
 		// FitnessIOObject.class));
 	}
 
 	public void doWork() throws OperatorException {
 		Logger logger = LogService.getRoot();
-		logger.log(Level.INFO,
-				"Start: replay log on petri net for performance/conformance checking");
+		logger.log(Level.INFO, "Start: replay log on petri net for performance/conformance checking");
 		long time = System.currentTimeMillis();
 
 		ManifestIOObject manifestIOObject;
-		SimpleTimeLimiter limiter = new SimpleTimeLimiter(
-				Executors.newSingleThreadExecutor());
+		SimpleTimeLimiter limiter = new SimpleTimeLimiter(Executors.newSingleThreadExecutor());
 
-		PluginContext pluginContext = ProMPluginContextManager.instance()
-				.getFutureResultAwareContext(PNManifestReplayer.class);
+		PluginContext pluginContext = RapidProMGlobalContext.instance()
+				.getFutureResultAwarePluginContext(PNManifestReplayer.class);
 		try {
-			manifestIOObject = limiter.callWithTimeout(
-					new PERFORMANCE_CALCULATOR(pluginContext),
+			manifestIOObject = limiter.callWithTimeout(new PERFORMANCE_CALCULATOR(pluginContext),
 					getParameterAsInt(PARAMETER_2_KEY), TimeUnit.SECONDS, true);
 			outputManifest.deliver(manifestIOObject);
 		} catch (UncheckedTimeoutException e1) {
@@ -105,9 +97,8 @@ public class PerformanceConformanceAnalysisOperator
 			return;
 		}
 
-		logger.log(Level.INFO,
-				"End: replay log on petri net for performance/conformance checking ("
-						+ (System.currentTimeMillis() - time) / 1000 + " sec)");
+		logger.log(Level.INFO, "End: replay log on petri net for performance/conformance checking ("
+				+ (System.currentTimeMillis() - time) / 1000 + " sec)");
 	}
 
 	class PERFORMANCE_CALCULATOR implements Callable<ManifestIOObject> {
@@ -124,17 +115,13 @@ public class PerformanceConformanceAnalysisOperator
 			PetriNetIOObject pNet = inputPN.getData(PetriNetIOObject.class);
 			XLog xLog = getXLog();
 
-			PNManifestReplayerParameter manifestParameters = getParameterObject(
-					pNet, xLog);
+			PNManifestReplayerParameter manifestParameters = getParameterObject(pNet, xLog);
 
-			PNManifestFlattener flattener = new PNManifestFlattener(
-					pNet.getArtifact(), manifestParameters);
+			PNManifestFlattener flattener = new PNManifestFlattener(pNet.getArtifact(), manifestParameters);
 
 			CostBasedCompleteManifestParam parameter = new CostBasedCompleteManifestParam(
-					flattener.getMapEvClass2Cost(),
-					flattener.getMapTrans2Cost(), flattener.getMapSync2Cost(),
-					flattener.getInitMarking(), flattener.getFinalMarkings(),
-					manifestParameters.getMaxNumOfStates(),
+					flattener.getMapEvClass2Cost(), flattener.getMapTrans2Cost(), flattener.getMapSync2Cost(),
+					flattener.getInitMarking(), flattener.getFinalMarkings(), manifestParameters.getMaxNumOfStates(),
 					flattener.getFragmentTrans());
 			parameter.setGUIMode(false);
 			parameter.setCreateConn(false);
@@ -145,13 +132,11 @@ public class PerformanceConformanceAnalysisOperator
 
 			Manifest result = null;
 			try {
-				PNRepResult alignment = replayer.replayLog(pluginContext,
-						flattener.getNet(), xLog, flattener.getMap(),
+				PNRepResult alignment = replayer.replayLog(pluginContext, flattener.getNet(), xLog, flattener.getMap(),
 						replayAlgorithm, parameter);
-				result = ManifestFactory.construct(pNet.getArtifact(),
-						manifestParameters.getInitMarking(),
-						manifestParameters.getFinalMarkings(), xLog, flattener,
-						alignment, manifestParameters.getMapping());
+				result = ManifestFactory.construct(pNet.getArtifact(), manifestParameters.getInitMarking(),
+						manifestParameters.getFinalMarkings(), xLog, flattener, alignment,
+						manifestParameters.getMapping());
 
 				return new ManifestIOObject(result, pluginContext);
 
@@ -164,8 +149,8 @@ public class PerformanceConformanceAnalysisOperator
 
 	}
 
-	private PNManifestReplayerParameter getParameterObject(
-			PetriNetIOObject pNet, XLog log) throws UndefinedParameterError {
+	private PNManifestReplayerParameter getParameterObject(PetriNetIOObject pNet, XLog log)
+			throws UndefinedParameterError {
 		PNManifestReplayerParameter parameter = new PNManifestReplayerParameter();
 		try {
 			parameter.setGUIMode(false);
@@ -174,14 +159,12 @@ public class PerformanceConformanceAnalysisOperator
 				pNet.setFinalMarking(getFinalMarking(pNet.getArtifact()));
 			parameter.setFinalMarkings(pNet.getFinalMarkingAsArray());
 
-			parameter.setMaxNumOfStates(
-					getParameterAsInt(PARAMETER_1_KEY) * 1000);
+			parameter.setMaxNumOfStates(getParameterAsInt(PARAMETER_1_KEY) * 1000);
 			TransClasses tc = new TransClasses(pNet.getArtifact());
 			Map<TransClass, Set<EvClassPattern>> pattern = new HashMap<TransClass, Set<EvClassPattern>>();
 
 			XEventClassifier classifier = getXEventClassifier();
-			Collection<XEventClass> eventClasses = XLogInfoFactory
-					.createLogInfo(log, classifier).getEventClasses()
+			Collection<XEventClass> eventClasses = XLogInfoFactory.createLogInfo(log, classifier).getEventClasses()
 					.getClasses();
 
 			for (TransClass t : tc.getTransClasses()) {
@@ -197,8 +180,7 @@ public class PerformanceConformanceAnalysisOperator
 					}
 
 			}
-			TransClass2PatternMap mapping = new TransClass2PatternMap(log,
-					pNet.getArtifact(), classifier, tc, pattern);
+			TransClass2PatternMap mapping = new TransClass2PatternMap(log, pNet.getArtifact(), classifier, tc, pattern);
 			parameter.setMapping(mapping);
 
 			Map<XEventClass, Integer> mapEvClass2Cost = new HashMap<XEventClass, Integer>();
@@ -227,16 +209,15 @@ public class PerformanceConformanceAnalysisOperator
 	public List<ParameterType> getParameterTypes() {
 		List<ParameterType> parameterTypes = super.getParameterTypes();
 
-		ParameterTypeInt parameterType1 = new ParameterTypeInt(PARAMETER_1_KEY,
-				PARAMETER_1_DESCR, 0, Integer.MAX_VALUE, 200);
+		ParameterTypeInt parameterType1 = new ParameterTypeInt(PARAMETER_1_KEY, PARAMETER_1_DESCR, 0, Integer.MAX_VALUE,
+				200);
 		parameterTypes.add(parameterType1);
 
-		ParameterTypeInt parameterType2 = new ParameterTypeInt(PARAMETER_2_KEY,
-				PARAMETER_2_DESCR, 0, Integer.MAX_VALUE, 60);
+		ParameterTypeInt parameterType2 = new ParameterTypeInt(PARAMETER_2_KEY, PARAMETER_2_DESCR, 0, Integer.MAX_VALUE,
+				60);
 		parameterTypes.add(parameterType2);
 
-		ParameterTypeInt parameterType3 = new ParameterTypeInt(PARAMETER_3_KEY,
-				PARAMETER_3_DESCR, 1, Integer.MAX_VALUE,
+		ParameterTypeInt parameterType3 = new ParameterTypeInt(PARAMETER_3_KEY, PARAMETER_3_DESCR, 1, Integer.MAX_VALUE,
 				Runtime.getRuntime().availableProcessors());
 		parameterTypes.add(parameterType3);
 

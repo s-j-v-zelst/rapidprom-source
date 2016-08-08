@@ -6,8 +6,7 @@ import java.util.List;
 
 import org.deckfour.xes.classification.XEventClassifier;
 import org.processmining.log.plugins.ImportXEventClassifierListPlugin;
-import org.rapidprom.external.connectors.prom.ProMPluginContextManager;
-import org.rapidprom.ioobjectrenderers.XLogIOObjectVisualizationType;
+import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.XLogIOObject;
 import org.rapidprom.operators.abstr.AbstractRapidProMImportOperator;
 import org.rapidprom.operators.extract.ExtractXLogOperator;
@@ -27,8 +26,7 @@ import com.rapidminer.parameter.ParameterTypeFile;
  * mainly due to the fact that java does not support multiple-inheritance.
  * 
  */
-public class ImportXLogOperator
-		extends AbstractRapidProMImportOperator<XLogIOObject> {
+public class ImportXLogOperator extends AbstractRapidProMImportOperator<XLogIOObject> {
 
 	private final static String PARAMETER_KEY_IMPORTER = "importer";
 	private final static String PARAMETER_DESC_IMPORTER = "Select the implementing importer, importers differ in terms of performance: "
@@ -38,10 +36,8 @@ public class ImportXLogOperator
 			+ "(slower, but less memory usage). "
 			+ "The \"Lightweight & Sequential IDs\" importer is a balance between the \"Naive\" and the \"Buffered by MapDB\" importers";
 
-	private final static ImplementingPlugin[] PARAMETER_OPTIONS_IMPORTER = EnumSet
-			.allOf(ImplementingPlugin.class)
-			.toArray(new ImplementingPlugin[EnumSet
-					.allOf(ImplementingPlugin.class).size()]);
+	private final static ImplementingPlugin[] PARAMETER_OPTIONS_IMPORTER = EnumSet.allOf(ImplementingPlugin.class)
+			.toArray(new ImplementingPlugin[EnumSet.allOf(ImplementingPlugin.class).size()]);
 
 	private final static String[] SUPPORTED_FILE_FORMATS = new String[] { "xes" };
 
@@ -56,10 +52,8 @@ public class ImportXLogOperator
 		ImportXEventClassifierListPlugin plugin = new ImportXEventClassifierListPlugin();
 		List<XEventClassifier> classifiers;
 		try {
-			classifiers = (List<XEventClassifier>) plugin.importFile(
-					ProMPluginContextManager.instance()
-							.getFutureResultAwareContext(
-									ImportXEventClassifierListPlugin.class),
+			classifiers = (List<XEventClassifier>) plugin.importFile(RapidProMGlobalContext.instance()
+					.getFutureResultAwarePluginContext(ImportXEventClassifierListPlugin.class),
 					getParameterAsFile(PARAMETER_KEY_FILE));
 		} catch (Exception e) {
 			return new XLogIOObjectMetaData();
@@ -72,27 +66,22 @@ public class ImportXLogOperator
 
 	protected XLogIOObject read(File file) throws Exception {
 		XLogIOObject obj = new XLogIOObject(
-				ExtractXLogOperator.importLog(
-						PARAMETER_OPTIONS_IMPORTER[getParameterAsInt(
-								PARAMETER_KEY_IMPORTER)],
+				ExtractXLogOperator.importLog(PARAMETER_OPTIONS_IMPORTER[getParameterAsInt(PARAMETER_KEY_IMPORTER)],
 						getParameterAsFile(PARAMETER_KEY_FILE)),
-				ProMPluginContextManager.instance().getContext());
-		obj.setVisualizationType(XLogIOObjectVisualizationType.DEFAULT);
+				RapidProMGlobalContext.instance().getPluginContext());
 		return obj;
 	}
 
 	@Override
 	public List<ParameterType> getParameterTypes() {
 		List<ParameterType> types = super.getParameterTypes();
-		types.add(new ParameterTypeFile(PARAMETER_KEY_FILE, PARAMETER_DESC_FILE,
-				false, SUPPORTED_FILE_FORMATS));
-		types.add(createImporterParameterTypeCategory(PARAMETER_KEY_IMPORTER,
-				PARAMETER_DESC_IMPORTER, PARAMETER_OPTIONS_IMPORTER));
+		types.add(new ParameterTypeFile(PARAMETER_KEY_FILE, PARAMETER_DESC_FILE, false, SUPPORTED_FILE_FORMATS));
+		types.add(createImporterParameterTypeCategory(PARAMETER_KEY_IMPORTER, PARAMETER_DESC_IMPORTER,
+				PARAMETER_OPTIONS_IMPORTER));
 		return types;
 	}
 
-	private ParameterType createImporterParameterTypeCategory(String key,
-			String desc, ImplementingPlugin[] importers) {
+	private ParameterType createImporterParameterTypeCategory(String key, String desc, ImplementingPlugin[] importers) {
 		String[] importersStr = new String[importers.length];
 		for (int i = 0; i < importersStr.length; i++) {
 			importersStr[i] = importers[i].toString();

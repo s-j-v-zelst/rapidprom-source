@@ -7,25 +7,24 @@ import org.processmining.framework.plugin.PluginContext;
 import org.processmining.stream.core.interfaces.XSReader;
 import org.processmining.streamalphaminer.parameters.StreamAlphaMinerParameters;
 import org.processmining.streamalphaminer.plugins.StreamAlphaMinerAcepptingPetriNetPlugin;
-import org.rapidprom.external.connectors.prom.ProMPluginContextManager;
+import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.streams.XSReaderIOObject;
 import org.rapidprom.ioobjects.streams.event.XSEventStreamToAcceptingPetriNetReaderIOObject;
 import org.rapidprom.operators.streams.discovery.abstr.AbstractDFABasedMinerOperator;
 
 import com.rapidminer.operator.OperatorDescription;
 
-public class StreamAlphaMinerAcceptingPNOperator extends
-		AbstractDFABasedMinerOperator<XSEvent, AcceptingPetriNet, StreamAlphaMinerParameters> {
+public class StreamAlphaMinerAcceptingPNOperator
+		extends AbstractDFABasedMinerOperator<XSEvent, AcceptingPetriNet, StreamAlphaMinerParameters> {
 
-	public StreamAlphaMinerAcceptingPNOperator(
-			OperatorDescription description) {
+	public StreamAlphaMinerAcceptingPNOperator(OperatorDescription description) {
 		super(description);
 	}
 
 	@Override
 	protected PluginContext getPluginContextForAlgorithm() {
-		return ProMPluginContextManager.instance().getFutureResultAwareContext(
-				StreamAlphaMinerAcepptingPetriNetPlugin.class);
+		return RapidProMGlobalContext.instance()
+				.getFutureResultAwarePluginContext(StreamAlphaMinerAcepptingPetriNetPlugin.class);
 	}
 
 	@Override
@@ -34,18 +33,14 @@ public class StreamAlphaMinerAcceptingPNOperator extends
 	}
 
 	@Override
-	protected XSReaderIOObject<XSEvent, AcceptingPetriNet> getIOObject(
-			XSReader<XSEvent, AcceptingPetriNet> algorithm,
+	protected XSReaderIOObject<XSEvent, AcceptingPetriNet> getIOObject(XSReader<XSEvent, AcceptingPetriNet> algorithm,
 			PluginContext context) {
-		return new XSEventStreamToAcceptingPetriNetReaderIOObject(algorithm,
-				context);
+		return new XSEventStreamToAcceptingPetriNetReaderIOObject(algorithm, context);
 	}
 
 	@Override
-	protected XSReader<XSEvent, AcceptingPetriNet> getAlgorithm(
-			PluginContext context, XSEventStream stream,
+	protected XSReader<XSEvent, AcceptingPetriNet> getAlgorithm(PluginContext context, XSEventStream stream,
 			StreamAlphaMinerParameters parameters) {
-		return StreamAlphaMinerAcepptingPetriNetPlugin.apply(context, stream,
-				parameters);
+		return StreamAlphaMinerAcepptingPetriNetPlugin.apply(context, stream, parameters);
 	}
 }

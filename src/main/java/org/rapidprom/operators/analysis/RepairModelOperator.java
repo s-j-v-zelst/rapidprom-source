@@ -13,7 +13,7 @@ import org.processmining.modelrepair.plugins.Uma_RepairModel_Plugin;
 import org.processmining.models.graphbased.directed.petrinet.Petrinet;
 import org.processmining.models.graphbased.directed.petrinet.elements.Place;
 import org.processmining.models.semantics.petrinet.Marking;
-import org.rapidprom.external.connectors.prom.ProMPluginContextManager;
+import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.PetriNetIOObject;
 import org.rapidprom.ioobjects.XLogIOObject;
 import org.rapidprom.operators.abstr.AbstractRapidProMDiscoveryOperator;
@@ -77,8 +77,7 @@ public class RepairModelOperator extends AbstractRapidProMDiscoveryOperator {
 					+ "smaller subprocesses that are inserted at more specific locations in "
 					+ "the process. This parameter is optional and may lead to simpler models "
 					+ "with a higher similarity to the original model. In both cases, the "
-					+ "resulting model will perfectly fit the log (if \"Detect sub-processes\" "
-					+ "is set to 'true').",
+					+ "resulting model will perfectly fit the log (if \"Detect sub-processes\" " + "is set to 'true').",
 			PARAMETER_6_KEY = "Cost of loop model move",
 			PARAMETER_6_DESCR = "A technical parameter used during loop detection (\"Detect loops\"). "
 					+ "When set to '0' (default value), loop detection will ignore that some "
@@ -97,8 +96,7 @@ public class RepairModelOperator extends AbstractRapidProMDiscoveryOperator {
 					+ "as the absolute number of occurrences of a process step in the log. Set to '0' "
 					+ "(default) to remove only process steps which never occur in the log (this "
 					+ "ensures a fitting model); set to > 0 to also remove parts of the model used "
-					+ "only infrequently (gives a simpler model that does not show all behaviors "
-					+ "of the log).",
+					+ "only infrequently (gives a simpler model that does not show all behaviors " + "of the log).",
 			PARAMETER_8_KEY = "Global cost max iterations",
 			PARAMETER_8_DESCR = "Parameter used by computation of a global cost alignment "
 					+ "(\"Global cost alignment\"). It specifies the number of analysis iterations "
@@ -106,15 +104,12 @@ public class RepairModelOperator extends AbstractRapidProMDiscoveryOperator {
 					+ "require a repair. Usually, the smallest number is found after one global "
 					+ "analysis (default value '1'). ";
 
-	private InputPort inputPetrinet = getInputPorts()
-			.createPort("model (ProM Petri Net)", PetriNetIOObject.class);
-	private OutputPort outputPetrinet = getOutputPorts()
-			.createPort("model (ProM Petri Net)");
+	private InputPort inputPetrinet = getInputPorts().createPort("model (ProM Petri Net)", PetriNetIOObject.class);
+	private OutputPort outputPetrinet = getOutputPorts().createPort("model (ProM Petri Net)");
 
 	public RepairModelOperator(OperatorDescription description) {
 		super(description);
-		getTransformer().addRule(
-				new GenerateNewMDRule(outputPetrinet, PetriNetIOObject.class));
+		getTransformer().addRule(new GenerateNewMDRule(outputPetrinet, PetriNetIOObject.class));
 	}
 
 	public void doWork() throws OperatorException {
@@ -124,69 +119,57 @@ public class RepairModelOperator extends AbstractRapidProMDiscoveryOperator {
 
 		Uma_RepairModel_Plugin repairer = new Uma_RepairModel_Plugin();
 
-		PluginContext pluginContext = ProMPluginContextManager.instance()
-				.getFutureResultAwareContext(Uma_RepairModel_Plugin.class);
+		PluginContext pluginContext = RapidProMGlobalContext.instance()
+				.getFutureResultAwarePluginContext(Uma_RepairModel_Plugin.class);
 
 		XLogIOObject xLog = new XLogIOObject(getXLog(), pluginContext);
 
-		PetriNetIOObject petriNet = inputPetrinet
-				.getData(PetriNetIOObject.class);
+		PetriNetIOObject petriNet = inputPetrinet.getData(PetriNetIOObject.class);
 
 		Object[] result = null;
 		try {
 			if (!petriNet.hasFinalMarking())
-				petriNet.setFinalMarking(
-						getFinalMarking(petriNet.getArtifact()));
-			result = repairer.repairModel_buildT2Econnection(pluginContext,
-					xLog.getArtifact(), petriNet.getArtifact(),
-					petriNet.getInitialMarking(), petriNet.getFinalMarking(),
-					getConfiguration(), getXEventClassifier());
+				petriNet.setFinalMarking(getFinalMarking(petriNet.getArtifact()));
+			result = repairer.repairModel_buildT2Econnection(pluginContext, xLog.getArtifact(), petriNet.getArtifact(),
+					petriNet.getInitialMarking(), petriNet.getFinalMarking(), getConfiguration(),
+					getXEventClassifier());
 		} catch (ObjectNotFoundException e) {
 			e.printStackTrace();
 		}
 
-		PetriNetIOObject output = new PetriNetIOObject((Petrinet) result[0],
-				(Marking) result[1], null, pluginContext);
+		PetriNetIOObject output = new PetriNetIOObject((Petrinet) result[0], (Marking) result[1], null, pluginContext);
 
 		outputPetrinet.deliver(output);
 
-		logger.log(Level.INFO, "End: repair model using event log ("
-				+ (System.currentTimeMillis() - time) / 1000 + " sec)");
+		logger.log(Level.INFO,
+				"End: repair model using event log (" + (System.currentTimeMillis() - time) / 1000 + " sec)");
 	}
 
 	public List<ParameterType> getParameterTypes() {
 		List<ParameterType> parameterTypes = super.getParameterTypes();
 
-		ParameterTypeBoolean parameter1 = new ParameterTypeBoolean(
-				PARAMETER_1_KEY, PARAMETER_1_DESCR, true);
+		ParameterTypeBoolean parameter1 = new ParameterTypeBoolean(PARAMETER_1_KEY, PARAMETER_1_DESCR, true);
 		parameterTypes.add(parameter1);
 
-		ParameterTypeBoolean parameter2 = new ParameterTypeBoolean(
-				PARAMETER_2_KEY, PARAMETER_2_DESCR, true);
+		ParameterTypeBoolean parameter2 = new ParameterTypeBoolean(PARAMETER_2_KEY, PARAMETER_2_DESCR, true);
 		parameterTypes.add(parameter2);
 
-		ParameterTypeBoolean parameter5 = new ParameterTypeBoolean(
-				PARAMETER_5_KEY, PARAMETER_5_DESCR, true);
+		ParameterTypeBoolean parameter5 = new ParameterTypeBoolean(PARAMETER_5_KEY, PARAMETER_5_DESCR, true);
 		parameterTypes.add(parameter5);
 
-		ParameterTypeBoolean parameter3 = new ParameterTypeBoolean(
-				PARAMETER_3_KEY, PARAMETER_3_DESCR, true);
+		ParameterTypeBoolean parameter3 = new ParameterTypeBoolean(PARAMETER_3_KEY, PARAMETER_3_DESCR, true);
 		parameterTypes.add(parameter3);
 
-		ParameterTypeInt parameter7 = new ParameterTypeInt(PARAMETER_7_KEY,
-				PARAMETER_7_DESCR, 0, Integer.MAX_VALUE, 0);
+		ParameterTypeInt parameter7 = new ParameterTypeInt(PARAMETER_7_KEY, PARAMETER_7_DESCR, 0, Integer.MAX_VALUE, 0);
 		parameterTypes.add(parameter7);
 
-		ParameterTypeBoolean parameter4 = new ParameterTypeBoolean(
-				PARAMETER_4_KEY, PARAMETER_4_DESCR, true);
+		ParameterTypeBoolean parameter4 = new ParameterTypeBoolean(PARAMETER_4_KEY, PARAMETER_4_DESCR, true);
 		parameterTypes.add(parameter4);
 
-		ParameterTypeInt parameter6 = new ParameterTypeInt(PARAMETER_6_KEY,
-				PARAMETER_6_DESCR, 0, Integer.MAX_VALUE, 0);
+		ParameterTypeInt parameter6 = new ParameterTypeInt(PARAMETER_6_KEY, PARAMETER_6_DESCR, 0, Integer.MAX_VALUE, 0);
 		parameterTypes.add(parameter6);
 
-		ParameterTypeInt parameter8 = new ParameterTypeInt(PARAMETER_8_KEY,
-				PARAMETER_8_DESCR, 0, Integer.MAX_VALUE, 1);
+		ParameterTypeInt parameter8 = new ParameterTypeInt(PARAMETER_8_KEY, PARAMETER_8_DESCR, 0, Integer.MAX_VALUE, 1);
 		parameterTypes.add(parameter8);
 
 		return parameterTypes;
@@ -195,22 +178,14 @@ public class RepairModelOperator extends AbstractRapidProMDiscoveryOperator {
 	private RepairConfiguration getConfiguration() {
 		RepairConfiguration repairConfiguration = new RepairConfiguration();
 		try {
-			repairConfiguration.detectLoops = getParameterAsBoolean(
-					PARAMETER_1_KEY);
-			repairConfiguration.loopModelMoveCosts = getParameterAsInt(
-					PARAMETER_6_KEY);
-			repairConfiguration.detectSubProcesses = getParameterAsBoolean(
-					PARAMETER_2_KEY);
-			repairConfiguration.removeInfrequentNodes = getParameterAsBoolean(
-					PARAMETER_3_KEY);
-			repairConfiguration.remove_keepIfMoreThan = getParameterAsInt(
-					PARAMETER_7_KEY);
-			repairConfiguration.globalCostAlignment = getParameterAsBoolean(
-					PARAMETER_4_KEY);
-			repairConfiguration.globalCost_maxIterations = getParameterAsInt(
-					PARAMETER_8_KEY);
-			repairConfiguration.alignAlignments = getParameterAsBoolean(
-					PARAMETER_5_KEY);
+			repairConfiguration.detectLoops = getParameterAsBoolean(PARAMETER_1_KEY);
+			repairConfiguration.loopModelMoveCosts = getParameterAsInt(PARAMETER_6_KEY);
+			repairConfiguration.detectSubProcesses = getParameterAsBoolean(PARAMETER_2_KEY);
+			repairConfiguration.removeInfrequentNodes = getParameterAsBoolean(PARAMETER_3_KEY);
+			repairConfiguration.remove_keepIfMoreThan = getParameterAsInt(PARAMETER_7_KEY);
+			repairConfiguration.globalCostAlignment = getParameterAsBoolean(PARAMETER_4_KEY);
+			repairConfiguration.globalCost_maxIterations = getParameterAsInt(PARAMETER_8_KEY);
+			repairConfiguration.alignAlignments = getParameterAsBoolean(PARAMETER_5_KEY);
 
 		} catch (UndefinedParameterError e) {
 			e.printStackTrace();

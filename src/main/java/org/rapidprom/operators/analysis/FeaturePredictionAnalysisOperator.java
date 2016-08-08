@@ -5,7 +5,7 @@ import java.util.logging.Logger;
 
 import org.processmining.framework.plugin.PluginContext;
 import org.processmining.prediction.PredictionPlugin;
-import org.rapidprom.external.connectors.prom.ProMPluginContextManager;
+import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.PredictorIOObject;
 import org.rapidprom.ioobjects.XLogIOObject;
 
@@ -19,17 +19,12 @@ import com.rapidminer.tools.LogService;
 
 public class FeaturePredictionAnalysisOperator extends Operator {
 
-	private InputPort inputXLog = getInputPorts().createPort(
-			"event log (ProM Event Log)", XLogIOObject.class);
-	private OutputPort outputPredictor = getOutputPorts().createPort(
-			"model (ProM Predictor)");
+	private InputPort inputXLog = getInputPorts().createPort("event log (ProM Event Log)", XLogIOObject.class);
+	private OutputPort outputPredictor = getOutputPorts().createPort("model (ProM Predictor)");
 
 	public FeaturePredictionAnalysisOperator(OperatorDescription description) {
 		super(description);
-		getTransformer()
-				.addRule(
-						new GenerateNewMDRule(outputPredictor,
-								PredictorIOObject.class));
+		getTransformer().addRule(new GenerateNewMDRule(outputPredictor, PredictorIOObject.class));
 	}
 
 	public void doWork() throws OperatorException {
@@ -37,25 +32,22 @@ public class FeaturePredictionAnalysisOperator extends Operator {
 		logger.log(Level.INFO, "Start: feature prediction");
 		long time = System.currentTimeMillis();
 
-		PluginContext pluginContext = ProMPluginContextManager.instance()
-				.getFutureResultAwareContext(PredictionPlugin.class);
+		PluginContext pluginContext = RapidProMGlobalContext.instance()
+				.getFutureResultAwarePluginContext(PredictionPlugin.class);
 
 		PredictionPlugin predictor = new PredictionPlugin();
 
 		PredictorIOObject predictorIOObject = null;
 		try {
 			predictorIOObject = new PredictorIOObject(
-					predictor.performPrediction(pluginContext, inputXLog
-							.getData(XLogIOObject.class).getArtifact()),
+					predictor.performPrediction(pluginContext, inputXLog.getData(XLogIOObject.class).getArtifact()),
 					pluginContext);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		outputPredictor.deliver(predictorIOObject);
-		logger.log(Level.INFO,
-				"End: feature prediction ("
-						+ (System.currentTimeMillis() - time) / 1000 + " sec)");
+		logger.log(Level.INFO, "End: feature prediction (" + (System.currentTimeMillis() - time) / 1000 + " sec)");
 	}
 
 }

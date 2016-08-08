@@ -12,7 +12,7 @@ import org.processmining.eventstream.core.interfaces.XSEventStream;
 import org.processmining.framework.plugin.PluginContext;
 import org.processmining.stream.core.enums.CommunicationType;
 import org.processmining.stream.core.interfaces.XSAuthor;
-import org.rapidprom.external.connectors.prom.ProMPluginContextManager;
+import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.CPNModelIOObject;
 import org.rapidprom.ioobjects.streams.XSAuthorIOObject;
 import org.rapidprom.ioobjects.streams.event.XSEventStreamIOObject;
@@ -61,16 +61,12 @@ public class CPNToEventStreamOperator extends Operator {
 
 	private static final String PARAMETER_OPTION_CASE_IDENTIFICATION_VARIABELE = CPN2XSEventStreamCaseIdentification.CPN_VARIABLE
 			.toString();
-	private static final String PARAMETER_OPTION_COMMUNICATION_TYPE_ASYNC = CommunicationType.ASYNC
-			.toString();
-	private static final String PARAMETER_OPTION_COMMUNICATION_TYPE_SYNC = CommunicationType.SYNC
-			.toString();
+	private static final String PARAMETER_OPTION_COMMUNICATION_TYPE_ASYNC = CommunicationType.ASYNC.toString();
+	private static final String PARAMETER_OPTION_COMMUNICATION_TYPE_SYNC = CommunicationType.SYNC.toString();
 	private static final String[] PARAMETER_OPTIONS_CASE_IDENTIFICATION = new String[] {
-			PARAMETER_OPTION_CASE_IDENTIFICATION_VARIABELE,
-			PARAMETER_OPTION_CASE_IDENTIFICATION_REPETITION };
+			PARAMETER_OPTION_CASE_IDENTIFICATION_VARIABELE, PARAMETER_OPTION_CASE_IDENTIFICATION_REPETITION };
 	private static final String[] PARAMETER_OPTIONS_COMMUNICATION_TYPE = new String[] {
-			PARAMETER_OPTION_COMMUNICATION_TYPE_SYNC,
-			PARAMETER_OPTION_COMMUNICATION_TYPE_ASYNC };
+			PARAMETER_OPTION_COMMUNICATION_TYPE_SYNC, PARAMETER_OPTION_COMMUNICATION_TYPE_ASYNC };
 
 	private static final String PARAMETER_KEY_IGNORE_PAGE = "ignore_page";
 	private static final String PARAMETER_LABEL_IGNORE_PAGE = "Ignore CPN model's page information in emitted events.";
@@ -78,46 +74,36 @@ public class CPNToEventStreamOperator extends Operator {
 	private static final String PARAMETER_KEY_IGNORE_PATTERSNS = "ignore_patterns";
 	private static final String PARAMETER_LABEL_IGNORE_PATTERNS = "Provide a comma separated list of patterns to ignore for event emission";
 
-	private InputPort inputCPNModel = getInputPorts().createPort("cpn model",
-			CPNModelIOObject.class);
+	private InputPort inputCPNModel = getInputPorts().createPort("cpn model", CPNModelIOObject.class);
 	private OutputPort outputAuthor = getOutputPorts().createPort("generator");
 	private OutputPort outputStream = getOutputPorts().createPort("stream");
 
 	public CPNToEventStreamOperator(OperatorDescription description) {
 		super(description);
-		getTransformer().addRule(
-				new GenerateNewMDRule(outputAuthor, XSAuthorIOObject.class));
-		getTransformer().addRule(new GenerateNewMDRule(outputStream,
-				XSEventStreamIOObject.class));
+		getTransformer().addRule(new GenerateNewMDRule(outputAuthor, XSAuthorIOObject.class));
+		getTransformer().addRule(new GenerateNewMDRule(outputStream, XSEventStreamIOObject.class));
 	}
 
-	private CPN2XSEventStreamParameters determineCaseIdentification(
-			CPN2XSEventStreamParameters params) throws UndefinedParameterError {
+	private CPN2XSEventStreamParameters determineCaseIdentification(CPN2XSEventStreamParameters params)
+			throws UndefinedParameterError {
 		String caseIdentificationType = PARAMETER_OPTIONS_CASE_IDENTIFICATION[getParameterAsInt(
 				PARAMETER_KEY_CASE_IDENTIFICATION)];
-		if (caseIdentificationType
-				.equals(PARAMETER_OPTION_CASE_IDENTIFICATION_REPETITION)) {
-			params.setCaseIdentificationType(
-					CPN2XSEventStreamCaseIdentification.REPITITION);
-		} else if (caseIdentificationType
-				.equals(PARAMETER_OPTION_CASE_IDENTIFICATION_VARIABELE)) {
-			params.setCaseIdentificationType(
-					CPN2XSEventStreamCaseIdentification.CPN_VARIABLE);
-			params.setCaseIdentifier(getParameterAsString(
-					PARAMETER_KEY_CASE_IDENTIFICATION_VARIABLE));
+		if (caseIdentificationType.equals(PARAMETER_OPTION_CASE_IDENTIFICATION_REPETITION)) {
+			params.setCaseIdentificationType(CPN2XSEventStreamCaseIdentification.REPITITION);
+		} else if (caseIdentificationType.equals(PARAMETER_OPTION_CASE_IDENTIFICATION_VARIABELE)) {
+			params.setCaseIdentificationType(CPN2XSEventStreamCaseIdentification.CPN_VARIABLE);
+			params.setCaseIdentifier(getParameterAsString(PARAMETER_KEY_CASE_IDENTIFICATION_VARIABLE));
 		}
 		return params;
 	}
 
-	private CPN2XSEventStreamParameters determineCommunicationType(
-			CPN2XSEventStreamParameters params) throws UndefinedParameterError {
+	private CPN2XSEventStreamParameters determineCommunicationType(CPN2XSEventStreamParameters params)
+			throws UndefinedParameterError {
 		String communicationType = PARAMETER_OPTIONS_COMMUNICATION_TYPE[getParameterAsInt(
 				PARAMETER_KEY_COMMUNICATION_TYPE)];
-		if (communicationType
-				.equals(PARAMETER_OPTION_COMMUNICATION_TYPE_ASYNC)) {
+		if (communicationType.equals(PARAMETER_OPTION_COMMUNICATION_TYPE_ASYNC)) {
 			params.setCommunicationType(CommunicationType.ASYNC);
-		} else if (communicationType
-				.equals(PARAMETER_OPTION_COMMUNICATION_TYPE_SYNC)) {
+		} else if (communicationType.equals(PARAMETER_OPTION_COMMUNICATION_TYPE_SYNC)) {
 			params.setCommunicationType(CommunicationType.SYNC);
 		}
 		return params;
@@ -129,20 +115,16 @@ public class CPNToEventStreamOperator extends Operator {
 		Logger logger = LogService.getRoot();
 		logger.log(Level.INFO, "start do work Stream Generator");
 
-		PluginContext context = ProMPluginContextManager.instance()
-				.getFutureResultAwareContext(
-						CPNModelToXSEventStreamAuthorPlugin.class);
+		PluginContext context = RapidProMGlobalContext.instance()
+				.getFutureResultAwarePluginContext(CPNModelToXSEventStreamAuthorPlugin.class);
 
 		CPN2XSEventStreamParameters parameters = getStreamParameters();
 
 		Object[] result = CPNModelToXSEventStreamAuthorPlugin.apply(context,
-				inputCPNModel.getData(CPNModelIOObject.class).getArtifact(),
-				parameters);
+				inputCPNModel.getData(CPNModelIOObject.class).getArtifact(), parameters);
 
-		outputAuthor.deliver(new XSAuthorIOObject<XSEvent>(
-				(XSAuthor<XSEvent>) result[0], context));
-		outputStream.deliver(
-				new XSEventStreamIOObject((XSEventStream) result[1], context));
+		outputAuthor.deliver(new XSAuthorIOObject<XSEvent>((XSAuthor<XSEvent>) result[0], context));
+		outputStream.deliver(new XSEventStreamIOObject((XSEventStream) result[1], context));
 
 		logger.log(Level.INFO, "end do work Stream Generator");
 	}
@@ -161,52 +143,38 @@ public class CPNToEventStreamOperator extends Operator {
 		return parameterTypes;
 	}
 
-	private List<ParameterType> setupIgnorePatternsParameter(
-			List<ParameterType> parameterTypes) {
-		ParameterType ignorePatterns = new ParameterTypeString(
-				PARAMETER_KEY_IGNORE_PATTERSNS, PARAMETER_LABEL_IGNORE_PATTERNS,
-				true, false);
+	private List<ParameterType> setupIgnorePatternsParameter(List<ParameterType> parameterTypes) {
+		ParameterType ignorePatterns = new ParameterTypeString(PARAMETER_KEY_IGNORE_PATTERSNS,
+				PARAMETER_LABEL_IGNORE_PATTERNS, true, false);
 		parameterTypes.add(ignorePatterns);
 		return parameterTypes;
 	}
 
-	private List<ParameterType> setupIgnorePageParameter(
-			List<ParameterType> parameterTypes) {
-		ParameterType ignorePageBool = new ParameterTypeBoolean(
-				PARAMETER_KEY_IGNORE_PAGE, PARAMETER_LABEL_IGNORE_PAGE, true,
-				false);
+	private List<ParameterType> setupIgnorePageParameter(List<ParameterType> parameterTypes) {
+		ParameterType ignorePageBool = new ParameterTypeBoolean(PARAMETER_KEY_IGNORE_PAGE, PARAMETER_LABEL_IGNORE_PAGE,
+				true, false);
 		ignorePageBool.setOptional(false);
 		parameterTypes.add(ignorePageBool);
 		return parameterTypes;
 	}
 
-	private CPN2XSEventStreamParameters getStreamParameters()
-			throws UndefinedParameterError {
+	private CPN2XSEventStreamParameters getStreamParameters() throws UndefinedParameterError {
 		CPN2XSEventStreamParameters streamParams = new CPN2XSEventStreamParameters();
-		streamParams.setMaximumNumberOfStepsPerRepetition(
-				getParameterAsInt(PARAMETER_KEY_MAX_STEPS));
-		streamParams.setTotalNumberOfRepetitions(
-				getParameterAsInt(PARAMETER_KEY_REPETITIONS));
-		streamParams.setTransitionDelayMs(
-				getParameterAsInt(PARAMETER_KEY_STEP_DELAY));
+		streamParams.setMaximumNumberOfStepsPerRepetition(getParameterAsInt(PARAMETER_KEY_MAX_STEPS));
+		streamParams.setTotalNumberOfRepetitions(getParameterAsInt(PARAMETER_KEY_REPETITIONS));
+		streamParams.setTransitionDelayMs(getParameterAsInt(PARAMETER_KEY_STEP_DELAY));
 		streamParams = determineCaseIdentification(streamParams);
-		streamParams.setIncludeVariables(
-				getParameterAsBoolean(PARAMETER_KEY_INCLUDE_ADDITIONAL_DATA));
+		streamParams.setIncludeVariables(getParameterAsBoolean(PARAMETER_KEY_INCLUDE_ADDITIONAL_DATA));
 		streamParams = determineCommunicationType(streamParams);
-		streamParams.setIgnorePage(
-				getParameterAsBoolean(PARAMETER_KEY_IGNORE_PAGE));
-		String[] ignorePatterns = getParameterAsString(
-				PARAMETER_KEY_IGNORE_PATTERSNS) == null ? new String[0]
-						: getParameterAsString(PARAMETER_KEY_IGNORE_PATTERSNS)
-								.split(",");
+		streamParams.setIgnorePage(getParameterAsBoolean(PARAMETER_KEY_IGNORE_PAGE));
+		String[] ignorePatterns = getParameterAsString(PARAMETER_KEY_IGNORE_PATTERSNS) == null ? new String[0]
+				: getParameterAsString(PARAMETER_KEY_IGNORE_PATTERSNS).split(",");
 		streamParams.setIgnorePatterns(ignorePatterns);
 		return streamParams;
 	}
 
-	private List<ParameterType> setupAdditionalVariables(
-			List<ParameterType> parameterTypes) {
-		ParameterTypeBoolean includeVariablesParam = new ParameterTypeBoolean(
-				PARAMETER_KEY_INCLUDE_ADDITIONAL_DATA,
+	private List<ParameterType> setupAdditionalVariables(List<ParameterType> parameterTypes) {
+		ParameterTypeBoolean includeVariablesParam = new ParameterTypeBoolean(PARAMETER_KEY_INCLUDE_ADDITIONAL_DATA,
 				PARAMETER_LABEL_INCLUDE_ADDITIONAL_DATA, false);
 		includeVariablesParam.setOptional(false);
 		includeVariablesParam.setExpert(false);
@@ -214,66 +182,50 @@ public class CPNToEventStreamOperator extends Operator {
 		return parameterTypes;
 	}
 
-	private List<ParameterType> setupCaseIdentificationParameter(
-			List<ParameterType> parameterTypes) {
-		ParameterTypeCategory caseIdentificationCat = new ParameterTypeCategory(
-				PARAMETER_KEY_CASE_IDENTIFICATION,
-				PARAMETER_LABEL_CASE_IDENTIFICATION,
-				PARAMETER_OPTIONS_CASE_IDENTIFICATION, 0, false);
+	private List<ParameterType> setupCaseIdentificationParameter(List<ParameterType> parameterTypes) {
+		ParameterTypeCategory caseIdentificationCat = new ParameterTypeCategory(PARAMETER_KEY_CASE_IDENTIFICATION,
+				PARAMETER_LABEL_CASE_IDENTIFICATION, PARAMETER_OPTIONS_CASE_IDENTIFICATION, 0, false);
 
 		parameterTypes.add(caseIdentificationCat);
 
 		ParameterTypeString caseIdentificationVariable = new ParameterTypeString(
-				PARAMETER_KEY_CASE_IDENTIFICATION_VARIABLE,
-				PARAMETER_LABEL_CASE_IDENTIFICATION_VARIABLE,
-				new String(
-						PARAMETER_DEFAULT_VALUE_CASE_IDENTIFICATION_VARIABLE),
-				false);
+				PARAMETER_KEY_CASE_IDENTIFICATION_VARIABLE, PARAMETER_LABEL_CASE_IDENTIFICATION_VARIABLE,
+				new String(PARAMETER_DEFAULT_VALUE_CASE_IDENTIFICATION_VARIABLE), false);
 		caseIdentificationVariable.setOptional(true);
 		caseIdentificationVariable
-				.registerDependencyCondition(new EqualStringCondition(this,
-						PARAMETER_KEY_CASE_IDENTIFICATION, true, new String[] {
-								PARAMETER_OPTION_CASE_IDENTIFICATION_VARIABELE }));
+				.registerDependencyCondition(new EqualStringCondition(this, PARAMETER_KEY_CASE_IDENTIFICATION, true,
+						new String[] { PARAMETER_OPTION_CASE_IDENTIFICATION_VARIABELE }));
 		parameterTypes.add(caseIdentificationVariable);
 		return parameterTypes;
 	}
 
-	private List<ParameterType> setupCommunicationType(
-			List<ParameterType> parameterTypes) {
-		ParameterTypeCategory communicationTypeParam = new ParameterTypeCategory(
-				PARAMETER_KEY_COMMUNICATION_TYPE,
-				PARAMETER_LABEL_COMMUNIATION_TYPE,
-				PARAMETER_OPTIONS_COMMUNICATION_TYPE, 0);
+	private List<ParameterType> setupCommunicationType(List<ParameterType> parameterTypes) {
+		ParameterTypeCategory communicationTypeParam = new ParameterTypeCategory(PARAMETER_KEY_COMMUNICATION_TYPE,
+				PARAMETER_LABEL_COMMUNIATION_TYPE, PARAMETER_OPTIONS_COMMUNICATION_TYPE, 0);
 		communicationTypeParam.setOptional(false);
 		communicationTypeParam.setExpert(false);
 		parameterTypes.add(communicationTypeParam);
 		return parameterTypes;
 	}
 
-	private List<ParameterType> setupMaxStepsParameter(
-			List<ParameterType> parameterTypes) {
-		ParameterTypeInt maxSteps = new ParameterTypeInt(
-				PARAMETER_KEY_MAX_STEPS, PARAMETER_LABEL_MAX_STEPS, -1,
+	private List<ParameterType> setupMaxStepsParameter(List<ParameterType> parameterTypes) {
+		ParameterTypeInt maxSteps = new ParameterTypeInt(PARAMETER_KEY_MAX_STEPS, PARAMETER_LABEL_MAX_STEPS, -1,
 				Integer.MAX_VALUE, -1, false);
 		maxSteps.setOptional(false);
 		parameterTypes.add(maxSteps);
 		return parameterTypes;
 	}
 
-	private List<ParameterType> setupRepetitionsParameter(
-			List<ParameterType> parameterTypes) {
-		ParameterTypeInt repetitions = new ParameterTypeInt(
-				PARAMETER_KEY_REPETITIONS, PARAMETER_LABEL_REPETITIONS, 1,
+	private List<ParameterType> setupRepetitionsParameter(List<ParameterType> parameterTypes) {
+		ParameterTypeInt repetitions = new ParameterTypeInt(PARAMETER_KEY_REPETITIONS, PARAMETER_LABEL_REPETITIONS, 1,
 				Integer.MAX_VALUE, 1, false);
 		repetitions.setOptional(false);
 		parameterTypes.add(repetitions);
 		return parameterTypes;
 	}
 
-	private List<ParameterType> setupStepDelayParameter(
-			List<ParameterType> parameterTypes) {
-		ParameterTypeInt stepDelay = new ParameterTypeInt(
-				PARAMETER_KEY_STEP_DELAY, PARAMETER_LABEL_STEP_DELAY, 0,
+	private List<ParameterType> setupStepDelayParameter(List<ParameterType> parameterTypes) {
+		ParameterTypeInt stepDelay = new ParameterTypeInt(PARAMETER_KEY_STEP_DELAY, PARAMETER_LABEL_STEP_DELAY, 0,
 				Integer.MAX_VALUE, 0, false);
 		stepDelay.setOptional(false);
 		parameterTypes.add(stepDelay);

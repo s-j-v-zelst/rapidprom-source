@@ -8,7 +8,7 @@ import org.processmining.models.graphbased.directed.petrinet.Petrinet;
 import org.processmining.models.semantics.petrinet.Marking;
 import org.processmining.plugins.InductiveMiner.mining.MiningParameters;
 import org.processmining.plugins.InductiveMiner.plugins.IMPetriNet;
-import org.rapidprom.external.connectors.prom.ProMPluginContextManager;
+import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.PetriNetIOObject;
 import org.rapidprom.operators.abstr.AbstractInductiveMinerOperator;
 
@@ -24,8 +24,7 @@ public class InductiveMinerPNOperator extends AbstractInductiveMinerOperator {
 
 	public InductiveMinerPNOperator(OperatorDescription description) {
 		super(description);
-		getTransformer()
-				.addRule(new GenerateNewMDRule(output, PetriNetIOObject.class));
+		getTransformer().addRule(new GenerateNewMDRule(output, PetriNetIOObject.class));
 	}
 
 	public void doWork() throws OperatorException {
@@ -34,18 +33,15 @@ public class InductiveMinerPNOperator extends AbstractInductiveMinerOperator {
 		logger.log(Level.INFO, "Start: inductive miner - pn");
 		long time = System.currentTimeMillis();
 
-		PluginContext pluginContext = ProMPluginContextManager.instance()
-				.getContext();
+		PluginContext pluginContext = RapidProMGlobalContext.instance().getPluginContext();
 		MiningParameters param = getConfiguration();
 
-		Object[] result = IMPetriNet.minePetriNet(pluginContext, getXLog(),
-				param);
+		Object[] result = IMPetriNet.minePetriNet(pluginContext, getXLog(), param);
 
-		PetriNetIOObject petrinet = new PetriNetIOObject((Petrinet) result[0],
-				(Marking) result[1], (Marking) result[2], pluginContext);
+		PetriNetIOObject petrinet = new PetriNetIOObject((Petrinet) result[0], (Marking) result[1], (Marking) result[2],
+				pluginContext);
 
 		output.deliver(petrinet);
-		logger.log(Level.INFO, "End: inductive miner - pn ("
-				+ (System.currentTimeMillis() - time) / 1000 + " sec)");
+		logger.log(Level.INFO, "End: inductive miner - pn (" + (System.currentTimeMillis() - time) / 1000 + " sec)");
 	}
 }

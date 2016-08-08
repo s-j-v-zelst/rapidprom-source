@@ -4,7 +4,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import org.processmining.framework.plugin.GlobalContext;
 import org.processmining.framework.plugin.PluginContext;
 import org.processmining.framework.plugin.PluginExecutionResult;
 import org.processmining.framework.plugin.PluginManager;
@@ -19,13 +18,13 @@ public final class RapidProMGlobalContext extends AbstractGlobalContext {
 	private static boolean initialized = false;
 	private static RapidProMGlobalContext instance = null;
 	
-	public static GlobalContext initialize(PluginManager pluginManager) {
+	public static RapidProMGlobalContext initialize(PluginManager pluginManager) {
 		instance = new RapidProMGlobalContext(pluginManager);
 		initialized = true;
 		return instance;
 	}
 	
-	public static GlobalContext instance() {
+	public static RapidProMGlobalContext instance() {
 		assert (initialized);
 		return instance;
 	}

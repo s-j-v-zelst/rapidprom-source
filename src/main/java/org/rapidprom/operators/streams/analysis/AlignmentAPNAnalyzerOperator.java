@@ -16,7 +16,7 @@ import org.processmining.streamanalysis.core.interfaces.XSStreamAnalyzer;
 import org.processmining.streamanalysis.parameters.AlignmentAnalyzerParametersImpl;
 import org.processmining.streamanalysis.plugins.AlignmentAPNAnalyzerPlugin;
 import org.processmining.streamanalysis.utils.XLogArray;
-import org.rapidprom.external.connectors.prom.ProMPluginContextManager;
+import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.XLogIOObject;
 import org.rapidprom.ioobjects.streams.XSStreamAnalyzerIOObject;
 import org.rapidprom.ioobjects.streams.event.XSEventStreamIOObject;
@@ -30,8 +30,8 @@ import com.rapidminer.operator.ports.InputPortExtender;
 import com.rapidminer.parameter.ParameterType;
 import com.rapidminer.parameter.ParameterTypeInt;
 
-public class AlignmentAPNAnalyzerOperator extends
-		AbstractEventStreamBasedDiscoveryAlgorithmAnalyzer<AlignmentAnalyzerParametersImpl> {
+public class AlignmentAPNAnalyzerOperator
+		extends AbstractEventStreamBasedDiscoveryAlgorithmAnalyzer<AlignmentAnalyzerParametersImpl> {
 
 	private final static String PARAMETER_KEY_MAX_STATE_SPACE = "max_state_space";
 	private final static String PARAMETER_DESC_MAX_STATE_SPACE = "Determine the maximal size of the state space of the underlying automaton.";
@@ -41,8 +41,7 @@ public class AlignmentAPNAnalyzerOperator extends
 	private final static String PARAMETER_DESC_TIMEOUT = "Determine the timeout in ms for calcuating the alignments";
 	private final static int PARAMETER_DEFAULT_TIMEOUT = 5000;
 
-	private final InputPortExtender referenceLogsPort = new InputPortExtender(
-			"logs", getInputPorts(), null, 1);
+	private final InputPortExtender referenceLogsPort = new InputPortExtender("logs", getInputPorts(), null, 1);
 
 	public AlignmentAPNAnalyzerOperator(OperatorDescription description) {
 		super(description, new AlignmentAnalyzerParametersImpl());
@@ -57,10 +56,9 @@ public class AlignmentAPNAnalyzerOperator extends
 		} catch (IOException e) {
 			throw new OperatorException(e.getMessage());
 		}
-		PluginContext context = ProMPluginContextManager.instance()
-				.getFutureResultAwareContext(AlignmentAPNAnalyzerPlugin.class);
-		XSEventStream stream = getStreamPort()
-				.getData(XSEventStreamIOObject.class).getArtifact();
+		PluginContext context = RapidProMGlobalContext.instance()
+				.getFutureResultAwarePluginContext(AlignmentAPNAnalyzerPlugin.class);
+		XSEventStream stream = getStreamPort().getData(XSEventStreamIOObject.class).getArtifact();
 		XLogArray arr = new XLogArray();
 		for (InputPort i : referenceLogsPort.getManagedPorts()) {
 			try {
@@ -75,17 +73,13 @@ public class AlignmentAPNAnalyzerOperator extends
 		for (InputPort i : getAlgorithmsPort().getManagedPorts()) {
 			try {
 				algos.add((XSEventStreamToAcceptingPetriNetReader) i
-						.getData(
-								XSEventStreamToAcceptingPetriNetReaderIOObject.class)
-						.getArtifact());
+						.getData(XSEventStreamToAcceptingPetriNetReaderIOObject.class).getArtifact());
 			} catch (UserError e) {
 			}
 		}
 		XSStreamAnalyzer<XSEvent, Map<XSReader<XSEvent, AcceptingPetriNet>, Map<Long, Iterable<Iterable<Double>>>>, AcceptingPetriNet> analyzer = AlignmentAPNAnalyzerPlugin
 				.run(context, stream, arr, params,
-						algos.toArray(
-								new XSEventStreamToAcceptingPetriNetReader[algos
-										.size()]));
+						algos.toArray(new XSEventStreamToAcceptingPetriNetReader[algos.size()]));
 		getAnalyzerPort().deliver(
 				new XSStreamAnalyzerIOObject<XSEvent, Map<XSReader<XSEvent, AcceptingPetriNet>, Map<Long, Iterable<Iterable<Double>>>>, AcceptingPetriNet>(
 						analyzer, context));
@@ -101,11 +95,9 @@ public class AlignmentAPNAnalyzerOperator extends
 	}
 
 	@Override
-	protected AlignmentAnalyzerParametersImpl parseParameters()
-			throws UserError, IOException {
+	protected AlignmentAnalyzerParametersImpl parseParameters() throws UserError, IOException {
 		AlignmentAnalyzerParametersImpl params = super.parseParameters();
-		params.setMaxNumberOfStates(
-				getParameterAsInt(PARAMETER_KEY_MAX_STATE_SPACE));
+		params.setMaxNumberOfStates(getParameterAsInt(PARAMETER_KEY_MAX_STATE_SPACE));
 		params.setTimeoutMili(getParameterAsInt(PARAMETER_KEY_TIMEOUT));
 		return params;
 	}
@@ -119,14 +111,12 @@ public class AlignmentAPNAnalyzerOperator extends
 	}
 
 	private ParameterTypeInt createMaxStateSpaceParameterType() {
-		return new ParameterTypeInt(PARAMETER_KEY_MAX_STATE_SPACE,
-				PARAMETER_DESC_MAX_STATE_SPACE, 1, Integer.MAX_VALUE,
+		return new ParameterTypeInt(PARAMETER_KEY_MAX_STATE_SPACE, PARAMETER_DESC_MAX_STATE_SPACE, 1, Integer.MAX_VALUE,
 				PARAMETER_DEFAULT_MAX_STATE_SPACE, true);
 	}
 
 	private ParameterTypeInt createTimeoutParameterType() {
-		return new ParameterTypeInt(PARAMETER_KEY_TIMEOUT,
-				PARAMETER_DESC_TIMEOUT, 0, Integer.MAX_VALUE,
+		return new ParameterTypeInt(PARAMETER_KEY_TIMEOUT, PARAMETER_DESC_TIMEOUT, 0, Integer.MAX_VALUE,
 				PARAMETER_DEFAULT_TIMEOUT, true);
 	}
 

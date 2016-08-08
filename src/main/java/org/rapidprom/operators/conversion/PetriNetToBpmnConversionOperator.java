@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 import org.processmining.framework.plugin.PluginContext;
 import org.processmining.models.graphbased.directed.bpmn.BPMNDiagram;
 import org.processmining.plugins.converters.PetriNetToBPMNConverterPlugin;
-import org.rapidprom.external.connectors.prom.ProMPluginContextManager;
+import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.BPMNIOObject;
 import org.rapidprom.ioobjects.PetriNetIOObject;
 
@@ -20,16 +20,13 @@ import com.rapidminer.tools.LogService;
 
 public class PetriNetToBpmnConversionOperator extends Operator {
 
-	private InputPort input = getInputPorts()
-			.createPort("model (ProM Petri Net)", PetriNetIOObject.class);
+	private InputPort input = getInputPorts().createPort("model (ProM Petri Net)", PetriNetIOObject.class);
 
-	private OutputPort output = getOutputPorts()
-			.createPort("model (ProM BPMN)");
+	private OutputPort output = getOutputPorts().createPort("model (ProM BPMN)");
 
 	public PetriNetToBpmnConversionOperator(OperatorDescription description) {
 		super(description);
-		getTransformer()
-				.addRule(new GenerateNewMDRule(output, BPMNIOObject.class));
+		getTransformer().addRule(new GenerateNewMDRule(output, BPMNIOObject.class));
 	}
 
 	@Override
@@ -40,23 +37,20 @@ public class PetriNetToBpmnConversionOperator extends Operator {
 		logger.log(Level.INFO, "Start: Petri Net to BPMN conversion");
 		long time = System.currentTimeMillis();
 
-		PluginContext pluginContext = ProMPluginContextManager.instance()
-				.getFutureResultAwareContext(
-						PetriNetToBPMNConverterPlugin.class);
+		PluginContext pluginContext = RapidProMGlobalContext.instance()
+				.getFutureResultAwarePluginContext(PetriNetToBPMNConverterPlugin.class);
 
 		PetriNetToBPMNConverterPlugin converter = new PetriNetToBPMNConverterPlugin();
-		Object[] result = converter.convert(pluginContext,
-				input.getData(PetriNetIOObject.class).getArtifact());
+		Object[] result = converter.convert(pluginContext, input.getData(PetriNetIOObject.class).getArtifact());
 		// BPMN2PetriNetConverter_Plugin converter = new
 		// BPMN2PetriNetConverter_Plugin();
 		// Object[] result = converter.convert(pluginContext,
 		// input.getData(PetriNetIOObject.class).getData()));
 
-		output.deliver(
-				new BPMNIOObject((BPMNDiagram) result[0], pluginContext));
+		output.deliver(new BPMNIOObject((BPMNDiagram) result[0], pluginContext));
 
-		logger.log(Level.INFO, "End: Petri Net to BPMN conversion ("
-				+ (System.currentTimeMillis() - time) / 1000 + " sec)");
+		logger.log(Level.INFO,
+				"End: Petri Net to BPMN conversion (" + (System.currentTimeMillis() - time) / 1000 + " sec)");
 	}
 
 }

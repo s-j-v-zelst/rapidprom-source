@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 import org.processmining.framework.plugin.PluginContext;
 import org.processmining.ptconversions.pn.ProcessTree2Petrinet;
 import org.processmining.ptconversions.pn.ProcessTree2Petrinet.PetrinetWithMarkings;
-import org.rapidprom.external.connectors.prom.ProMPluginContextManager;
+import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.PetriNetIOObject;
 import org.rapidprom.ioobjects.ProcessTreeIOObject;
 
@@ -20,16 +20,12 @@ import com.rapidminer.tools.LogService;
 
 public class ProcessTreeToPetriNetConversionOperator extends Operator {
 
-	private InputPort input = getInputPorts()
-			.createPort("model (ProM ProcessTree)", ProcessTreeIOObject.class);
-	private OutputPort output = getOutputPorts()
-			.createPort("model (ProM Petri Net)");
+	private InputPort input = getInputPorts().createPort("model (ProM ProcessTree)", ProcessTreeIOObject.class);
+	private OutputPort output = getOutputPorts().createPort("model (ProM Petri Net)");
 
-	public ProcessTreeToPetriNetConversionOperator(
-			OperatorDescription description) {
+	public ProcessTreeToPetriNetConversionOperator(OperatorDescription description) {
 		super(description);
-		getTransformer()
-				.addRule(new GenerateNewMDRule(output, PetriNetIOObject.class));
+		getTransformer().addRule(new GenerateNewMDRule(output, PetriNetIOObject.class));
 	}
 
 	public void doWork() throws OperatorException {
@@ -37,25 +33,22 @@ public class ProcessTreeToPetriNetConversionOperator extends Operator {
 		logger.log(Level.INFO, "Start: Process Tree to Petri Net conversion");
 		long time = System.currentTimeMillis();
 
-		PluginContext pluginContext = ProMPluginContextManager.instance()
-				.getContext();
+		PluginContext pluginContext = RapidProMGlobalContext.instance().getPluginContext();
 
 		PetrinetWithMarkings result = null;
 		try {
-			result = ProcessTree2Petrinet.convert(
-					input.getData(ProcessTreeIOObject.class).getArtifact());
+			result = ProcessTree2Petrinet.convert(input.getData(ProcessTreeIOObject.class).getArtifact());
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new OperatorException(
-					"The process tree could not be converted to a petri net");
+			throw new OperatorException("The process tree could not be converted to a petri net");
 		}
 
-		PetriNetIOObject petriNet = new PetriNetIOObject(result.petrinet,
-				result.initialMarking, result.finalMarking, pluginContext);
+		PetriNetIOObject petriNet = new PetriNetIOObject(result.petrinet, result.initialMarking, result.finalMarking,
+				pluginContext);
 
 		output.deliver(petriNet);
 
-		logger.log(Level.INFO, "End: Process Tree to Petri Net conversion ("
-				+ (System.currentTimeMillis() - time) / 1000 + " sec)");
+		logger.log(Level.INFO,
+				"End: Process Tree to Petri Net conversion (" + (System.currentTimeMillis() - time) / 1000 + " sec)");
 	}
 }

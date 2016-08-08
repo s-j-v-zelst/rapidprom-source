@@ -17,7 +17,7 @@ import org.processmining.stream.core.interfaces.XSReader;
 import org.processmining.streamanalysis.core.interfaces.XSStreamAnalyzer;
 import org.processmining.streamanalysis.parameters.ProjRecPrecAnalyzerParametersImpl;
 import org.processmining.streamanalysis.plugins.ProjRecPrecAutomataXSEventStreamAPN2APNAnalyzerPlugin;
-import org.rapidprom.external.connectors.prom.ProMPluginContextManager;
+import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.AcceptingPetriNetIOObject;
 import org.rapidprom.ioobjects.streams.XSStreamAnalyzerIOObject;
 import org.rapidprom.ioobjects.streams.event.XSEventStreamIOObject;
@@ -31,11 +31,11 @@ import com.rapidminer.operator.ports.InputPortExtender;
 import com.rapidminer.parameter.ParameterType;
 import com.rapidminer.parameter.ParameterTypeInt;
 
-public class ProjRecPrecAPNStreamAnalyzerOperator extends
-		AbstractEventStreamBasedDiscoveryAlgorithmAnalyzer<ProjRecPrecAnalyzerParametersImpl> {
+public class ProjRecPrecAPNStreamAnalyzerOperator
+		extends AbstractEventStreamBasedDiscoveryAlgorithmAnalyzer<ProjRecPrecAnalyzerParametersImpl> {
 
-	private final InputPortExtender referenceModelsPort = new InputPortExtender(
-			"accepting petri nets", getInputPorts(), null, 1);
+	private final InputPortExtender referenceModelsPort = new InputPortExtender("accepting petri nets", getInputPorts(),
+			null, 1);
 
 	private final static String PARAMETER_KEY_MAX_STATE_SPACE = "max_state_space";
 	private final static String PARAMETER_DESC_MAX_STATE_SPACE = "Determine the maximal size of the state space of the underlying automaton.";
@@ -45,8 +45,7 @@ public class ProjRecPrecAPNStreamAnalyzerOperator extends
 	private final static String PARAMETER_DESC_PROJECTION_SIZE = "Determine the number of activities taken into account per projection";
 	private final static int PARAMETER_DEFAULT_PROJECTION_SIZE = 2;
 
-	public ProjRecPrecAPNStreamAnalyzerOperator(
-			OperatorDescription description) {
+	public ProjRecPrecAPNStreamAnalyzerOperator(OperatorDescription description) {
 		super(description, new ProjRecPrecAnalyzerParametersImpl());
 		referenceModelsPort.start();
 	}
@@ -59,17 +58,13 @@ public class ProjRecPrecAPNStreamAnalyzerOperator extends
 		} catch (IOException e) {
 			throw new OperatorException(e.getMessage());
 		}
-		PluginContext context = ProMPluginContextManager.instance()
-				.getFutureResultAwareContext(
-						ProjRecPrecAutomataXSEventStreamAPN2APNAnalyzerPlugin.class);
-		XSEventStream stream = getStreamPort()
-				.getData(XSEventStreamIOObject.class).getArtifact();
-		AcceptingPetriNetArray arr = AcceptingPetriNetArrayFactory
-				.createAcceptingPetriNetArray();
+		PluginContext context = RapidProMGlobalContext.instance()
+				.getFutureResultAwarePluginContext(ProjRecPrecAutomataXSEventStreamAPN2APNAnalyzerPlugin.class);
+		XSEventStream stream = getStreamPort().getData(XSEventStreamIOObject.class).getArtifact();
+		AcceptingPetriNetArray arr = AcceptingPetriNetArrayFactory.createAcceptingPetriNetArray();
 		for (InputPort i : referenceModelsPort.getManagedPorts()) {
 			try {
-				arr.addNet(i.getData(AcceptingPetriNetIOObject.class)
-						.getArtifact());
+				arr.addNet(i.getData(AcceptingPetriNetIOObject.class).getArtifact());
 			} catch (UserError e) {
 			}
 		}
@@ -77,30 +72,23 @@ public class ProjRecPrecAPNStreamAnalyzerOperator extends
 		for (InputPort i : getAlgorithmsPort().getManagedPorts()) {
 			try {
 				algos.add((XSEventStreamToAcceptingPetriNetReader) i
-						.getData(
-								XSEventStreamToAcceptingPetriNetReaderIOObject.class)
-						.getArtifact());
+						.getData(XSEventStreamToAcceptingPetriNetReaderIOObject.class).getArtifact());
 			} catch (UserError e) {
 			}
 		}
 		XSStreamAnalyzer<XSEvent, Map<XSReader<XSEvent, AcceptingPetriNet>, Map<Long, Iterable<Iterable<Double>>>>, AcceptingPetriNet> analyzer = ProjRecPrecAutomataXSEventStreamAPN2APNAnalyzerPlugin
 				.run(context, stream, arr, params,
-						algos.toArray(
-								new XSEventStreamToAcceptingPetriNetReader[algos
-										.size()]));
+						algos.toArray(new XSEventStreamToAcceptingPetriNetReader[algos.size()]));
 		getAnalyzerPort().deliver(
 				new XSStreamAnalyzerIOObject<XSEvent, Map<XSReader<XSEvent, AcceptingPetriNet>, Map<Long, Iterable<Iterable<Double>>>>, AcceptingPetriNet>(
 						analyzer, context));
 	}
 
 	@Override
-	protected ProjRecPrecAnalyzerParametersImpl parseParameters()
-			throws UserError, IOException {
+	protected ProjRecPrecAnalyzerParametersImpl parseParameters() throws UserError, IOException {
 		ProjRecPrecAnalyzerParametersImpl params = super.parseParameters();
-		CompareParameters compareParameters = new CompareParameters(
-				getParameterAsInt(PARAMETER_KEY_PROJECTION_SIZE));
-		compareParameters.setMaxStatesReachabilityGraph(
-				getParameterAsInt(PARAMETER_KEY_MAX_STATE_SPACE));
+		CompareParameters compareParameters = new CompareParameters(getParameterAsInt(PARAMETER_KEY_PROJECTION_SIZE));
+		compareParameters.setMaxStatesReachabilityGraph(getParameterAsInt(PARAMETER_KEY_MAX_STATE_SPACE));
 		params.setProjRecParams(compareParameters);
 		return params;
 	}
@@ -114,14 +102,12 @@ public class ProjRecPrecAPNStreamAnalyzerOperator extends
 	}
 
 	private ParameterTypeInt createMaxStateSpaceParameterType() {
-		return new ParameterTypeInt(PARAMETER_KEY_MAX_STATE_SPACE,
-				PARAMETER_DESC_MAX_STATE_SPACE, 1, Integer.MAX_VALUE,
+		return new ParameterTypeInt(PARAMETER_KEY_MAX_STATE_SPACE, PARAMETER_DESC_MAX_STATE_SPACE, 1, Integer.MAX_VALUE,
 				PARAMETER_DEFAULT_MAX_STATE_SPACE, true);
 	}
 
 	private ParameterTypeInt createProjectionSizeParameterType() {
-		return new ParameterTypeInt(PARAMETER_KEY_PROJECTION_SIZE,
-				PARAMETER_DESC_PROJECTION_SIZE, 2, 3,
+		return new ParameterTypeInt(PARAMETER_KEY_PROJECTION_SIZE, PARAMETER_DESC_PROJECTION_SIZE, 2, 3,
 				PARAMETER_DEFAULT_PROJECTION_SIZE, true);
 	}
 

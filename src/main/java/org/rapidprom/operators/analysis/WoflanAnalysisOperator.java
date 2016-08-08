@@ -7,10 +7,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.processmining.contexts.cli.CLIPluginContext;
 import org.processmining.framework.plugin.PluginContext;
 import org.processmining.plugins.petrinet.behavioralanalysis.woflan.Woflan;
-import org.rapidprom.external.connectors.prom.ProMPluginContextManager;
+import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.PetriNetIOObject;
 import org.rapidprom.ioobjects.WoflanDiagnosisIOObject;
 
@@ -33,23 +32,17 @@ public class WoflanAnalysisOperator extends Operator {
 
 	private static final String PARAMETER_0_KEY = "Enable Time limit",
 			PARAMETER_0_DESCR = "Tries to evaluate soundness within a given time period.",
-			PARAMETER_1_KEY = "Time limit (sec)",
-			PARAMETER_1_DESCR = "Time limit before the analysis is cancelled. "
+			PARAMETER_1_KEY = "Time limit (sec)", PARAMETER_1_DESCR = "Time limit before the analysis is cancelled. "
 					+ "Helpful when analyzing large Petri nets.";
 
-	private InputPort input = getInputPorts()
-			.createPort("model (ProM Petri Net)", PetriNetIOObject.class);
-	private OutputPort outputWoflan = getOutputPorts()
-			.createPort("woflan diagnosis (ProM WoflanDiagnosis)");
-	private OutputPort outputWoflanString = getOutputPorts()
-			.createPort("woflan diagnosis (String)");
+	private InputPort input = getInputPorts().createPort("model (ProM Petri Net)", PetriNetIOObject.class);
+	private OutputPort outputWoflan = getOutputPorts().createPort("woflan diagnosis (ProM WoflanDiagnosis)");
+	private OutputPort outputWoflanString = getOutputPorts().createPort("woflan diagnosis (String)");
 
 	public WoflanAnalysisOperator(OperatorDescription description) {
 		super(description);
-		getTransformer().addRule(new GenerateNewMDRule(outputWoflan,
-				WoflanDiagnosisIOObject.class));
-		getTransformer().addRule(
-				new GenerateNewMDRule(outputWoflanString, ExampleSet.class));
+		getTransformer().addRule(new GenerateNewMDRule(outputWoflan, WoflanDiagnosisIOObject.class));
+		getTransformer().addRule(new GenerateNewMDRule(outputWoflanString, ExampleSet.class));
 	}
 
 	public void doWork() throws OperatorException {
@@ -59,25 +52,19 @@ public class WoflanAnalysisOperator extends Operator {
 		long time = System.currentTimeMillis();
 
 		WoflanDiagnosisIOObject woflanDiagnosisIOObject = null;
-		PluginContext pluginContext = ProMPluginContextManager.instance()
-				.getFutureResultAwareContext(Woflan.class);
-		SimpleTimeLimiter limiter = new SimpleTimeLimiter(
-				Executors.newSingleThreadExecutor());
+		PluginContext pluginContext = RapidProMGlobalContext.instance().getFutureResultAwarePluginContext(Woflan.class);
+		SimpleTimeLimiter limiter = new SimpleTimeLimiter(Executors.newSingleThreadExecutor());
 		Object[][] outputString = new Object[1][1];
 
 		try {
 			if (getParameterAsBoolean(PARAMETER_0_KEY))
-				woflanDiagnosisIOObject = limiter.callWithTimeout(
-						new WOFLANER(pluginContext),
-						getParameterAsInt(PARAMETER_1_KEY), TimeUnit.SECONDS,
-						true);
+				woflanDiagnosisIOObject = limiter.callWithTimeout(new WOFLANER(pluginContext),
+						getParameterAsInt(PARAMETER_1_KEY), TimeUnit.SECONDS, true);
 			else
-				woflanDiagnosisIOObject = limiter.callWithTimeout(
-						new WOFLANER(pluginContext), Long.MAX_VALUE,
+				woflanDiagnosisIOObject = limiter.callWithTimeout(new WOFLANER(pluginContext), Long.MAX_VALUE,
 						TimeUnit.SECONDS, true);
 
-			outputString[0][0] = woflanDiagnosisIOObject.getArtifact()
-					.toString();
+			outputString[0][0] = woflanDiagnosisIOObject.getArtifact().toString();
 			outputWoflan.deliver(woflanDiagnosisIOObject);
 
 		} catch (UncheckedTimeoutException e) {
@@ -98,20 +85,17 @@ public class WoflanAnalysisOperator extends Operator {
 
 		outputWoflanString.deliver(es);
 
-		logger.log(Level.INFO, "End: woflan analysis ("
-				+ (System.currentTimeMillis() - time) / 1000 + " sec)");
+		logger.log(Level.INFO, "End: woflan analysis (" + (System.currentTimeMillis() - time) / 1000 + " sec)");
 	}
 
 	public List<ParameterType> getParameterTypes() {
 
 		List<ParameterType> parameterTypes = super.getParameterTypes();
 
-		ParameterTypeBoolean parameter0 = new ParameterTypeBoolean(
-				PARAMETER_0_KEY, PARAMETER_0_DESCR, true);
+		ParameterTypeBoolean parameter0 = new ParameterTypeBoolean(PARAMETER_0_KEY, PARAMETER_0_DESCR, true);
 		parameterTypes.add(parameter0);
 
-		ParameterTypeInt parameter1 = new ParameterTypeInt(PARAMETER_1_KEY,
-				PARAMETER_1_DESCR, 0, 10000, 60);
+		ParameterTypeInt parameter1 = new ParameterTypeInt(PARAMETER_1_KEY, PARAMETER_1_DESCR, 0, 10000, 60);
 		parameterTypes.add(parameter1);
 
 		return parameterTypes;
@@ -129,9 +113,7 @@ public class WoflanAnalysisOperator extends Operator {
 		public WoflanDiagnosisIOObject call() throws Exception {
 			PetriNetIOObject petriNet = input.getData(PetriNetIOObject.class);
 			Woflan woflan = new Woflan();
-			return new WoflanDiagnosisIOObject(
-					woflan.diagnose(pluginContext, petriNet.getArtifact()),
-					pluginContext);
+			return new WoflanDiagnosisIOObject(woflan.diagnose(pluginContext, petriNet.getArtifact()), pluginContext);
 		}
 
 	}

@@ -1,27 +1,29 @@
 package org.rapidprom.operators.discovery;
 
-import java.util.*;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.deckfour.xes.info.XLogInfo;
+import org.deckfour.xes.info.XLogInfoFactory;
+import org.processmining.framework.plugin.PluginContext;
+import org.processmining.models.graphbased.directed.fuzzymodel.attenuation.Attenuation;
+import org.processmining.models.graphbased.directed.fuzzymodel.attenuation.NRootAttenuation;
+import org.processmining.models.graphbased.directed.fuzzymodel.metrics.MetricsRepository;
+import org.processmining.plugins.fuzzymodel.miner.FuzzyMinerPlugin;
+import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
+import org.rapidprom.ioobjects.MetricsRepositoryIOObject;
+import org.rapidprom.operators.abstr.AbstractRapidProMDiscoveryOperator;
 
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
 import com.rapidminer.operator.UserError;
 import com.rapidminer.operator.ports.OutputPort;
 import com.rapidminer.operator.ports.metadata.GenerateNewMDRule;
+import com.rapidminer.parameter.ParameterType;
+import com.rapidminer.parameter.ParameterTypeDouble;
+import com.rapidminer.parameter.ParameterTypeInt;
 import com.rapidminer.tools.LogService;
-import com.rapidminer.parameter.*;
-
-import org.processmining.framework.plugin.PluginContext;
-import org.deckfour.xes.info.XLogInfo;
-import org.deckfour.xes.info.XLogInfoFactory;
-import org.processmining.models.graphbased.directed.fuzzymodel.metrics.MetricsRepository;
-import org.processmining.models.graphbased.directed.fuzzymodel.attenuation.Attenuation;
-import org.processmining.models.graphbased.directed.fuzzymodel.attenuation.NRootAttenuation;
-import org.processmining.plugins.fuzzymodel.miner.FuzzyMinerPlugin;
-import org.rapidprom.external.connectors.prom.ProMPluginContextManager;
-import org.rapidprom.ioobjects.MetricsRepositoryIOObject;
-import org.rapidprom.operators.abstr.AbstractRapidProMDiscoveryOperator;
 
 public class FuzzyMinerOperator extends AbstractRapidProMDiscoveryOperator {
 
@@ -56,8 +58,7 @@ public class FuzzyMinerOperator extends AbstractRapidProMDiscoveryOperator {
 					+ "selection of edges that will be included in the simplified process model. Like "
 					+ "for unary significance, the log-based frequency significance metric is also the "
 					+ "most important implementation for binary significance. The more often two event "
-					+ "classes are observed after one another, the more significant their precedence "
-					+ "relation",
+					+ "classes are observed after one another, the more significant their precedence " + "relation",
 
 			PARAMETER_4_KEY = "Distance significance (Binary)",
 			PARAMETER_4_DESCR = "The distance significance metric is a derivative implementation of binary "
@@ -120,13 +121,11 @@ public class FuzzyMinerOperator extends AbstractRapidProMDiscoveryOperator {
 			PARAMETER_10_KEY = "Maximum Distance",
 			PARAMETER_10_DESCR = "Defines the maximum length of long-term relations";
 
-	private OutputPort outputMetricsRepository = getOutputPorts()
-			.createPort("model (ProM MetricsRepository)");
+	private OutputPort outputMetricsRepository = getOutputPorts().createPort("model (ProM MetricsRepository)");
 
 	public FuzzyMinerOperator(OperatorDescription description) {
 		super(description);
-		getTransformer().addRule(new GenerateNewMDRule(outputMetricsRepository,
-				MetricsRepositoryIOObject.class));
+		getTransformer().addRule(new GenerateNewMDRule(outputMetricsRepository, MetricsRepositoryIOObject.class));
 	}
 
 	public void doWork() throws OperatorException {
@@ -135,8 +134,8 @@ public class FuzzyMinerOperator extends AbstractRapidProMDiscoveryOperator {
 		logger.log(Level.INFO, "Start: fuzzy miner");
 		long time = System.currentTimeMillis();
 
-		PluginContext pluginContext = ProMPluginContextManager.instance()
-				.getFutureResultAwareContext(FuzzyMinerPlugin.class);
+		PluginContext pluginContext = RapidProMGlobalContext.instance()
+				.getFutureResultAwarePluginContext(FuzzyMinerPlugin.class);
 
 		MetricsRepository metricsRepository = getMetricsConfiguration();
 		Attenuation attenuation = new NRootAttenuation(2.7, 5);
@@ -144,56 +143,44 @@ public class FuzzyMinerOperator extends AbstractRapidProMDiscoveryOperator {
 
 		FuzzyMinerPlugin executer = new FuzzyMinerPlugin();
 		MetricsRepositoryIOObject metricsRepositoryIOObject = new MetricsRepositoryIOObject(
-				executer.mineGeneric(pluginContext, getXLog(),
-						metricsRepository, attenuation, maxDistance),
+				executer.mineGeneric(pluginContext, getXLog(), metricsRepository, attenuation, maxDistance),
 				pluginContext);
 
 		outputMetricsRepository.deliver(metricsRepositoryIOObject);
-		logger.log(Level.INFO, "End: fuzzy miner ("
-				+ (System.currentTimeMillis() - time) / 1000 + " sec)");
+		logger.log(Level.INFO, "End: fuzzy miner (" + (System.currentTimeMillis() - time) / 1000 + " sec)");
 	}
 
 	public List<ParameterType> getParameterTypes() {
 		List<ParameterType> parameterTypes = super.getParameterTypes();
 
-		ParameterTypeDouble parameter1 = new ParameterTypeDouble(
-				PARAMETER_1_KEY, PARAMETER_1_DESCR, 0, 1, 1);
+		ParameterTypeDouble parameter1 = new ParameterTypeDouble(PARAMETER_1_KEY, PARAMETER_1_DESCR, 0, 1, 1);
 		parameterTypes.add(parameter1);
 
-		ParameterTypeDouble parameter2 = new ParameterTypeDouble(
-				PARAMETER_2_KEY, PARAMETER_2_DESCR, 0, 1, 1);
+		ParameterTypeDouble parameter2 = new ParameterTypeDouble(PARAMETER_2_KEY, PARAMETER_2_DESCR, 0, 1, 1);
 		parameterTypes.add(parameter2);
 
-		ParameterTypeDouble parameter3 = new ParameterTypeDouble(
-				PARAMETER_3_KEY, PARAMETER_3_DESCR, 0, 1, 1);
+		ParameterTypeDouble parameter3 = new ParameterTypeDouble(PARAMETER_3_KEY, PARAMETER_3_DESCR, 0, 1, 1);
 		parameterTypes.add(parameter3);
 
-		ParameterTypeDouble parameter4 = new ParameterTypeDouble(
-				PARAMETER_4_KEY, PARAMETER_4_DESCR, 0, 1, 1);
+		ParameterTypeDouble parameter4 = new ParameterTypeDouble(PARAMETER_4_KEY, PARAMETER_4_DESCR, 0, 1, 1);
 		parameterTypes.add(parameter4);
 
-		ParameterTypeDouble parameter5 = new ParameterTypeDouble(
-				PARAMETER_5_KEY, PARAMETER_5_DESCR, 0, 1, 1);
+		ParameterTypeDouble parameter5 = new ParameterTypeDouble(PARAMETER_5_KEY, PARAMETER_5_DESCR, 0, 1, 1);
 		parameterTypes.add(parameter5);
 
-		ParameterTypeDouble parameter7 = new ParameterTypeDouble(
-				PARAMETER_7_KEY, PARAMETER_7_DESCR, 0, 1, 1);
+		ParameterTypeDouble parameter7 = new ParameterTypeDouble(PARAMETER_7_KEY, PARAMETER_7_DESCR, 0, 1, 1);
 		parameterTypes.add(parameter7);
 
-		ParameterTypeDouble parameter6 = new ParameterTypeDouble(
-				PARAMETER_6_KEY, PARAMETER_6_DESCR, 0, 1, 1);
+		ParameterTypeDouble parameter6 = new ParameterTypeDouble(PARAMETER_6_KEY, PARAMETER_6_DESCR, 0, 1, 1);
 		parameterTypes.add(parameter6);
 
-		ParameterTypeDouble parameter8 = new ParameterTypeDouble(
-				PARAMETER_8_KEY, PARAMETER_8_DESCR, 0, 1, 1);
+		ParameterTypeDouble parameter8 = new ParameterTypeDouble(PARAMETER_8_KEY, PARAMETER_8_DESCR, 0, 1, 1);
 		parameterTypes.add(parameter8);
 
-		ParameterTypeDouble parameter9 = new ParameterTypeDouble(
-				PARAMETER_9_KEY, PARAMETER_9_DESCR, 0, 1, 1);
+		ParameterTypeDouble parameter9 = new ParameterTypeDouble(PARAMETER_9_KEY, PARAMETER_9_DESCR, 0, 1, 1);
 		parameterTypes.add(parameter9);
 
-		ParameterTypeInt parameter10 = new ParameterTypeInt(PARAMETER_10_KEY,
-				PARAMETER_10_DESCR, 0, 100, 1);
+		ParameterTypeInt parameter10 = new ParameterTypeInt(PARAMETER_10_KEY, PARAMETER_10_DESCR, 0, 100, 1);
 		parameterTypes.add(parameter10);
 
 		return parameterTypes;
@@ -203,38 +190,28 @@ public class FuzzyMinerOperator extends AbstractRapidProMDiscoveryOperator {
 
 		XLogInfo logInfo = null;
 		try {
-			logInfo = XLogInfoFactory.createLogInfo(getXLog(),
-					getXEventClassifier());
+			logInfo = XLogInfoFactory.createLogInfo(getXLog(), getXEventClassifier());
 		} catch (UserError e) {
 			e.printStackTrace();
 		}
 		MetricsRepository metrics = MetricsRepository.createRepository(logInfo);
 		try {
-			metrics.getUnaryLogMetrics().get(0).setNormalizationMaximum(
-					getParameterAsDouble(PARAMETER_1_KEY));
-			metrics.getUnaryDerivateMetrics().get(0).setNormalizationMaximum(
-					getParameterAsDouble(PARAMETER_2_KEY));
+			metrics.getUnaryLogMetrics().get(0).setNormalizationMaximum(getParameterAsDouble(PARAMETER_1_KEY));
+			metrics.getUnaryDerivateMetrics().get(0).setNormalizationMaximum(getParameterAsDouble(PARAMETER_2_KEY));
 			metrics.getSignificanceBinaryLogMetrics().get(0)
-					.setNormalizationMaximum(
-							getParameterAsDouble(PARAMETER_3_KEY));
+					.setNormalizationMaximum(getParameterAsDouble(PARAMETER_3_KEY));
 			metrics.getCorrelationBinaryLogMetrics().get(0)
-					.setNormalizationMaximum(
-							getParameterAsDouble(PARAMETER_5_KEY));
+					.setNormalizationMaximum(getParameterAsDouble(PARAMETER_5_KEY));
 			metrics.getCorrelationBinaryLogMetrics().get(1)
-					.setNormalizationMaximum(
-							getParameterAsDouble(PARAMETER_6_KEY));
+					.setNormalizationMaximum(getParameterAsDouble(PARAMETER_6_KEY));
 			metrics.getCorrelationBinaryLogMetrics().get(2)
-					.setNormalizationMaximum(
-							getParameterAsDouble(PARAMETER_7_KEY));
+					.setNormalizationMaximum(getParameterAsDouble(PARAMETER_7_KEY));
 			metrics.getCorrelationBinaryLogMetrics().get(3)
-					.setNormalizationMaximum(
-							getParameterAsDouble(PARAMETER_8_KEY));
+					.setNormalizationMaximum(getParameterAsDouble(PARAMETER_8_KEY));
 			metrics.getCorrelationBinaryLogMetrics().get(4)
-					.setNormalizationMaximum(
-							getParameterAsDouble(PARAMETER_9_KEY));
+					.setNormalizationMaximum(getParameterAsDouble(PARAMETER_9_KEY));
 			metrics.getSignificanceBinaryMetrics().get(1)
-					.setNormalizationMaximum(
-							getParameterAsDouble(PARAMETER_4_KEY));
+					.setNormalizationMaximum(getParameterAsDouble(PARAMETER_4_KEY));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

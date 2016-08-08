@@ -9,9 +9,8 @@ import org.processmining.models.graphbased.directed.socialnetwork.SocialNetwork;
 import org.processmining.plugins.socialnetwork.miner.SNHoWMiner;
 import org.processmining.plugins.socialnetwork.miner.SNRAMiner;
 import org.processmining.plugins.socialnetwork.miner.SNSCMiner;
-import org.processmining.plugins.socialnetwork.miner.SNSTMiner;
 import org.processmining.plugins.socialnetwork.miner.SNWTMiner;
-import org.rapidprom.external.connectors.prom.ProMPluginContextManager;
+import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.SocialNetworkIOObject;
 import org.rapidprom.operators.abstr.AbstractRapidProMDiscoveryOperator;
 
@@ -23,8 +22,7 @@ import com.rapidminer.parameter.ParameterType;
 import com.rapidminer.parameter.ParameterTypeCategory;
 import com.rapidminer.tools.LogService;
 
-public class SocialNetworkMinerOperator
-		extends AbstractRapidProMDiscoveryOperator {
+public class SocialNetworkMinerOperator extends AbstractRapidProMDiscoveryOperator {
 
 	private static final String HANDOVER_OF_WORK = "Handover of work",
 			HANDOVER_OF_WORK_DESCR = "Handover of work metric: Within a case (i.e., process "
@@ -68,18 +66,14 @@ public class SocialNetworkMinerOperator
 					+ "Alternative metrics can be composed by taking the distance between activities "
 					+ "into account.";
 
-	private static final String VARIATION = "Analysis variation",
-			VARIATION_DESCR = HANDOVER_OF_WORK_DESCR + "\n" + REASSIGNMENT_DESCR
-					+ "\n" + SUBCONTRACTING_DESCR + "\n"
-					+ WORKING_TOGETHER_DESCR;
+	private static final String VARIATION = "Analysis variation", VARIATION_DESCR = HANDOVER_OF_WORK_DESCR + "\n"
+			+ REASSIGNMENT_DESCR + "\n" + SUBCONTRACTING_DESCR + "\n" + WORKING_TOGETHER_DESCR;
 
-	private OutputPort outputSocialNetwork = getOutputPorts()
-			.createPort("model (ProM Social Network)");
+	private OutputPort outputSocialNetwork = getOutputPorts().createPort("model (ProM Social Network)");
 
 	public SocialNetworkMinerOperator(OperatorDescription description) {
 		super(description);
-		getTransformer().addRule(new GenerateNewMDRule(outputSocialNetwork,
-				SocialNetworkIOObject.class));
+		getTransformer().addRule(new GenerateNewMDRule(outputSocialNetwork, SocialNetworkIOObject.class));
 	}
 
 	public void doWork() throws OperatorException {
@@ -92,46 +86,38 @@ public class SocialNetworkMinerOperator
 		SocialNetwork result = null;
 		switch (getParameterAsInt(VARIATION)) {
 		case 0:
-			pluginContext = ProMPluginContextManager.instance()
-					.getFutureResultAwareContext(SNHoWMiner.class);
+			pluginContext = RapidProMGlobalContext.instance().getFutureResultAwarePluginContext(SNHoWMiner.class);
 			SNHoWMiner miner0 = new SNHoWMiner();
 			result = miner0.socialnetwork(pluginContext, getXLog());
 			break;
 		case 1:
-			pluginContext = ProMPluginContextManager.instance()
-					.getFutureResultAwareContext(SNRAMiner.class);
+			pluginContext = RapidProMGlobalContext.instance().getFutureResultAwarePluginContext(SNRAMiner.class);
 			SNRAMiner miner1 = new SNRAMiner();
 			result = miner1.socialnetwork(pluginContext, getXLog());
-			break;		
+			break;
 		case 2:
-			pluginContext = ProMPluginContextManager.instance()
-					.getFutureResultAwareContext(SNSCMiner.class);
+			pluginContext = RapidProMGlobalContext.instance().getFutureResultAwarePluginContext(SNSCMiner.class);
 			SNSCMiner miner3 = new SNSCMiner();
 			result = miner3.socialnetwork(pluginContext, getXLog());
 			break;
 		case 3:
-			pluginContext = ProMPluginContextManager.instance()
-					.getFutureResultAwareContext(SNWTMiner.class);
+			pluginContext = RapidProMGlobalContext.instance().getFutureResultAwarePluginContext(SNWTMiner.class);
 			SNWTMiner miner4 = new SNWTMiner();
 			result = miner4.socialnetwork(pluginContext, getXLog());
 			break;
 		}
 
-		outputSocialNetwork
-				.deliver(new SocialNetworkIOObject(result, pluginContext));
+		outputSocialNetwork.deliver(new SocialNetworkIOObject(result, pluginContext));
 
-		logger.log(Level.INFO, "End: social network miner ("
-				+ (System.currentTimeMillis() - time) / 1000 + " sec)");
+		logger.log(Level.INFO, "End: social network miner (" + (System.currentTimeMillis() - time) / 1000 + " sec)");
 	}
 
 	public List<ParameterType> getParameterTypes() {
 		List<ParameterType> parameterTypes = super.getParameterTypes();
 
-		String[] options = new String[] { HANDOVER_OF_WORK, REASSIGNMENT,
-				SUBCONTRACTING, WORKING_TOGETHER };
+		String[] options = new String[] { HANDOVER_OF_WORK, REASSIGNMENT, SUBCONTRACTING, WORKING_TOGETHER };
 
-		ParameterTypeCategory variation = new ParameterTypeCategory(VARIATION,
-				VARIATION_DESCR, options, 0);
+		ParameterTypeCategory variation = new ParameterTypeCategory(VARIATION, VARIATION_DESCR, options, 0);
 		parameterTypes.add(variation);
 
 		return parameterTypes;

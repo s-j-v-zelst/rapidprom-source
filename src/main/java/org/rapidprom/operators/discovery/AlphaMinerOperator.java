@@ -8,7 +8,7 @@ import org.processmining.alphaminer.plugins.AlphaMinerPlugin;
 import org.processmining.framework.plugin.PluginContext;
 import org.processmining.models.graphbased.directed.petrinet.Petrinet;
 import org.processmining.models.semantics.petrinet.Marking;
-import org.rapidprom.external.connectors.prom.ProMPluginContextManager;
+import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.PetriNetIOObject;
 import org.rapidprom.operators.abstr.AbstractRapidProMDiscoveryOperator;
 
@@ -39,12 +39,10 @@ public class AlphaMinerOperator extends AbstractRapidProMDiscoveryOperator {
 					+ "The \"++\" variant is defined in http://dx.doi.org/10.1007/s10618-007-0065-y . "
 					+ "The \"#\" variant is defined in http://dx.doi.org/10.1016/j.datak.2010.06.001 .";
 
-	private static final String CLASSIC = "AlphaMiner classic",
-			PLUS = "AlphaMiner +", PLUSPLUS = "AlphaMiner ++",
+	private static final String CLASSIC = "AlphaMiner classic", PLUS = "AlphaMiner +", PLUSPLUS = "AlphaMiner ++",
 			SHARP = "AlphaMiner #";
 
-	private OutputPort output = getOutputPorts()
-			.createPort("model (ProM Petri Net)");
+	private OutputPort output = getOutputPorts().createPort("model (ProM Petri Net)");
 
 	/**
 	 * The default constructor needed in exactly this signature
@@ -53,8 +51,7 @@ public class AlphaMinerOperator extends AbstractRapidProMDiscoveryOperator {
 		super(description);
 
 		/** Adding a rule for the output */
-		getTransformer()
-				.addRule(new GenerateNewMDRule(output, PetriNetIOObject.class));
+		getTransformer().addRule(new GenerateNewMDRule(output, PetriNetIOObject.class));
 	}
 
 	@Override
@@ -64,36 +61,31 @@ public class AlphaMinerOperator extends AbstractRapidProMDiscoveryOperator {
 		logger.log(Level.INFO, "Start: alpha miner");
 		long time = System.currentTimeMillis();
 
-		PluginContext pluginContext = ProMPluginContextManager.instance()
-				.getFutureResultAwareContext(AlphaMinerPlugin.class);
+		PluginContext pluginContext = RapidProMGlobalContext.instance()
+				.getFutureResultAwarePluginContext(AlphaMinerPlugin.class);
 
 		Object[] result = null;
 		switch (getParameterAsString(PARAMETER_1_KEY)) {
 		case CLASSIC:
-			result = AlphaMinerPlugin.applyAlphaClassic(pluginContext,
-					getXLog(), getXEventClassifier());
+			result = AlphaMinerPlugin.applyAlphaClassic(pluginContext, getXLog(), getXEventClassifier());
 			break;
 		case PLUS:
-			result = AlphaMinerPlugin.applyAlphaPlus(pluginContext, getXLog(),
-					getXEventClassifier());
+			result = AlphaMinerPlugin.applyAlphaPlus(pluginContext, getXLog(), getXEventClassifier());
 			break;
 		case PLUSPLUS:
-			result = AlphaMinerPlugin.applyAlphaPlusPlus(pluginContext,
-					getXLog(), getXEventClassifier());
+			result = AlphaMinerPlugin.applyAlphaPlusPlus(pluginContext, getXLog(), getXEventClassifier());
 			break;
 		case SHARP:
-			result = AlphaMinerPlugin.applyAlphaSharp(pluginContext, getXLog(),
-					getXEventClassifier());
+			result = AlphaMinerPlugin.applyAlphaSharp(pluginContext, getXLog(), getXEventClassifier());
 			break;
 		}
 
-		PetriNetIOObject petriNetIOObject = new PetriNetIOObject(
-				(Petrinet) result[0], (Marking) result[1], null, pluginContext);
+		PetriNetIOObject petriNetIOObject = new PetriNetIOObject((Petrinet) result[0], (Marking) result[1], null,
+				pluginContext);
 
 		output.deliver(petriNetIOObject);
 
-		logger.log(Level.INFO, "End: alpha miner ("
-				+ (System.currentTimeMillis() - time) / 1000 + " sec)");
+		logger.log(Level.INFO, "End: alpha miner (" + (System.currentTimeMillis() - time) / 1000 + " sec)");
 
 	}
 
@@ -101,8 +93,7 @@ public class AlphaMinerOperator extends AbstractRapidProMDiscoveryOperator {
 
 		List<ParameterType> parameterTypes = super.getParameterTypes();
 
-		ParameterTypeCategory parameter1 = new ParameterTypeCategory(
-				PARAMETER_1_KEY, PARAMETER_1_DESCR,
+		ParameterTypeCategory parameter1 = new ParameterTypeCategory(PARAMETER_1_KEY, PARAMETER_1_DESCR,
 				new String[] { CLASSIC, PLUS, PLUSPLUS, SHARP }, 1);
 		parameterTypes.add(parameter1);
 

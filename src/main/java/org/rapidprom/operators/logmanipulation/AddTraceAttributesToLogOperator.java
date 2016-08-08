@@ -14,7 +14,6 @@ import org.deckfour.xes.model.XAttribute;
 import org.deckfour.xes.model.XLog;
 import org.deckfour.xes.model.XTrace;
 import org.deckfour.xes.model.impl.XAttributeLiteralImpl;
-import org.rapidprom.ioobjectrenderers.XLogIOObjectVisualizationType;
 import org.rapidprom.ioobjects.XLogIOObject;
 
 import com.rapidminer.example.Attribute;
@@ -39,17 +38,14 @@ public class AddTraceAttributesToLogOperator extends Operator {
 
 	private static final String PARAMETER_1 = "Case id column";
 
-	private InputPort inputExampleSet = getInputPorts().createPort(
-			"example set (Data Table)", new ExampleSetMetaData());
-	private InputPort inputLog = getInputPorts().createPort(
-			"event log (ProM Event Log)", XLogIOObject.class);
-	private OutputPort outputLog = getOutputPorts().createPort(
-			"event log (ProM Event Log)");
+	private InputPort inputExampleSet = getInputPorts().createPort("example set (Data Table)",
+			new ExampleSetMetaData());
+	private InputPort inputLog = getInputPorts().createPort("event log (ProM Event Log)", XLogIOObject.class);
+	private OutputPort outputLog = getOutputPorts().createPort("event log (ProM Event Log)");
 
 	public AddTraceAttributesToLogOperator(OperatorDescription description) {
 		super(description);
-		getTransformer().addRule(
-				new GenerateNewMDRule(outputLog, XLogIOObject.class));
+		getTransformer().addRule(new GenerateNewMDRule(outputLog, XLogIOObject.class));
 	}
 
 	@Override
@@ -58,7 +54,7 @@ public class AddTraceAttributesToLogOperator extends Operator {
 		logger.log(Level.INFO, "Start: add trace attributes");
 		long time = System.currentTimeMillis();
 		MetaData md = inputLog.getMetaData();
-		
+
 		ExampleSet es = inputExampleSet.getData(ExampleSet.class);
 
 		XLogIOObject logIO = inputLog.getData(XLogIOObject.class);
@@ -77,55 +73,48 @@ public class AddTraceAttributesToLogOperator extends Operator {
 		}
 
 		if (found) {
-			XLog adaptedLog = mergeExampleSetIntoLog(xLog, es,
-					getParameterAsString(PARAMETER_1), idColumnAttrib);
-			XLogIOObject xLogIOObject = new XLogIOObject(adaptedLog,
-					logIO.getPluginContext());
-			xLogIOObject
-					.setVisualizationType(XLogIOObjectVisualizationType.EXAMPLE_SET);
+			XLog adaptedLog = mergeExampleSetIntoLog(xLog, es, getParameterAsString(PARAMETER_1), idColumnAttrib);
+			XLogIOObject xLogIOObject = new XLogIOObject(adaptedLog, logIO.getPluginContext());
 			outputLog.deliverMD(md);
 			outputLog.deliver(xLogIOObject);
 
 		} else {
 			// show warning
-			JOptionPane.showMessageDialog(null, "Case ID was not found",
-					"Case ID column not found", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, "Case ID was not found", "Case ID column not found",
+					JOptionPane.ERROR_MESSAGE);
 			outputLog.deliverMD(md);
 			outputLog.deliver(null);
 		}
-		logger.log(Level.INFO,
-				"End: add trace attributes ("
-						+ (System.currentTimeMillis() - time) / 1000 + " sec)");
+		logger.log(Level.INFO, "End: add trace attributes (" + (System.currentTimeMillis() - time) / 1000 + " sec)");
 	}
 
 	public List<ParameterType> getParameterTypes() {
 		List<ParameterType> parameterTypes = super.getParameterTypes();
 
-		ParameterTypeString parameterType1 = new ParameterTypeString(
-				PARAMETER_1, PARAMETER_1, "T:concept:name");
+		ParameterTypeString parameterType1 = new ParameterTypeString(PARAMETER_1, PARAMETER_1, "T:concept:name");
 		parameterTypes.add(parameterType1);
 
 		return parameterTypes;
 	}
 
-	private HashMap<String,XTrace> buildTraceMap(XLog xlog) {
-		HashMap<String,XTrace> map = new HashMap<>();
-		
+	private HashMap<String, XTrace> buildTraceMap(XLog xlog) {
+		HashMap<String, XTrace> map = new HashMap<>();
+
 		for (XTrace t : xlog) {
 			String name = XConceptExtension.instance().extractName(t);
 			if (name != null) {
 				map.put(name, t);
 			}
 		}
-		
+
 		return map;
 	}
-	
-	private XLog mergeExampleSetIntoLog(XLog xLog, ExampleSet es,
-			String nameIDcolumn, Attribute idColumnAttrib) throws UndefinedParameterError {
-		
-		HashMap<String,XTrace> traceMap = buildTraceMap(xLog);
-		
+
+	private XLog mergeExampleSetIntoLog(XLog xLog, ExampleSet es, String nameIDcolumn, Attribute idColumnAttrib)
+			throws UndefinedParameterError {
+
+		HashMap<String, XTrace> traceMap = buildTraceMap(xLog);
+
 		Iterator<Example> iterator = es.iterator();
 		while (iterator.hasNext()) {
 			Example example = iterator.next();
@@ -139,28 +128,23 @@ public class AddTraceAttributesToLogOperator extends Operator {
 					Attribute attrib = iterator2.next();
 					XAttribute newAttrib = null;
 					if (!attrib.getName().equals(getParameterAsString(PARAMETER_1))) {
-						if (attrib.getValueType() == Ontology.NUMERICAL
-								|| attrib.getValueType() == Ontology.INTEGER
+						if (attrib.getValueType() == Ontology.NUMERICAL || attrib.getValueType() == Ontology.INTEGER
 								|| attrib.getValueType() == Ontology.REAL) {
-							double numericalValue = example
-									.getNumericalValue(attrib);
-							XAttributeLiteralImpl attribLit = new XAttributeLiteralImpl(
-									attrib.getName(),
+							double numericalValue = example.getNumericalValue(attrib);
+							XAttributeLiteralImpl attribLit = new XAttributeLiteralImpl(attrib.getName(),
 									Double.toString(numericalValue));
 							newAttrib = attribLit;
 						} else if (attrib.getValueType() == Ontology.NOMINAL
 								|| attrib.getValueType() == Ontology.BINOMINAL
 								|| attrib.getValueType() == Ontology.STRING
 								|| attrib.getValueType() == Ontology.POLYNOMINAL) {
-							String nominalValue = example
-									.getNominalValue(attrib);
-							XAttributeLiteralImpl attribLit = new XAttributeLiteralImpl(
-									attrib.getName(), nominalValue);
+							String nominalValue = example.getNominalValue(attrib);
+							XAttributeLiteralImpl attribLit = new XAttributeLiteralImpl(attrib.getName(), nominalValue);
 							newAttrib = attribLit;
 						} else if (attrib.getValueType() == Ontology.DATE_TIME) {
 							Date dateValue = example.getDateValue(attrib);
-							XAttributeLiteralImpl attribLit = new XAttributeLiteralImpl(
-									attrib.getName(), dateValue.toString());
+							XAttributeLiteralImpl attribLit = new XAttributeLiteralImpl(attrib.getName(),
+									dateValue.toString());
 							newAttrib = attribLit;
 						}
 					}

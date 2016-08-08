@@ -8,24 +8,22 @@ import org.processmining.processtree.ProcessTree;
 import org.processmining.stream.core.interfaces.XSReader;
 import org.processmining.streaminductiveminer.parameters.StreamInductiveMinerParameters;
 import org.processmining.streaminductiveminer.plugins.StreamInductiveMinerProcessTreePlugin;
-import org.rapidprom.external.connectors.prom.ProMPluginContextManager;
+import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.streams.XSReaderIOObject;
 import org.rapidprom.ioobjects.streams.event.XSEventStreamToProcessTreePetriNetReaderIOObject;
 import org.rapidprom.operators.streams.discovery.abstr.AbstractDFABasedMinerOperator;
 
 import com.rapidminer.operator.OperatorDescription;
 
-public class StreamInductiveMinerProcessTreeOperator extends
-		AbstractDFABasedMinerOperator<XSEvent, ProcessTree, StreamInductiveMinerParameters> {
+public class StreamInductiveMinerProcessTreeOperator
+		extends AbstractDFABasedMinerOperator<XSEvent, ProcessTree, StreamInductiveMinerParameters> {
 
-	public StreamInductiveMinerProcessTreeOperator(
-			OperatorDescription description) {
+	public StreamInductiveMinerProcessTreeOperator(OperatorDescription description) {
 		super(description);
 	}
 
 	@Override
-	protected XSEventStreamToProcessTreeReader getAlgorithm(
-			PluginContext context, XSEventStream stream,
+	protected XSEventStreamToProcessTreeReader getAlgorithm(PluginContext context, XSEventStream stream,
 			StreamInductiveMinerParameters parameters) {
 		StreamInductiveMinerProcessTreePlugin plugin = new StreamInductiveMinerProcessTreePlugin();
 		return plugin.apply(context, stream, parameters);
@@ -33,8 +31,8 @@ public class StreamInductiveMinerProcessTreeOperator extends
 
 	@Override
 	protected PluginContext getPluginContextForAlgorithm() {
-		return ProMPluginContextManager.instance().getFutureResultAwareContext(
-				StreamInductiveMinerProcessTreePlugin.class);
+		return RapidProMGlobalContext.instance()
+				.getFutureResultAwarePluginContext(StreamInductiveMinerProcessTreePlugin.class);
 	}
 
 	@Override
@@ -43,10 +41,9 @@ public class StreamInductiveMinerProcessTreeOperator extends
 	}
 
 	@Override
-	protected XSReaderIOObject<XSEvent, ProcessTree> getIOObject(
-			XSReader<XSEvent, ProcessTree> algorithm, PluginContext context) {
-		return new XSEventStreamToProcessTreePetriNetReaderIOObject(algorithm,
-				context);
+	protected XSReaderIOObject<XSEvent, ProcessTree> getIOObject(XSReader<XSEvent, ProcessTree> algorithm,
+			PluginContext context) {
+		return new XSEventStreamToProcessTreePetriNetReaderIOObject(algorithm, context);
 	}
 
 }

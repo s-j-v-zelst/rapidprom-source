@@ -19,8 +19,6 @@ import org.deckfour.xes.extension.std.XLifecycleExtension;
 import org.deckfour.xes.extension.std.XOrganizationalExtension;
 import org.deckfour.xes.extension.std.XTimeExtension;
 import org.deckfour.xes.factory.XFactory;
-import org.deckfour.xes.factory.XFactoryBufferedImpl;
-import org.deckfour.xes.factory.XFactoryRegistry;
 import org.deckfour.xes.model.XAttributeLiteral;
 import org.deckfour.xes.model.XAttributeMap;
 import org.deckfour.xes.model.XEvent;
@@ -30,8 +28,7 @@ import org.deckfour.xes.model.impl.XAttributeLiteralImpl;
 import org.deckfour.xes.model.impl.XAttributeMapImpl;
 import org.deckfour.xes.model.impl.XAttributeTimestampImpl;
 import org.processmining.xeslite.external.XFactoryExternalStore;
-//import org.processmining.models.xes.XEventPassageClassifier;
-import org.rapidprom.external.connectors.prom.ProMPluginContextManager;
+import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.XLogIOObject;
 import org.rapidprom.operators.ports.metadata.ExampleSetNumberOfAttributesPrecondition;
 import org.rapidprom.parameter.ParameterTypeExampleSetAttributesDynamicCategory;
@@ -97,43 +94,35 @@ public class ExampleSetToXLogConversionOperator extends Operator {
 	private Collection<String> reservedColumns = new HashSet<>();
 
 	/** defining the ports */
-	private InputPort inputExampleSet = getInputPorts()
-			.createPort("example set (Data Table)", new ExampleSetMetaData());
-	private OutputPort outputLog = getOutputPorts()
-			.createPort("event log (ProM Event Log)");
+	private InputPort inputExampleSet = getInputPorts().createPort("example set (Data Table)",
+			new ExampleSetMetaData());
+	private OutputPort outputLog = getOutputPorts().createPort("event log (ProM Event Log)");
 
 	public ExampleSetToXLogConversionOperator(OperatorDescription description) {
 		super(description);
-		getTransformer()
-				.addRule(new GenerateNewMDRule(outputLog, XLogIOObject.class));
-		inputExampleSet.addPrecondition(
-				new ExampleSetNumberOfAttributesPrecondition(inputExampleSet,
-						2));
+		getTransformer().addRule(new GenerateNewMDRule(outputLog, XLogIOObject.class));
+		inputExampleSet.addPrecondition(new ExampleSetNumberOfAttributesPrecondition(inputExampleSet, 2));
 	}
 
 	private XLog addClassifiers(XLog log, boolean lifecycle) {
 		log.getClassifiers().add(new XEventNameClassifier());
 		if (lifecycle) {
 			log.getClassifiers()
-					.add(new XEventAndClassifier(new XEventNameClassifier(),
-							new XEventLifeTransClassifier()));
+					.add(new XEventAndClassifier(new XEventNameClassifier(), new XEventLifeTransClassifier()));
 		}
 		return log;
 	}
 
-	private List<ParameterType> addEventIdentificationParameterType(
-			List<ParameterType> params) {
-		ParameterType eventIdentification = setupDynamicExampleSetBasedParameterType(
-				PARAMETER_KEY_EVENT_IDENTIFIER, PARAMETER_DESC_EVENT_IDENTIFIER,
-				new String[] { PARAMETER_DEFAULT_EVENT_IDENTIFIER }, 0, false,
+	private List<ParameterType> addEventIdentificationParameterType(List<ParameterType> params) {
+		ParameterType eventIdentification = setupDynamicExampleSetBasedParameterType(PARAMETER_KEY_EVENT_IDENTIFIER,
+				PARAMETER_DESC_EVENT_IDENTIFIER, new String[] { PARAMETER_DEFAULT_EVENT_IDENTIFIER }, 0, false,
 				inputExampleSet);
 		eventIdentification.setOptional(false);
 		params.add(eventIdentification);
 		return params;
 	}
 
-	private XLog addExtensions(XLog log, boolean lifecycle, boolean time,
-			boolean oragnizational) {
+	private XLog addExtensions(XLog log, boolean lifecycle, boolean time, boolean oragnizational) {
 		log.getExtensions().add(XConceptExtension.instance());
 		if (lifecycle) {
 			log.getExtensions().add(XLifecycleExtension.instance());
@@ -147,133 +136,98 @@ public class ExampleSetToXLogConversionOperator extends Operator {
 		return log;
 	}
 
-	private XLog addGlobals(XLog log, boolean useLifeCycle,
-			boolean useOrganizational, boolean useTimeStamp) {
-		log.getGlobalTraceAttributes()
-				.add(new XAttributeLiteralImpl(XConceptExtension.KEY_NAME,
-						GLOBAL_INVALID, XConceptExtension.instance()));
-		log.getGlobalEventAttributes()
-				.add(new XAttributeLiteralImpl(XConceptExtension.KEY_NAME,
-						GLOBAL_INVALID, XConceptExtension.instance()));
+	private XLog addGlobals(XLog log, boolean useLifeCycle, boolean useOrganizational, boolean useTimeStamp) {
+		log.getGlobalTraceAttributes().add(
+				new XAttributeLiteralImpl(XConceptExtension.KEY_NAME, GLOBAL_INVALID, XConceptExtension.instance()));
+		log.getGlobalEventAttributes().add(
+				new XAttributeLiteralImpl(XConceptExtension.KEY_NAME, GLOBAL_INVALID, XConceptExtension.instance()));
 		if (useLifeCycle) {
-			log.getGlobalEventAttributes()
-					.add(new XAttributeLiteralImpl(
-							XLifecycleExtension.KEY_TRANSITION, GLOBAL_INVALID,
-							XLifecycleExtension.instance()));
+			log.getGlobalEventAttributes().add(new XAttributeLiteralImpl(XLifecycleExtension.KEY_TRANSITION,
+					GLOBAL_INVALID, XLifecycleExtension.instance()));
 		}
 		if (useTimeStamp) {
 			log.getGlobalEventAttributes()
-					.add(new XAttributeTimestampImpl(
-							XTimeExtension.KEY_TIMESTAMP, 0,
-							XTimeExtension.instance()));
+					.add(new XAttributeTimestampImpl(XTimeExtension.KEY_TIMESTAMP, 0, XTimeExtension.instance()));
 		}
 		if (useOrganizational) {
-			if (!getDynamicParameterTypeValue(PARAMETER_KEY_EVENT_RESOURCE)
-					.equals(DEFAULT_VALUE_OPTIONAL)) {
-				log.getGlobalEventAttributes().add(new XAttributeLiteralImpl(
-						XOrganizationalExtension.KEY_RESOURCE, GLOBAL_INVALID,
-						XOrganizationalExtension.instance()));
+			if (!getDynamicParameterTypeValue(PARAMETER_KEY_EVENT_RESOURCE).equals(DEFAULT_VALUE_OPTIONAL)) {
+				log.getGlobalEventAttributes().add(new XAttributeLiteralImpl(XOrganizationalExtension.KEY_RESOURCE,
+						GLOBAL_INVALID, XOrganizationalExtension.instance()));
 			}
-			if (!getDynamicParameterTypeValue(PARAMETER_KEY_EVENT_RESOURCE_ROLE)
-					.equals(DEFAULT_VALUE_OPTIONAL)) {
-				log.getGlobalEventAttributes().add(new XAttributeLiteralImpl(
-						XOrganizationalExtension.KEY_ROLE, GLOBAL_INVALID,
-						XOrganizationalExtension.instance()));
+			if (!getDynamicParameterTypeValue(PARAMETER_KEY_EVENT_RESOURCE_ROLE).equals(DEFAULT_VALUE_OPTIONAL)) {
+				log.getGlobalEventAttributes().add(new XAttributeLiteralImpl(XOrganizationalExtension.KEY_ROLE,
+						GLOBAL_INVALID, XOrganizationalExtension.instance()));
 			}
-			if (!getDynamicParameterTypeValue(
-					PARAMETER_KEY_EVENT_RESOURCE_GROUP)
-							.equals(DEFAULT_VALUE_OPTIONAL)) {
-				log.getGlobalEventAttributes().add(new XAttributeLiteralImpl(
-						XOrganizationalExtension.KEY_GROUP, GLOBAL_INVALID,
-						XOrganizationalExtension.instance()));
+			if (!getDynamicParameterTypeValue(PARAMETER_KEY_EVENT_RESOURCE_GROUP).equals(DEFAULT_VALUE_OPTIONAL)) {
+				log.getGlobalEventAttributes().add(new XAttributeLiteralImpl(XOrganizationalExtension.KEY_GROUP,
+						GLOBAL_INVALID, XOrganizationalExtension.instance()));
 			}
 		}
 		return log;
 	}
 
-	private List<ParameterType> addLifecycleTransitionParameterTypes(
-			List<ParameterType> params) {
+	private List<ParameterType> addLifecycleTransitionParameterTypes(List<ParameterType> params) {
 		ParameterType includeLifecycleTransition = new ParameterTypeBoolean(
-				PARAMETER_KEY_INCLUDE_EVENT_LIFECYCLE_TRANSITION,
-				PARAMETER_DESC_INLCUDE_EVENT_LIFECYCLE_TRANSITION, false,
-				false);
+				PARAMETER_KEY_INCLUDE_EVENT_LIFECYCLE_TRANSITION, PARAMETER_DESC_INLCUDE_EVENT_LIFECYCLE_TRANSITION,
+				false, false);
 		params.add(includeLifecycleTransition);
 
 		ParameterType lifecycleTransition = setupDynamicExampleSetBasedParameterType(
-				PARAMETER_KEY_EVENT_LIFECYCLE_TRANSITION,
-				PARAMETER_DESC_EVENT_LIFECYCLE_TRANSITION,
-				new String[] { PARAMETER_DEFAULT_EVENT_LIFECYCLE_TRANSITION },
-				0, true, inputExampleSet);
+				PARAMETER_KEY_EVENT_LIFECYCLE_TRANSITION, PARAMETER_DESC_EVENT_LIFECYCLE_TRANSITION,
+				new String[] { PARAMETER_DEFAULT_EVENT_LIFECYCLE_TRANSITION }, 0, true, inputExampleSet);
 		lifecycleTransition.setOptional(true);
-		lifecycleTransition
-				.registerDependencyCondition(new BooleanParameterCondition(this,
-						PARAMETER_KEY_INCLUDE_EVENT_LIFECYCLE_TRANSITION, true,
-						true));
+		lifecycleTransition.registerDependencyCondition(
+				new BooleanParameterCondition(this, PARAMETER_KEY_INCLUDE_EVENT_LIFECYCLE_TRANSITION, true, true));
 		params.add(lifecycleTransition);
 		return params;
 	}
 
-	private List<ParameterType> addResourceGroupParameterType(
-			List<ParameterType> params, String isOrgKey) {
-		ParameterType group = setupDynamicExampleSetBasedParameterType(
-				PARAMETER_KEY_EVENT_RESOURCE_GROUP,
-				PARAMETER_DESC_EVENT_RESOURCE_GROUP,
-				new String[] { PARAMETER_DEFAULT_EVENT_RESOURCE_GROUP }, 0,
-				true, inputExampleSet);
+	private List<ParameterType> addResourceGroupParameterType(List<ParameterType> params, String isOrgKey) {
+		ParameterType group = setupDynamicExampleSetBasedParameterType(PARAMETER_KEY_EVENT_RESOURCE_GROUP,
+				PARAMETER_DESC_EVENT_RESOURCE_GROUP, new String[] { PARAMETER_DEFAULT_EVENT_RESOURCE_GROUP }, 0, true,
+				inputExampleSet);
 		group.setOptional(true);
-		group.registerDependencyCondition(
-				new BooleanParameterCondition(this, isOrgKey, true, true));
+		group.registerDependencyCondition(new BooleanParameterCondition(this, isOrgKey, true, true));
 		params.add(group);
 		return params;
 	}
 
-	private List<ParameterType> addResourceParameterType(
-			List<ParameterType> params, String isOrgKey) {
+	private List<ParameterType> addResourceParameterType(List<ParameterType> params, String isOrgKey) {
 
-		ParameterType resource = setupDynamicExampleSetBasedParameterType(
-				PARAMETER_KEY_EVENT_RESOURCE, PARAMETER_DESC_EVENT_RESOURCE,
-				new String[] { PARAMETER_DEFAULT_EVENT_RESOURCE }, 0, true,
+		ParameterType resource = setupDynamicExampleSetBasedParameterType(PARAMETER_KEY_EVENT_RESOURCE,
+				PARAMETER_DESC_EVENT_RESOURCE, new String[] { PARAMETER_DEFAULT_EVENT_RESOURCE }, 0, true,
 				inputExampleSet);
 		resource.setOptional(true);
 
-		resource.registerDependencyCondition(
-				new BooleanParameterCondition(this, isOrgKey, true, true));
+		resource.registerDependencyCondition(new BooleanParameterCondition(this, isOrgKey, true, true));
 
 		params.add(resource);
 		return params;
 	}
 
-	private List<ParameterType> addResourceRoleParameterType(
-			List<ParameterType> params, String isOrgKey) {
+	private List<ParameterType> addResourceRoleParameterType(List<ParameterType> params, String isOrgKey) {
 
-		ParameterType role = setupDynamicExampleSetBasedParameterType(
-				PARAMETER_KEY_EVENT_RESOURCE_ROLE,
-				PARAMETER_DESC_EVENT_RESOURCE_ROLE,
-				new String[] { PARAMETER_DEFAULT_EVENT_RESOURCE_ROLE }, 0, true,
+		ParameterType role = setupDynamicExampleSetBasedParameterType(PARAMETER_KEY_EVENT_RESOURCE_ROLE,
+				PARAMETER_DESC_EVENT_RESOURCE_ROLE, new String[] { PARAMETER_DEFAULT_EVENT_RESOURCE_ROLE }, 0, true,
 				inputExampleSet);
 		role.setOptional(true);
-		role.registerDependencyCondition(
-				new BooleanParameterCondition(this, isOrgKey, true, true));
+		role.registerDependencyCondition(new BooleanParameterCondition(this, isOrgKey, true, true));
 		params.add(role);
 		return params;
 	}
 
-	private List<ParameterType> addTimeStampParameterTypes(
-			List<ParameterType> params) {
+	private List<ParameterType> addTimeStampParameterTypes(List<ParameterType> params) {
 
-		ParameterType includeTimeStamps = new ParameterTypeBoolean(
-				PARAMETER_KEY_INCLUDE_EVENT_TIME_STAMP,
+		ParameterType includeTimeStamps = new ParameterTypeBoolean(PARAMETER_KEY_INCLUDE_EVENT_TIME_STAMP,
 				PARAMETER_DESC_INCLUDE_EVENT_TIME_STAMP, false, false);
 		params.add(includeTimeStamps);
 
-		ParameterType eventTimeStamp = setupDynamicExampleSetBasedParameterType(
-				PARAMETER_KEY_EVENT_TIMESTAMP, PARAMETER_DESC_EVENT_TIMESTAMP,
-				new String[] { PARAMETER_DEFAULT_EVENT_TIMESTAMP }, 0, false,
+		ParameterType eventTimeStamp = setupDynamicExampleSetBasedParameterType(PARAMETER_KEY_EVENT_TIMESTAMP,
+				PARAMETER_DESC_EVENT_TIMESTAMP, new String[] { PARAMETER_DEFAULT_EVENT_TIMESTAMP }, 0, false,
 				inputExampleSet);
 		eventTimeStamp.setOptional(true);
-		eventTimeStamp
-				.registerDependencyCondition(new BooleanParameterCondition(this,
-						PARAMETER_KEY_INCLUDE_EVENT_TIME_STAMP, true, true));
+		eventTimeStamp.registerDependencyCondition(
+				new BooleanParameterCondition(this, PARAMETER_KEY_INCLUDE_EVENT_TIME_STAMP, true, true));
 		params.add(eventTimeStamp);
 
 		// FIXME we do not allow for reordering as the ProM reordering operator
@@ -290,54 +244,43 @@ public class ExampleSetToXLogConversionOperator extends Operator {
 		return params;
 	}
 
-	private List<ParameterType> addTraceIdentificationParameterType(
-			List<ParameterType> params) {
-		ParameterType traceIdentification = setupDynamicExampleSetBasedParameterType(
-				PARAMETER_KEY_TRACE_IDENTIFIER, PARAMETER_DESC_TRACE_IDENTIFIER,
-				new String[] { PARAMETER_DEFAULT_TRACE_IDENTIFIER }, 0, false,
+	private List<ParameterType> addTraceIdentificationParameterType(List<ParameterType> params) {
+		ParameterType traceIdentification = setupDynamicExampleSetBasedParameterType(PARAMETER_KEY_TRACE_IDENTIFIER,
+				PARAMETER_DESC_TRACE_IDENTIFIER, new String[] { PARAMETER_DEFAULT_TRACE_IDENTIFIER }, 0, false,
 				inputExampleSet);
 		traceIdentification.setOptional(false);
 		params.add(traceIdentification);
 		return params;
 	}
 
-	private XEvent constructEvent(XFactory factory, ExampleSet data,
-			Example example, String eventIdentifier) {
+	private XEvent constructEvent(XFactory factory, ExampleSet data, Example example, String eventIdentifier) {
 		XAttributeMap attributes = new XAttributeMapImpl();
-		String eventName = example
-				.getValueAsString(data.getAttributes().get(eventIdentifier));
+		String eventName = example.getValueAsString(data.getAttributes().get(eventIdentifier));
 		attributes.put(XConceptExtension.KEY_NAME,
-				new XAttributeLiteralImpl(XConceptExtension.KEY_NAME, eventName,
-						XConceptExtension.instance()));
+				new XAttributeLiteralImpl(XConceptExtension.KEY_NAME, eventName, XConceptExtension.instance()));
 		XEvent event = factory.createEvent(attributes);
 		return decorateEvent(event, data, example);
 	}
 
 	private XLog constructLogByExampleSet(ExampleSet data) {
-//		XFactory factory = XFactoryRegistry.instance().currentDefault();
+		// XFactory factory = XFactoryRegistry.instance().currentDefault();
 		XFactory factory = new XFactoryExternalStore.MapDBDiskImpl();
 
-		XLog log = createLog(factory, getParameterAsBoolean(
-				PARAMETER_KEY_INCLUDE_EVENT_LIFECYCLE_TRANSITION));
+		XLog log = createLog(factory, getParameterAsBoolean(PARAMETER_KEY_INCLUDE_EVENT_LIFECYCLE_TRANSITION));
 
-		log = addExtensions(log, isUseLifeCycle(), isUseTime(),
-				isUseOrganizational());
+		log = addExtensions(log, isUseLifeCycle(), isUseTime(), isUseOrganizational());
 
-		log = addGlobals(log, isUseLifeCycle(), isUseOrganizational(),
-				isUseTime());
+		log = addGlobals(log, isUseLifeCycle(), isUseOrganizational(), isUseTime());
 
 		log = addClassifiers(log, isUseLifeCycle());
 
 		// iterate over traces and events
 		Iterator<Example> iterator = data.iterator();
 		Map<String, XTrace> mapping = new HashMap<String, XTrace>();
-		String traceIdentifier = getDynamicParameterTypeValue(
-				PARAMETER_KEY_TRACE_IDENTIFIER);
-		String eventIdentifier = getDynamicParameterTypeValue(
-				PARAMETER_KEY_EVENT_IDENTIFIER);
+		String traceIdentifier = getDynamicParameterTypeValue(PARAMETER_KEY_TRACE_IDENTIFIER);
+		String eventIdentifier = getDynamicParameterTypeValue(PARAMETER_KEY_EVENT_IDENTIFIER);
 		while (iterator.hasNext()) {
-			log = processExampleAsEvent(factory, log, data, iterator.next(),
-					mapping, traceIdentifier, eventIdentifier);
+			log = processExampleAsEvent(factory, log, data, iterator.next(), mapping, traceIdentifier, eventIdentifier);
 
 		}
 		return log;
@@ -355,12 +298,11 @@ public class ExampleSetToXLogConversionOperator extends Operator {
 	 * @param mapping
 	 * @return
 	 */
-	private XTrace constructTrace(XFactory factory, XLog log,
-			String traceIdentifier, Map<String, XTrace> mapping) {
+	private XTrace constructTrace(XFactory factory, XLog log, String traceIdentifier, Map<String, XTrace> mapping) {
 		if (mapping.containsKey(traceIdentifier))
 			return mapping.get(traceIdentifier);
-		XAttributeLiteral attribNameTrace = factory.createAttributeLiteral(
-				"concept:name", traceIdentifier, XConceptExtension.instance());
+		XAttributeLiteral attribNameTrace = factory.createAttributeLiteral("concept:name", traceIdentifier,
+				XConceptExtension.instance());
 		XAttributeMap attribMapTrace = new XAttributeMapImpl();
 		attribMapTrace.put(XConceptExtension.KEY_NAME, attribNameTrace);
 		XTrace trace = factory.createTrace(attribMapTrace);
@@ -370,21 +312,16 @@ public class ExampleSetToXLogConversionOperator extends Operator {
 	}
 
 	private XLog createLog(XFactory factory, boolean useLifeCycleModel) {
-		XAttributeLiteral attribNameLog = factory.createAttributeLiteral(
-				XConceptExtension.KEY_NAME,
+		XAttributeLiteral attribNameLog = factory.createAttributeLiteral(XConceptExtension.KEY_NAME,
 				"Event Log (created by RapidMiner @ "
-						+ (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"))
-								.format(Calendar.getInstance().getTime())
-						+ ")",
+						+ (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(Calendar.getInstance().getTime()) + ")",
 				XConceptExtension.instance());
 		XAttributeMap attribMapLog = new XAttributeMapImpl();
 		attribMapLog.put(XConceptExtension.KEY_NAME, attribNameLog);
 
 		if (useLifeCycleModel) {
-			XAttributeLiteral attribLifecycleLog = factory
-					.createAttributeLiteral(XLifecycleExtension.KEY_MODEL,
-							XLifecycleExtension.VALUE_MODEL_STANDARD,
-							XLifecycleExtension.instance());
+			XAttributeLiteral attribLifecycleLog = factory.createAttributeLiteral(XLifecycleExtension.KEY_MODEL,
+					XLifecycleExtension.VALUE_MODEL_STANDARD, XLifecycleExtension.instance());
 			attribMapLog.put(XLifecycleExtension.KEY_MODEL, attribLifecycleLog);
 		}
 		XLog log = factory.createLog(attribMapLog);
@@ -392,8 +329,7 @@ public class ExampleSetToXLogConversionOperator extends Operator {
 		return log;
 	}
 
-	private XEvent decorateEvent(XEvent event, ExampleSet data,
-			Example example) {
+	private XEvent decorateEvent(XEvent event, ExampleSet data, Example example) {
 		if (isUseTime()) {
 			event = decorateEventWithTime(event, data, example);
 		}
@@ -412,89 +348,64 @@ public class ExampleSetToXLogConversionOperator extends Operator {
 		return event;
 	}
 
-	private XEvent decorateEventWithAdditionalData(XEvent event,
-			ExampleSet data, Example example) {
+	private XEvent decorateEventWithAdditionalData(XEvent event, ExampleSet data, Example example) {
 		for (Attribute a : data.getAttributes()) {
 			if (!(reservedColumns.contains(a.getName()))) {
 				String attrVal = example.getValueAsString(a);
 				String attrKey = "event_attr:" + a.getName();
-				event.getAttributes().put(attrKey,
-						new XAttributeLiteralImpl(attrKey, attrVal));
+				event.getAttributes().put(attrKey, new XAttributeLiteralImpl(attrKey, attrVal));
 			}
 		}
 		return event;
 	}
 
-	private XEvent decorateEventWithGroup(XEvent event, ExampleSet data,
-			Example example) {
-		String resourceGroupAttr = getDynamicParameterTypeValue(
-				PARAMETER_KEY_EVENT_RESOURCE_GROUP);
+	private XEvent decorateEventWithGroup(XEvent event, ExampleSet data, Example example) {
+		String resourceGroupAttr = getDynamicParameterTypeValue(PARAMETER_KEY_EVENT_RESOURCE_GROUP);
 		if (!resourceGroupAttr.equals(DEFAULT_VALUE_OPTIONAL)) {
-			String group = example.getValueAsString(
-					data.getAttributes().get(resourceGroupAttr));
-			event.getAttributes().put(XOrganizationalExtension.KEY_GROUP,
-					new XAttributeLiteralImpl(
-							XOrganizationalExtension.KEY_GROUP, group,
-							XOrganizationalExtension.instance()));
+			String group = example.getValueAsString(data.getAttributes().get(resourceGroupAttr));
+			event.getAttributes().put(XOrganizationalExtension.KEY_GROUP, new XAttributeLiteralImpl(
+					XOrganizationalExtension.KEY_GROUP, group, XOrganizationalExtension.instance()));
 		}
 		return event;
 	}
 
-	private XEvent decorateEventWithLifeCycle(XEvent event, ExampleSet data,
-			Example example) {
-		String ltAttr = getDynamicParameterTypeValue(
-				PARAMETER_KEY_EVENT_LIFECYCLE_TRANSITION);
+	private XEvent decorateEventWithLifeCycle(XEvent event, ExampleSet data, Example example) {
+		String ltAttr = getDynamicParameterTypeValue(PARAMETER_KEY_EVENT_LIFECYCLE_TRANSITION);
 		if (!ltAttr.equals(DEFAULT_VALUE_OPTIONAL)) {
-			String lifecycle = example
-					.getValueAsString(data.getAttributes().get(ltAttr));
-			event.getAttributes().put(XLifecycleExtension.KEY_TRANSITION,
-					new XAttributeLiteralImpl(
-							XLifecycleExtension.KEY_TRANSITION, lifecycle,
-							XLifecycleExtension.instance()));
+			String lifecycle = example.getValueAsString(data.getAttributes().get(ltAttr));
+			event.getAttributes().put(XLifecycleExtension.KEY_TRANSITION, new XAttributeLiteralImpl(
+					XLifecycleExtension.KEY_TRANSITION, lifecycle, XLifecycleExtension.instance()));
 		}
 		return event;
 	}
 
-	private XEvent decorateEventWithResource(XEvent event, ExampleSet data,
-			Example example) {
-		String resourceAttr = getDynamicParameterTypeValue(
-				PARAMETER_KEY_EVENT_RESOURCE);
+	private XEvent decorateEventWithResource(XEvent event, ExampleSet data, Example example) {
+		String resourceAttr = getDynamicParameterTypeValue(PARAMETER_KEY_EVENT_RESOURCE);
 		if (!resourceAttr.equals(DEFAULT_VALUE_OPTIONAL)) {
-			String resource = example
-					.getValueAsString(data.getAttributes().get(resourceAttr));
-			event.getAttributes().put(XOrganizationalExtension.KEY_RESOURCE,
-					new XAttributeLiteralImpl(
-							XOrganizationalExtension.KEY_RESOURCE, resource,
-							XOrganizationalExtension.instance()));
+			String resource = example.getValueAsString(data.getAttributes().get(resourceAttr));
+			event.getAttributes().put(XOrganizationalExtension.KEY_RESOURCE, new XAttributeLiteralImpl(
+					XOrganizationalExtension.KEY_RESOURCE, resource, XOrganizationalExtension.instance()));
 		}
 		return event;
 	}
 
-	private XEvent decorateEventWithRole(XEvent event, ExampleSet data,
-			Example example) {
-		String resourceRoleAttr = getDynamicParameterTypeValue(
-				PARAMETER_KEY_EVENT_RESOURCE_ROLE);
+	private XEvent decorateEventWithRole(XEvent event, ExampleSet data, Example example) {
+		String resourceRoleAttr = getDynamicParameterTypeValue(PARAMETER_KEY_EVENT_RESOURCE_ROLE);
 		if (!resourceRoleAttr.equals(DEFAULT_VALUE_OPTIONAL)) {
-			String role = example.getValueAsString(
-					data.getAttributes().get(resourceRoleAttr));
-			event.getAttributes().put(XOrganizationalExtension.KEY_ROLE,
-					new XAttributeLiteralImpl(XOrganizationalExtension.KEY_ROLE,
-							role, XOrganizationalExtension.instance()));
+			String role = example.getValueAsString(data.getAttributes().get(resourceRoleAttr));
+			event.getAttributes().put(XOrganizationalExtension.KEY_ROLE, new XAttributeLiteralImpl(
+					XOrganizationalExtension.KEY_ROLE, role, XOrganizationalExtension.instance()));
 
 		}
 		return event;
 	}
 
-	private XEvent decorateEventWithTime(XEvent event, ExampleSet data,
-			Example example) {
-		String timeAttr = getDynamicParameterTypeValue(
-				PARAMETER_KEY_EVENT_TIMESTAMP);
+	private XEvent decorateEventWithTime(XEvent event, ExampleSet data, Example example) {
+		String timeAttr = getDynamicParameterTypeValue(PARAMETER_KEY_EVENT_TIMESTAMP);
 		if (!timeAttr.equals(DEFAULT_VALUE_OPTIONAL)) {
-			Date time = example
-					.getDateValue(data.getAttributes().get(timeAttr));
+			Date time = example.getDateValue(data.getAttributes().get(timeAttr));
 			event.getAttributes().put(XTimeExtension.KEY_TIMESTAMP,
-					new XAttributeTimestampImpl(XTimeExtension.KEY_TIMESTAMP,
-							time, XTimeExtension.instance()));
+					new XAttributeTimestampImpl(XTimeExtension.KEY_TIMESTAMP, time, XTimeExtension.instance()));
 		}
 		return event;
 	}
@@ -505,8 +416,7 @@ public class ExampleSetToXLogConversionOperator extends Operator {
 		logger.log(Level.INFO, "Start: ExampleSet to XLog conversion");
 		long time = System.currentTimeMillis();
 		reservedColumns = determineReservedColumns();
-		XLog log = constructLogByExampleSet(
-				inputExampleSet.getData(ExampleSet.class));
+		XLog log = constructLogByExampleSet(inputExampleSet.getData(ExampleSet.class));
 		// FIXME time based reordering in ProM does not properly copy all log
 		// extensions, classifiers etc.
 		// if (!getDynamicParameterTypeValue(PARAMETER_KEY_EVENT_TIMESTAMP)
@@ -515,41 +425,33 @@ public class ExampleSetToXLogConversionOperator extends Operator {
 		// log = ReSortLog.removeEdgePoints(
 		// ProMPluginContextManager.instance().getContext(), log);
 		// }
-		outputLog.deliver(new XLogIOObject(log,
-				ProMPluginContextManager.instance().getContext()));
-		logger.log(Level.INFO, "End: Table to Event Log conversion ("
-				+ (System.currentTimeMillis() - time) / 1000 + " sec)");
+		outputLog.deliver(new XLogIOObject(log, RapidProMGlobalContext.instance().getPluginContext()));
+		logger.log(Level.INFO,
+				"End: Table to Event Log conversion (" + (System.currentTimeMillis() - time) / 1000 + " sec)");
 	}
 
 	private Collection<String> determineReservedColumns() {
 		Collection<String> reserved = new HashSet<>();
-		reserved.add(
-				getDynamicParameterTypeValue(PARAMETER_KEY_TRACE_IDENTIFIER));
-		reserved.add(
-				getDynamicParameterTypeValue(PARAMETER_KEY_EVENT_IDENTIFIER));
+		reserved.add(getDynamicParameterTypeValue(PARAMETER_KEY_TRACE_IDENTIFIER));
+		reserved.add(getDynamicParameterTypeValue(PARAMETER_KEY_EVENT_IDENTIFIER));
 		if (isUseTime()) {
-			reserved.add(getDynamicParameterTypeValue(
-					PARAMETER_KEY_EVENT_TIMESTAMP));
+			reserved.add(getDynamicParameterTypeValue(PARAMETER_KEY_EVENT_TIMESTAMP));
 		}
 		if (isUseLifeCycle()) {
-			reserved.add(getDynamicParameterTypeValue(
-					PARAMETER_KEY_EVENT_LIFECYCLE_TRANSITION));
+			reserved.add(getDynamicParameterTypeValue(PARAMETER_KEY_EVENT_LIFECYCLE_TRANSITION));
 		}
 		if (isUseOrganizational()) {
-			reserved.add(
-					getDynamicParameterTypeValue(PARAMETER_KEY_EVENT_RESOURCE));
-			reserved.add(getDynamicParameterTypeValue(
-					PARAMETER_KEY_EVENT_RESOURCE_ROLE));
-			reserved.add(getDynamicParameterTypeValue(
-					PARAMETER_KEY_EVENT_RESOURCE_GROUP));
+			reserved.add(getDynamicParameterTypeValue(PARAMETER_KEY_EVENT_RESOURCE));
+			reserved.add(getDynamicParameterTypeValue(PARAMETER_KEY_EVENT_RESOURCE_ROLE));
+			reserved.add(getDynamicParameterTypeValue(PARAMETER_KEY_EVENT_RESOURCE_GROUP));
 		}
 		return reserved;
 	}
 
 	private String getDynamicParameterTypeValue(String key) {
 		try {
-			return ((ParameterTypeExampleSetAttributesDynamicCategory) getParameterType(
-					key)).getValues()[getParameterAsInt(key)];
+			return ((ParameterTypeExampleSetAttributesDynamicCategory) getParameterType(key))
+					.getValues()[getParameterAsInt(key)];
 		} catch (UndefinedParameterError e) {
 			e.printStackTrace();
 		}
@@ -564,37 +466,29 @@ public class ExampleSetToXLogConversionOperator extends Operator {
 		params = addTimeStampParameterTypes(params);
 		params = addLifecycleTransitionParameterTypes(params);
 		params = addOrganizationalPerspectiveSelector(params);
-		params = addResourceParameterType(params,
-				PARAMETER_KEY_INCLUDE_ORGANIZATIONAL);
-		params = addResourceRoleParameterType(params,
-				PARAMETER_KEY_INCLUDE_ORGANIZATIONAL);
-		params = addResourceGroupParameterType(params,
-				PARAMETER_KEY_INCLUDE_ORGANIZATIONAL);
+		params = addResourceParameterType(params, PARAMETER_KEY_INCLUDE_ORGANIZATIONAL);
+		params = addResourceRoleParameterType(params, PARAMETER_KEY_INCLUDE_ORGANIZATIONAL);
+		params = addResourceGroupParameterType(params, PARAMETER_KEY_INCLUDE_ORGANIZATIONAL);
 		params = addAllDataParameterType(params);
 		return params;
 	}
 
-	private List<ParameterType> addAllDataParameterType(
-			List<ParameterType> params) {
-		ParameterType allData = new ParameterTypeBoolean(
-				PARAMETER_KEY_INCLUDE_ALL_DATA, PARAMETER_DESC_INCLUDE_ALL_DATA,
-				true, false);
+	private List<ParameterType> addAllDataParameterType(List<ParameterType> params) {
+		ParameterType allData = new ParameterTypeBoolean(PARAMETER_KEY_INCLUDE_ALL_DATA,
+				PARAMETER_DESC_INCLUDE_ALL_DATA, true, false);
 		params.add(allData);
 		return params;
 	}
 
-	private List<ParameterType> addOrganizationalPerspectiveSelector(
-			List<ParameterType> params) {
-		ParameterTypeBoolean orgPerspective = new ParameterTypeBoolean(
-				PARAMETER_KEY_INCLUDE_ORGANIZATIONAL,
+	private List<ParameterType> addOrganizationalPerspectiveSelector(List<ParameterType> params) {
+		ParameterTypeBoolean orgPerspective = new ParameterTypeBoolean(PARAMETER_KEY_INCLUDE_ORGANIZATIONAL,
 				PARAMETER_DESC_INCLUDE_ORGANIZATIONAL, false, false);
 		params.add(orgPerspective);
 		return params;
 	}
 
 	private boolean isUseLifeCycle() {
-		return getParameterAsBoolean(
-				PARAMETER_KEY_INCLUDE_EVENT_LIFECYCLE_TRANSITION);
+		return getParameterAsBoolean(PARAMETER_KEY_INCLUDE_EVENT_LIFECYCLE_TRANSITION);
 	}
 
 	private boolean isUseOrganizational() {
@@ -609,21 +503,19 @@ public class ExampleSetToXLogConversionOperator extends Operator {
 		return getParameterAsBoolean(PARAMETER_KEY_INCLUDE_ALL_DATA);
 	}
 
-	private XLog processExampleAsEvent(XFactory factory, XLog log,
-			ExampleSet data, Example example, Map<String, XTrace> mapping,
-			String traceIdentifier, String eventIdentifier) {
-		XTrace trace = constructTrace(factory, log, example.getValueAsString(
-				data.getAttributes().get(traceIdentifier)), mapping);
+	private XLog processExampleAsEvent(XFactory factory, XLog log, ExampleSet data, Example example,
+			Map<String, XTrace> mapping, String traceIdentifier, String eventIdentifier) {
+		XTrace trace = constructTrace(factory, log, example.getValueAsString(data.getAttributes().get(traceIdentifier)),
+				mapping);
 		trace.add(constructEvent(factory, data, example, eventIdentifier));
 		return log;
 
 	}
 
-	private ParameterType setupDynamicExampleSetBasedParameterType(String key,
-			String desc, String[] values, int defaultValue, boolean expert,
-			InputPort inputPort) {
-		return new ParameterTypeExampleSetAttributesDynamicCategory(key, desc,
-				values, values, defaultValue, expert, inputPort);
+	private ParameterType setupDynamicExampleSetBasedParameterType(String key, String desc, String[] values,
+			int defaultValue, boolean expert, InputPort inputPort) {
+		return new ParameterTypeExampleSetAttributesDynamicCategory(key, desc, values, values, defaultValue, expert,
+				inputPort);
 	}
 
 }

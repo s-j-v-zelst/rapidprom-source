@@ -9,7 +9,7 @@ import org.processmining.framework.plugin.PluginContext;
 import org.processmining.plugins.etm.parameters.ETMParam;
 import org.processmining.plugins.etm.parameters.ETMParamFactory;
 import org.processmining.plugins.etm.ui.plugins.ETMwithoutGUI;
-import org.rapidprom.external.connectors.prom.ProMPluginContextManager;
+import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.ProcessTreeIOObject;
 import org.rapidprom.operators.abstr.AbstractRapidProMDiscoveryOperator;
 
@@ -41,12 +41,11 @@ public class ETMdMinerOperator extends AbstractRapidProMDiscoveryOperator {
 			PARAMETER_4_KEY = "Crossover Probability",
 			PARAMETER_4_DESCR = "The probability for 2 process models/trees to ‘mate’: "
 					+ "e.g. to have parts swapped between them to create offspring. "
-					+ "Experiments show that crossover should be kept low, possibly "
-					+ "even at 0.0, maximum 0.25.",
-			PARAMETER_5_KEY = "Mutation Probability", 
+					+ "Experiments show that crossover should be kept low, possibly " + "even at 0.0, maximum 0.25.",
+			PARAMETER_5_KEY = "Mutation Probability",
 			PARAMETER_5_DESCR = "The probability for a process model/tree to have a (random) "
 					+ "mutation applied. We recommend this to be set high, e.g. close to 1.0.",
-			PARAMETER_6_KEY = "Maximum Generations", 
+			PARAMETER_6_KEY = "Maximum Generations",
 			PARAMETER_6_DESCR = "The number of generations/rounds the ETM goes through. "
 					+ "The more rounds the higher the quality of the process model/tree "
 					+ "but the longer it takes for the ETM to finish. Recommendation: "
@@ -88,13 +87,11 @@ public class ETMdMinerOperator extends AbstractRapidProMDiscoveryOperator {
 					+ "required next to replay fitness and precision, but plays a less important "
 					+ "role. Recommended setting is a weight of 1.";
 
-	private OutputPort outputProcessTree = getOutputPorts()
-			.createPort("model (ProM ProcessTree)");
+	private OutputPort outputProcessTree = getOutputPorts().createPort("model (ProM ProcessTree)");
 
 	public ETMdMinerOperator(OperatorDescription description) {
 		super(description);
-		getTransformer().addRule(new GenerateNewMDRule(outputProcessTree,
-				ProcessTreeIOObject.class));
+		getTransformer().addRule(new GenerateNewMDRule(outputProcessTree, ProcessTreeIOObject.class));
 	}
 
 	public void doWork() throws OperatorException {
@@ -103,20 +100,19 @@ public class ETMdMinerOperator extends AbstractRapidProMDiscoveryOperator {
 		logger.log(Level.INFO, "Start: evolutionary tree miner");
 		long time = System.currentTimeMillis();
 
-		PluginContext pluginContext = ProMPluginContextManager.instance()
-				.getFutureResultAwareContext(ETMwithoutGUI.class);
+		PluginContext pluginContext = RapidProMGlobalContext.instance()
+				.getFutureResultAwarePluginContext(ETMwithoutGUI.class);
 		XLog xLog = getXLog();
 
 		ETMParam eTMParam = getConfiguration(xLog, pluginContext);
 
 		ProcessTreeIOObject processTreeIOObject = new ProcessTreeIOObject(
-				ETMwithoutGUI.minePTWithParameters(pluginContext, xLog,
-						getXEventClassifier(), eTMParam),
+				ETMwithoutGUI.minePTWithParameters(pluginContext, xLog, getXEventClassifier(), eTMParam),
 				pluginContext);
 		outputProcessTree.deliver(processTreeIOObject);
 
-		logger.log(Level.INFO, "End: evolutionary tree miner " + "("
-				+ (System.currentTimeMillis() - time) / 1000 + " sec)");
+		logger.log(Level.INFO,
+				"End: evolutionary tree miner " + "(" + (System.currentTimeMillis() - time) / 1000 + " sec)");
 
 	}
 
@@ -124,56 +120,50 @@ public class ETMdMinerOperator extends AbstractRapidProMDiscoveryOperator {
 
 		List<ParameterType> parameterTypes = super.getParameterTypes();
 
-		ParameterTypeInt parameter1 = new ParameterTypeInt(PARAMETER_1_KEY,
-				PARAMETER_1_DESCR, 0, Integer.MAX_VALUE, 20);
+		ParameterTypeInt parameter1 = new ParameterTypeInt(PARAMETER_1_KEY, PARAMETER_1_DESCR, 0, Integer.MAX_VALUE,
+				20);
 		parameterTypes.add(parameter1);
 
-		ParameterTypeInt parameter2 = new ParameterTypeInt(PARAMETER_2_KEY,
-				PARAMETER_2_DESCR, 0, Integer.MAX_VALUE, 5);
+		ParameterTypeInt parameter2 = new ParameterTypeInt(PARAMETER_2_KEY, PARAMETER_2_DESCR, 0, Integer.MAX_VALUE, 5);
 		parameterTypes.add(parameter2);
 
-		ParameterTypeInt parameter3 = new ParameterTypeInt(PARAMETER_3_KEY,
-				PARAMETER_3_DESCR, 0, Integer.MAX_VALUE, 2);
+		ParameterTypeInt parameter3 = new ParameterTypeInt(PARAMETER_3_KEY, PARAMETER_3_DESCR, 0, Integer.MAX_VALUE, 2);
 		parameterTypes.add(parameter3);
 
-		ParameterTypeDouble parameter4 = new ParameterTypeDouble(
-				PARAMETER_4_KEY, PARAMETER_4_DESCR, 0, 1, 0.2);
+		ParameterTypeDouble parameter4 = new ParameterTypeDouble(PARAMETER_4_KEY, PARAMETER_4_DESCR, 0, 1, 0.2);
 		parameterTypes.add(parameter4);
 
-		ParameterTypeDouble parameter5 = new ParameterTypeDouble(
-				PARAMETER_5_KEY, PARAMETER_5_DESCR, 0, 1, 0.8);
+		ParameterTypeDouble parameter5 = new ParameterTypeDouble(PARAMETER_5_KEY, PARAMETER_5_DESCR, 0, 1, 0.8);
 		parameterTypes.add(parameter5);
 
-		ParameterTypeInt parameter6 = new ParameterTypeInt(PARAMETER_6_KEY,
-				PARAMETER_6_DESCR, 0, Integer.MAX_VALUE, 500);
+		ParameterTypeInt parameter6 = new ParameterTypeInt(PARAMETER_6_KEY, PARAMETER_6_DESCR, 0, Integer.MAX_VALUE,
+				500);
 		parameterTypes.add(parameter6);
 
-		ParameterTypeDouble parameter7 = new ParameterTypeDouble(PARAMETER_7_KEY,
-				PARAMETER_7_DESCR, 0, 1, 1);
+		ParameterTypeDouble parameter7 = new ParameterTypeDouble(PARAMETER_7_KEY, PARAMETER_7_DESCR, 0, 1, 1);
 		parameterTypes.add(parameter7);
 
-		ParameterTypeDouble parameter8 = new ParameterTypeDouble(PARAMETER_8_KEY,
-				PARAMETER_8_DESCR, -1, 1, 1);
+		ParameterTypeDouble parameter8 = new ParameterTypeDouble(PARAMETER_8_KEY, PARAMETER_8_DESCR, -1, 1, 1);
 		parameterTypes.add(parameter8);
 
-		ParameterTypeInt parameter9 = new ParameterTypeInt(PARAMETER_9_KEY,
-				PARAMETER_9_DESCR, -1, Integer.MAX_VALUE, 100);
+		ParameterTypeInt parameter9 = new ParameterTypeInt(PARAMETER_9_KEY, PARAMETER_9_DESCR, -1, Integer.MAX_VALUE,
+				100);
 		parameterTypes.add(parameter9);
 
-		ParameterTypeInt parameter10 = new ParameterTypeInt(PARAMETER_10_KEY,
-				PARAMETER_10_DESCR, 0, Integer.MAX_VALUE, 10);
+		ParameterTypeInt parameter10 = new ParameterTypeInt(PARAMETER_10_KEY, PARAMETER_10_DESCR, 0, Integer.MAX_VALUE,
+				10);
 		parameterTypes.add(parameter10);
 
-		ParameterTypeInt parameter11 = new ParameterTypeInt(PARAMETER_11_KEY,
-				PARAMETER_11_DESCR, 0, Integer.MAX_VALUE, 5);
+		ParameterTypeInt parameter11 = new ParameterTypeInt(PARAMETER_11_KEY, PARAMETER_11_DESCR, 0, Integer.MAX_VALUE,
+				5);
 		parameterTypes.add(parameter11);
 
-		ParameterTypeInt parameter12 = new ParameterTypeInt(PARAMETER_12_KEY,
-				PARAMETER_12_DESCR, 0, Integer.MAX_VALUE, 1);
+		ParameterTypeInt parameter12 = new ParameterTypeInt(PARAMETER_12_KEY, PARAMETER_12_DESCR, 0, Integer.MAX_VALUE,
+				1);
 		parameterTypes.add(parameter12);
 
-		ParameterTypeInt parameter13 = new ParameterTypeInt(PARAMETER_13_KEY,
-				PARAMETER_13_DESCR, 0, Integer.MAX_VALUE, 1);
+		ParameterTypeInt parameter13 = new ParameterTypeInt(PARAMETER_13_KEY, PARAMETER_13_DESCR, 0, Integer.MAX_VALUE,
+				1);
 		parameterTypes.add(parameter13);
 
 		return parameterTypes;
@@ -182,20 +172,13 @@ public class ETMdMinerOperator extends AbstractRapidProMDiscoveryOperator {
 	private ETMParam getConfiguration(XLog log, PluginContext context) {
 		ETMParam param;
 		try {
-			param = ETMParamFactory.buildParam(log, context,
-					getParameterAsInt(PARAMETER_1_KEY),
-					getParameterAsInt(PARAMETER_2_KEY),
-					getParameterAsInt(PARAMETER_3_KEY),
-					getParameterAsDouble(PARAMETER_4_KEY),
-					getParameterAsDouble(PARAMETER_5_KEY), true, 
-					getParameterAsInt(PARAMETER_6_KEY),
-					getParameterAsDouble(PARAMETER_7_KEY),
-					getParameterAsDouble(PARAMETER_10_KEY),
-					getParameterAsDouble(PARAMETER_8_KEY),
-					getParameterAsDouble(PARAMETER_9_KEY),
-					getParameterAsDouble(PARAMETER_11_KEY),
-					getParameterAsDouble(PARAMETER_12_KEY),
-					getParameterAsDouble(PARAMETER_13_KEY), null, 0.0);
+			param = ETMParamFactory.buildParam(log, context, getParameterAsInt(PARAMETER_1_KEY),
+					getParameterAsInt(PARAMETER_2_KEY), getParameterAsInt(PARAMETER_3_KEY),
+					getParameterAsDouble(PARAMETER_4_KEY), getParameterAsDouble(PARAMETER_5_KEY), true,
+					getParameterAsInt(PARAMETER_6_KEY), getParameterAsDouble(PARAMETER_7_KEY),
+					getParameterAsDouble(PARAMETER_10_KEY), getParameterAsDouble(PARAMETER_8_KEY),
+					getParameterAsDouble(PARAMETER_9_KEY), getParameterAsDouble(PARAMETER_11_KEY),
+					getParameterAsDouble(PARAMETER_12_KEY), getParameterAsDouble(PARAMETER_13_KEY), null, 0.0);
 
 		} catch (UndefinedParameterError e) {
 			e.printStackTrace();

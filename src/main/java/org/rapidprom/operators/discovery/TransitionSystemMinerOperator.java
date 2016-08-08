@@ -13,7 +13,7 @@ import org.processmining.plugins.transitionsystem.miner.TSMinerTransitionSystem;
 import org.processmining.plugins.transitionsystem.miner.modir.TSMinerModirInput;
 import org.processmining.plugins.transitionsystem.miner.util.TSAbstractions;
 import org.processmining.plugins.transitionsystem.miner.util.TSDirections;
-import org.rapidprom.external.connectors.prom.ProMPluginContextManager;
+import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.TransitionSystemIOObject;
 import org.rapidprom.operators.abstr.AbstractRapidProMDiscoveryOperator;
 
@@ -27,8 +27,7 @@ import com.rapidminer.parameter.ParameterTypeCategory;
 import com.rapidminer.parameter.ParameterTypeInt;
 import com.rapidminer.tools.LogService;
 
-public class TransitionSystemMinerOperator
-		extends AbstractRapidProMDiscoveryOperator {
+public class TransitionSystemMinerOperator extends AbstractRapidProMDiscoveryOperator {
 
 	public static final String PARAMETER_1_KEY = "Abstraction",
 			PARAMETER_1_DESCR = "Defines the abstraction used to define a state: "
@@ -41,13 +40,11 @@ public class TransitionSystemMinerOperator
 			PARAMETER_2_KEY = "Horizon",
 			PARAMETER_2_DESCR = "This number defines the length of the event window considered to "
 					+ "defines states: only use the last 'X' events of a (partial) trace will be used.";
-	private OutputPort output = getOutputPorts()
-			.createPort("model (ProM TransitionSystem)");
+	private OutputPort output = getOutputPorts().createPort("model (ProM TransitionSystem)");
 
 	public TransitionSystemMinerOperator(OperatorDescription description) {
 		super(description);
-		getTransformer().addRule(
-				new GenerateNewMDRule(output, TransitionSystemIOObject.class));
+		getTransformer().addRule(new GenerateNewMDRule(output, TransitionSystemIOObject.class));
 	}
 
 	public void doWork() throws OperatorException {
@@ -56,72 +53,59 @@ public class TransitionSystemMinerOperator
 		logger.log(Level.INFO, "Start: transition system miner");
 		long time = System.currentTimeMillis();
 
-		PluginContext pluginContext = ProMPluginContextManager.instance()
-				.getFutureResultAwareContext(TSMinerPlugin.class);
+		PluginContext pluginContext = RapidProMGlobalContext.instance()
+				.getFutureResultAwarePluginContext(TSMinerPlugin.class);
 
 		XEventClassifier[] classifiers = new XEventClassifier[1];
 		classifiers[0] = getXEventClassifier();
 
 		XEventClassifier transitionClassifier = getXEventClassifier();
 
-		Object[] result = TSMinerPlugin.main(pluginContext, getXLog(),
-				classifiers, transitionClassifier, getConfiguration(
-						pluginContext, classifiers, transitionClassifier));
+		Object[] result = TSMinerPlugin.main(pluginContext, getXLog(), classifiers, transitionClassifier,
+				getConfiguration(pluginContext, classifiers, transitionClassifier));
 
 		// TO-DO: for now we use default parameters, we should use the same
 		// parameters used in prom.
-		TransitionSystemIOObject ts = new TransitionSystemIOObject(
-				(TSMinerTransitionSystem) result[0], pluginContext);
+		TransitionSystemIOObject ts = new TransitionSystemIOObject((TSMinerTransitionSystem) result[0], pluginContext);
 		output.deliver(ts);
 
-		logger.log(Level.INFO, "End: transition system miner ("
-				+ (System.currentTimeMillis() - time) / 1000 + " sec)");
+		logger.log(Level.INFO, "End: transition system miner (" + (System.currentTimeMillis() - time) / 1000 + " sec)");
 	}
 
-	private TSMinerInput getConfiguration(PluginContext pluginContext,
-			XEventClassifier[] classifiers,
+	private TSMinerInput getConfiguration(PluginContext pluginContext, XEventClassifier[] classifiers,
 			XEventClassifier transitionClassifier) throws UserError {
 
-		TSMinerInput input = new TSMinerInput(pluginContext, getXLog(),
-				Arrays.asList(classifiers), transitionClassifier);
+		TSMinerInput input = new TSMinerInput(pluginContext, getXLog(), Arrays.asList(classifiers),
+				transitionClassifier);
 
-		TSMinerModirInput setting = input
-				.getModirSettings(TSDirections.BACKWARD, getXEventClassifier());
+		TSMinerModirInput setting = input.getModirSettings(TSDirections.BACKWARD, getXEventClassifier());
 
-		if (getParameterAsString(PARAMETER_1_KEY)
-				.equals(TSAbstractions.SET.getLabel()))
+		if (getParameterAsString(PARAMETER_1_KEY).equals(TSAbstractions.SET.getLabel()))
 			setting.setAbstraction(TSAbstractions.SET);
-		else if (getParameterAsString(PARAMETER_1_KEY)
-				.equals(TSAbstractions.BAG.getLabel()))
+		else if (getParameterAsString(PARAMETER_1_KEY).equals(TSAbstractions.BAG.getLabel()))
 			setting.setAbstraction(TSAbstractions.BAG);
-		else if (getParameterAsString(PARAMETER_1_KEY)
-				.equals(TSAbstractions.FIXED_LENGTH_SET.getLabel()))
+		else if (getParameterAsString(PARAMETER_1_KEY).equals(TSAbstractions.FIXED_LENGTH_SET.getLabel()))
 			setting.setAbstraction(TSAbstractions.FIXED_LENGTH_SET);
-		else 
+		else
 			setting.setAbstraction(TSAbstractions.SEQUENCE);
-		
+
 		setting.setUse(true);
 		setting.setFilteredHorizon(getParameterAsInt(PARAMETER_2_KEY));
 
-		input.setModirSettings(TSDirections.BACKWARD, getXEventClassifier(),
-				setting);
+		input.setModirSettings(TSDirections.BACKWARD, getXEventClassifier(), setting);
 		return input;
 	}
 
 	public List<ParameterType> getParameterTypes() {
 		List<ParameterType> parameterTypes = super.getParameterTypes();
 
-		ParameterTypeCategory parameter1 = new ParameterTypeCategory(
-				PARAMETER_1_KEY, PARAMETER_1_DESCR,
-				new String[] { TSAbstractions.SET.getLabel(),
-						TSAbstractions.BAG.getLabel(),
-						TSAbstractions.SEQUENCE.getLabel(),
-						TSAbstractions.FIXED_LENGTH_SET.getLabel() },
+		ParameterTypeCategory parameter1 = new ParameterTypeCategory(PARAMETER_1_KEY, PARAMETER_1_DESCR,
+				new String[] { TSAbstractions.SET.getLabel(), TSAbstractions.BAG.getLabel(),
+						TSAbstractions.SEQUENCE.getLabel(), TSAbstractions.FIXED_LENGTH_SET.getLabel() },
 				1);
 		parameterTypes.add(parameter1);
 
-		ParameterTypeInt parameter10 = new ParameterTypeInt(PARAMETER_2_KEY,
-				PARAMETER_2_DESCR, 0, 100, 1);
+		ParameterTypeInt parameter10 = new ParameterTypeInt(PARAMETER_2_KEY, PARAMETER_2_DESCR, 0, 100, 1);
 		parameterTypes.add(parameter10);
 
 		return parameterTypes;
