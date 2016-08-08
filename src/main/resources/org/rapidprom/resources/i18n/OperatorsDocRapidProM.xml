@@ -2,11 +2,6 @@
 <operatorHelp lang="en_EN">
        
    <!-- Groups -->
-   
-   <group>
-      <key>rapidprom</key>
-      <name>RapidProM (Process Mining)</name>
-    </group>
     
     <group>
       <key>analysis</key>

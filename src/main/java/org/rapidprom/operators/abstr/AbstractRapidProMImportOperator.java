@@ -60,7 +60,9 @@ public abstract class AbstractRapidProMImportOperator<T extends IOObject>
 								+ " sec)");
 				return result;
 			} catch (Exception e) {
-				throw new OperatorException("Import Failed: " + e.getMessage());
+				e.printStackTrace();
+				throw new OperatorException("Import Failed! ");
+				
 			}
 		} else {
 			throw new OperatorException("Import Failed");
