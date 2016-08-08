@@ -34,7 +34,7 @@ public class HeuristicsMinerOperator extends AbstractRapidProMDiscoveryOperator 
 	// Parameter keys (also used as description)
 	public static final String PARAMETER_1_KEY = "Threshold: Relative-to-best",
 			PARAMETER_1_DESCR = "Admissable distance between directly follows relations for an "
-					+ "activity and the activity’s best one. At 0 only the best directly follows "
+					+ "activity and the activity's best one. At 0 only the best directly follows "
 					+ "relation will be shown for every activity, at 100 all will be shown.",
 			PARAMETER_2_KEY = "Threshold: Dependency",
 			PARAMETER_2_DESCR = "Strength of the directly follows relations determines when to "
