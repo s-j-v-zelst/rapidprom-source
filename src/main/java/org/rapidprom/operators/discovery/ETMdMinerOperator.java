@@ -39,7 +39,7 @@ public class ETMdMinerOperator extends AbstractRapidProMDiscoveryOperator {
 					+ "at the same time slows the ETM down. Recommendation: ~10% of the "
 					+ "population size, minimum 1, maximum 50% of the population size.",
 			PARAMETER_4_KEY = "Crossover Probability",
-			PARAMETER_4_DESCR = "The probability for 2 process models/trees to ‘mate’: "
+			PARAMETER_4_DESCR = "The probability for 2 process models/trees to \"mate\": "
 					+ "e.g. to have parts swapped between them to create offspring. "
 					+ "Experiments show that crossover should be kept low, possibly " + "even at 0.0, maximum 0.25.",
 			PARAMETER_5_KEY = "Mutation Probability",
@@ -75,7 +75,7 @@ public class ETMdMinerOperator extends AbstractRapidProMDiscoveryOperator {
 					+ "overall quality/fitness of the process model/tree. Precision punishes "
 					+ "the process model/tree if it allows for more behaviour than seen in "
 					+ "the data. A delicate balance between replay fitness and precision "
-					+ "results in a ‘good’ process model. Recommended is a weight of 5 to 10.",
+					+ "results in a \"good\" process model. Recommended is a weight of 5 to 10.",
 			PARAMETER_12_KEY = "Weight: Generalization",
 			PARAMETER_12_DESCR = "The weight used for the generalization quality dimension in "
 					+ "the overall quality/fitness of the process model/tree. This dimension "

@@ -32,7 +32,7 @@ public class SocialNetworkMinerOperator extends AbstractRapidProMDiscoveryOperat
 					+ "For example, knowledge of the process structure can be used to detect "
 					+ "whether there is really a causal dependency between both activities. "
 					+ "It is also possible to not only consider direct succession but also "
-					+ "indirect succession using a “causality fall factor” beta, i.e., if there "
+					+ "indirect succession using a \"causality fall factor\" beta, i.e., if there "
 					+ "are 3 activities in-between an activity completed by i and an activity "
 					+ "completed by j, the causality fall factor is beta^3.",
 
