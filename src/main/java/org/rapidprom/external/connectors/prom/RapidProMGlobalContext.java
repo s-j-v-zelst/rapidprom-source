@@ -11,7 +11,6 @@ import org.processmining.framework.plugin.ProMFuture;
 import org.processmining.framework.plugin.annotations.Plugin;
 import org.processmining.framework.plugin.impl.AbstractGlobalContext;
 import org.processmining.framework.plugin.impl.PluginExecutionResultImpl;
-import org.processmining.framework.plugin.impl.PluginManagerImpl;
 
 public final class RapidProMGlobalContext extends AbstractGlobalContext {
 
@@ -78,28 +77,12 @@ public final class RapidProMGlobalContext extends AbstractGlobalContext {
 		final PluginContext result = instance.getMainPluginContext()
 				.createChildContext("RapidProMPluginContext_" + System.currentTimeMillis());
 		Plugin pluginAnn = findAnnotation(classContainingProMPlugin.getAnnotations(), Plugin.class);
-
-		PluginExecutionResult per = new PluginExecutionResultImpl(pluginAnn.returnTypes(), pluginAnn.returnLabels(),
-				RapidProMGlobalContext.instance().getPluginManager()
+		RapidProMPluginExecutionResultImpl per = new RapidProMPluginExecutionResultImpl(pluginAnn.returnTypes(),
+				pluginAnn.returnLabels(), RapidProMGlobalContext.instance().getPluginManager()
 						.getPlugin(classContainingProMPlugin.getCanonicalName()));
 		ProMFuture<?>[] futures = createProMFutures(pluginAnn);
-		Method m;
-		try {
-			m = PluginExecutionResultImpl.class.getDeclaredMethod("setResult", Object[].class);
-			m.setAccessible(true);
-			m.invoke(per, new Object[] { futures });
-			result.setFuture(per);
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		}
+		per.setRapidProMFuture(futures);
+		result.setFuture(per);
 		return result;
 	}
 
