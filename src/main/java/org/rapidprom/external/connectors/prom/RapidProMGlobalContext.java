@@ -1,22 +1,19 @@
 package org.rapidprom.external.connectors.prom;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
+import org.processmining.framework.connections.ConnectionManager;
+import org.processmining.framework.connections.impl.ConnectionManagerImpl;
 import org.processmining.framework.plugin.PluginContext;
-import org.processmining.framework.plugin.PluginExecutionResult;
 import org.processmining.framework.plugin.PluginManager;
 import org.processmining.framework.plugin.ProMFuture;
 import org.processmining.framework.plugin.annotations.Plugin;
 import org.processmining.framework.plugin.impl.AbstractGlobalContext;
-import org.processmining.framework.plugin.impl.PluginExecutionResultImpl;
 
 public final class RapidProMGlobalContext extends AbstractGlobalContext {
 
 	private static boolean initialized = false;
 	private static RapidProMGlobalContext instance = null;
-
 	public static RapidProMGlobalContext initialize(PluginManager pluginManager) {
 		instance = new RapidProMGlobalContext(pluginManager);
 		initialized = true;
@@ -28,12 +25,20 @@ public final class RapidProMGlobalContext extends AbstractGlobalContext {
 		return instance;
 	}
 
+	private final ConnectionManager connMgr;
+
 	private final PluginContext context = new RapidProMPluginContext(this, "RapidProM root plugin context");
 
 	private final PluginManager pluginManager;
 
 	private RapidProMGlobalContext(PluginManager pluginManager) {
 		this.pluginManager = pluginManager;
+		this.connMgr = new ConnectionManagerImpl(pluginManager);
+	}
+	
+	@Override
+	public ConnectionManager getConnectionManager() {
+		return connMgr;
 	}
 
 	private ProMFuture<?>[] createProMFutures(Plugin pluginAnn) {
