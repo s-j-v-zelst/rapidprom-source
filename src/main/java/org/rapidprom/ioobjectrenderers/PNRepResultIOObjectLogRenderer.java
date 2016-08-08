@@ -6,7 +6,7 @@ import org.processmining.plugins.petrinet.replayresult.visualization.PNLogReplay
 import org.rapidprom.ioobjectrenderers.abstr.AbstractRapidProMIOObjectRenderer;
 import org.rapidprom.ioobjects.PNRepResultIOObject;
 
-public class PNRepResultILogOObjectRenderer extends AbstractRapidProMIOObjectRenderer<PNRepResultIOObject> {
+public class PNRepResultIOObjectLogRenderer extends AbstractRapidProMIOObjectRenderer<PNRepResultIOObject> {
 
 	@Override
 	public String getName() {

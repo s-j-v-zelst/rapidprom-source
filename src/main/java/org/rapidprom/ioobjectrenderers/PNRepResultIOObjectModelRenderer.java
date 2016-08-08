@@ -8,7 +8,7 @@ import org.rapidprom.ioobjects.PNRepResultIOObject;
 
 import javassist.tools.rmi.ObjectNotFoundException;
 
-public class PNRepResultIModelOObjectRenderer extends AbstractRapidProMIOObjectRenderer<PNRepResultIOObject> {
+public class PNRepResultIOObjectModelRenderer extends AbstractRapidProMIOObjectRenderer<PNRepResultIOObject> {
 
 	@Override
 	public String getName() {
