@@ -16,6 +16,7 @@ repositories {
 		url "https://github.com/rapidprom/libraries/raw/master/"
 		layout "pattern", {
 			artifact "[module]-[revision]/[module]-[revision].[ext]"
+			artifact "[module]-[revision]/[artifact].[ext]"
 			ivy "[module]-[revision]/ivy-[module]-[revision]-${project.properties["version"]}.xml"
 		}
 	}
@@ -32,7 +33,7 @@ repositories {
 			artifact "[module]-[revision]/[module]-[revision].[ext]"
 			ivy "[module]-[revision]/ivy-[module]-[revision].xml"
 		}
-	}
+	}	
 }
 
 extensionConfig {
@@ -75,6 +76,9 @@ extensionConfig {
 
 // Define third party library dependencies
 dependencies {
+	
+	compile group:"org.rapidprom", name:"ProM-Framework", version:"29527", configuration:"compile"
+
 	compile "org.rapidprom:AcceptingPetriNet:6.5.62"
 	compile "org.rapidprom:AlphaMiner:6.5.47"
 	compile "org.rapidprom:Animation:6.5.50"
@@ -116,5 +120,5 @@ dependencies {
 	compile "org.rapidprom:Uma:6.5.46"
 	compile "org.rapidprom:Woflan:6.5.44"
 	compile "org.rapidprom:EventStream:6.5.72"
-	compile "org.rapidprom:XESLite:6.5.168"	
+	compile "org.rapidprom:XESLite:6.5.168"
 }
