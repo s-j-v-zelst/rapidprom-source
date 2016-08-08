@@ -17,13 +17,13 @@ public final class RapidProMGlobalContext extends AbstractGlobalContext {
 
 	private static boolean initialized = false;
 	private static RapidProMGlobalContext instance = null;
-	
+
 	public static RapidProMGlobalContext initialize(PluginManager pluginManager) {
 		instance = new RapidProMGlobalContext(pluginManager);
 		initialized = true;
 		return instance;
 	}
-	
+
 	public static RapidProMGlobalContext instance() {
 		assert (initialized);
 		return instance;
@@ -38,11 +38,9 @@ public final class RapidProMGlobalContext extends AbstractGlobalContext {
 	}
 
 	private ProMFuture<?>[] createProMFutures(Plugin pluginAnn) {
-		ProMFuture<?>[] futures = new ProMFuture<?>[pluginAnn
-				.returnTypes().length];
+		ProMFuture<?>[] futures = new ProMFuture<?>[pluginAnn.returnTypes().length];
 		for (int i = 0; i < pluginAnn.returnTypes().length; i++) {
-			futures[i] = new ProMFuture<Object>(pluginAnn.returnTypes()[i],
-					pluginAnn.returnLabels()[i]) {
+			futures[i] = new ProMFuture<Object>(pluginAnn.returnTypes()[i], pluginAnn.returnLabels()[i]) {
 				@Override
 				protected Object doInBackground() throws Exception {
 					// NOP
@@ -54,8 +52,7 @@ public final class RapidProMGlobalContext extends AbstractGlobalContext {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T extends Annotation> T findAnnotation(Annotation[] annotations,
-			Class<T> clazz) {
+	private <T extends Annotation> T findAnnotation(Annotation[] annotations, Class<T> clazz) {
 		T result = null;
 		for (Annotation a : annotations) {
 			if (a.annotationType().equals(clazz)) {
@@ -83,7 +80,8 @@ public final class RapidProMGlobalContext extends AbstractGlobalContext {
 		Plugin pluginAnn = findAnnotation(classContainingProMPlugin.getAnnotations(), Plugin.class);
 
 		PluginExecutionResult per = new PluginExecutionResultImpl(pluginAnn.returnTypes(), pluginAnn.returnLabels(),
-				PluginManagerImpl.getInstance().getPlugin(classContainingProMPlugin.getCanonicalName()));
+				RapidProMGlobalContext.instance().getPluginManager()
+						.getPlugin(classContainingProMPlugin.getCanonicalName()));
 		ProMFuture<?>[] futures = createProMFutures(pluginAnn);
 		Method m;
 		try {
@@ -118,12 +116,12 @@ public final class RapidProMGlobalContext extends AbstractGlobalContext {
 	public Class<? extends PluginContext> getPluginContextType() {
 		return RapidProMPluginContext.class;
 	}
-	
+
 	@Override
 	public PluginManager getPluginManager() {
 		return pluginManager;
 	}
-	
+
 	public RapidProMPluginContext getRapidProMPluginContext() {
 		return (RapidProMPluginContext) getMainPluginContext();
 	}
