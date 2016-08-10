@@ -4,116 +4,143 @@
             <operator>
                 <key>analyze_with_woflan</key>
                 <class>org.rapidprom.operators.analysis.WoflanAnalysisOperator</class>
+                <icon>magnifying_glass.png</icon>
             </operator>
             <operator>
                 <key>show_pompom_view</key>
                 <class>org.rapidprom.operators.analysis.ShowPomPomViewOperator</class>
+                <icon>magnifying_glass.png</icon>
             </operator>
             <operator>
                 <key>animate_event_log_in_fuzzy_instance</key>
                 <class>org.rapidprom.operators.analysis.AnimateLogInFuzzyModelAnalysisOperator</class>
+                <icon>magnifying_glass.png</icon>
             </operator>
             <operator>
                 <key>repair_model</key>
                 <class>org.rapidprom.operators.analysis.RepairModelOperator</class>
+                <icon>magnifying_glass.png</icon>
             </operator>
             <operator>
                 <key>reduce_silent_transitions</key>
                 <class>org.rapidprom.operators.analysis.ReduceSilentTransitionsOperator</class>
+                <icon>magnifying_glass.png</icon>
             </operator>    
             <operator>
                 <key>perform_predictions_of_business_process_features</key>
                 <class>org.rapidprom.operators.analysis.FeaturePredictionAnalysisOperator</class>
+                <icon>magnifying_glass.png</icon>
             </operator>
             <operator>
                 <key>mine_with_inductive_visual_miner</key>
                 <class>org.rapidprom.operators.analysis.InductiveVisualMinerOperator</class>
+                <icon>magnifying_glass.png</icon>
             </operator>
              <operator>
                 <key>case_data_extractor</key>
                 <class>org.rapidprom.operators.analysis.CaseDataExtractorOperator</class>
+                <icon>magnifying_glass.png</icon>
             </operator>
         </group>
         <group key="conformance">
         	 <operator>
                 <key>replay_a_log_on_petri_net_for_conformance_analysis</key>
                 <class>org.rapidprom.operators.conformance.ConformanceAnalysisOperator</class>
+                <icon>checks.png</icon>
             </operator>
             <operator>
                 <key>measure_precision</key>
                 <class>org.rapidprom.operators.conformance.MeasurePrecisionAnalysisOperator</class>
+                <icon>checks.png</icon>
             </operator>
             <operator>
                 <key>replay_a_log_on_petri_net_for_performance_conformance_analysis</key>
                 <class>org.rapidprom.operators.conformance.PerformanceConformanceAnalysisOperator</class>
+                <icon>checks.png</icon>
             </operator>
         </group>
         <group key="conversion">
             <operator>
                 <key>convert_petrinet_to_bpmn</key>
                 <class>org.rapidprom.operators.conversion.PetriNetToBpmnConversionOperator</class>
+                <icon>objects_transform.png</icon>
             </operator>
             <operator>
                 <key>transition_system_to_petrinet</key>
                 <class>org.rapidprom.operators.conversion.TransitionSystemtoPetriNetConversionOperator</class>
+                <icon>objects_transform.png</icon>
             </operator>
             <operator>
                 <key>construct_reachability_graph_of_a_petri_net</key>
                 <class>org.rapidprom.operators.conversion.PetriNetToReachabilityGraphConversionOperator</class>
+                <icon>objects_transform.png</icon>
             </operator>
             <operator>
                 <key>xlog_to_exampleset</key>
                 <class>org.rapidprom.operators.conversion.XLogToExampleSetConversionOperator</class>
+                <icon>objects_transform.png</icon>
             </operator>
             <operator>
                 <key>exampleset_to_xlog</key>
                 <class>org.rapidprom.operators.conversion.ExampleSetToXLogConversionOperator</class>
+                <icon>objects_transform.png</icon>
             </operator>
             <operator>
                 <key>convert_heuristics_net_into_petri_net</key>
                 <class>org.rapidprom.operators.conversion.HeuristicNetToPetriNetConversionOperator</class>
+                <icon>objects_transform.png</icon>
             </operator> 
             <operator>
                 <key>convert_process_tree_to_petri_net</key>
                 <class>org.rapidprom.operators.conversion.ProcessTreeToPetriNetConversionOperator</class>
+                <icon>objects_transform.png</icon>
             </operator>
         </group>
         <group key="discovery">
             <operator>
                 <key>alpha_miner</key>
                 <class>org.rapidprom.operators.discovery.AlphaMinerOperator</class>
+                <icon>hardhat.png</icon>
             </operator>
             <operator>
                 <key>ilp_miner</key>
                 <class>org.rapidprom.operators.discovery.ILPMinerOperator</class>
+                <icon>hardhat.png</icon>
             </operator>
             <operator>
                 <key>etm_miner</key>
                 <class>org.rapidprom.operators.discovery.ETMdMinerOperator</class>
+                <icon>hardhat.png</icon>
             </operator>
             <operator>
                 <key>heuristics_miner</key>
                 <class>org.rapidprom.operators.discovery.HeuristicsMinerOperator</class>
+                <icon>hardhat.png</icon>
             </operator>
             <operator>
                 <key>mine_petri_net_with_inductive_miner</key>
                 <class>org.rapidprom.operators.discovery.InductiveMinerPNOperator</class>
+                <icon>hardhat.png</icon>
             </operator>
             <operator>
                 <key>mine_process_tree_with_inductive_miner</key>
                 <class>org.rapidprom.operators.discovery.InductiveMinerPTOperator</class>
+                <icon>hardhat.png</icon>
             </operator>
             <operator>
                 <key>social_network_miner</key>
                 <class>org.rapidprom.operators.discovery.SocialNetworkMinerOperator</class>
+                <icon>hardhat.png</icon>
             </operator>
             <operator>
                 <key>mine_transition_system</key>
                 <class>org.rapidprom.operators.discovery.TransitionSystemMinerOperator</class>
+                <icon>hardhat.png</icon>
             </operator>
             <operator>
                 <key>mine_fuzzy_model</key>
                 <class>org.rapidprom.operators.discovery.FuzzyMinerOperator</class>
+                <icon>hardhat.png</icon>
             </operator>
             
         </group>
@@ -121,32 +148,39 @@
             <operator>
                 <key>export_petri_net</key>
                 <class>org.rapidprom.operators.io.ExportPetriNetOperator</class>
+                <icon>inbox_out.png</icon>
             </operator>
             <operator>
                 <key>export_log</key>
                 <class>org.rapidprom.operators.io.ExportXLogOperator</class>
+                <icon>inbox_out.png</icon>
             </operator>
         </group>
         <group key="import">
             <operator>
+                <key>extract_log_from_file</key>
+                <class>org.rapidprom.operators.extract.ExtractXLogOperator</class>
+                <icon>box_out.png</icon>
+            </operator>
+            <operator>
                 <key>import_accepting_petri_net</key>
                 <class>org.rapidprom.operators.io.ImportAcceptingPetriNetOperator</class>
+                <icon>inbox_into.png</icon>
             </operator>
             <operator>
                 <key>import_xlog</key>
                 <class>org.rapidprom.operators.io.ImportXLogOperator</class>
+                <icon>inbox_into.png</icon>
             </operator>
             <operator>
                 <key>import_cpn</key>
                 <class>org.rapidprom.operators.io.ImportCPNModelOperator</class>
-            </operator>
-            <operator>
-                <key>extract_log_from_file</key>
-                <class>org.rapidprom.operators.extract.ExtractXLogOperator</class>
+                <icon>inbox_into.png</icon>
             </operator>
             <operator>
                 <key>import_petri_net</key>
                 <class>org.rapidprom.operators.io.ImportPetriNetOperator</class>
+                <icon>inbox_into.png</icon>
             </operator>
         </group>
         <group key="log_manipulation">
