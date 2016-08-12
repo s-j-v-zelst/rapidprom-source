@@ -1,13 +1,11 @@
 package org.rapidprom.util;
 
-import org.apache.wicket.util.file.File;
-
 import com.rapidminer.tools.SystemInfoUtilities.JVMArch;
 import com.rapidminer.tools.SystemInfoUtilities.OperatingSystem;
 
 public class LpSolveUtils {
 
-	private static final String BASE_PATH = "lpsolve" + File.separator + "resources" + File.separator;
+	private static final String BASE_PATH = "lpsolve/resources/";
 
 	public static final String LPSOLVE_JAR = "lpsolve55j.jar";
 	public static final String BINARIES_FOLDER = "lib";
@@ -29,16 +27,16 @@ public class LpSolveUtils {
 		String result = "";
 		switch (os) {
 		case OSX:
-			result = "mac" + jvmArchToString(jvmArch) + File.separator;
+			result = "mac" + jvmArchToString(jvmArch) + "/";
 			break;
 		case WINDOWS:
-			result = "win" + jvmArchToString(jvmArch) + File.separator;
+			result = "win" + jvmArchToString(jvmArch) + "/";
 			break;
 		case OTHER:
 		case SOLARIS:
 		case UNIX:
 		default:
-			result = "ux" + jvmArchToString(jvmArch) + File.separator;
+			result = "ux" + jvmArchToString(jvmArch) + "/";
 			break;
 		}
 		return result;
