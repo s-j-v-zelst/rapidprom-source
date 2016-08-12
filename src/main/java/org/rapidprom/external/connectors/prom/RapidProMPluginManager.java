@@ -1,9 +1,13 @@
 package org.rapidprom.external.connectors.prom;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
@@ -27,11 +31,13 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.jar.JarInputStream;
 
 import javax.swing.event.EventListenerList;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.io.IOUtils;
 import org.processmining.framework.boot.Boot;
 import org.processmining.framework.boot.Boot.Level;
 import org.processmining.framework.packages.PackageDescriptor;
@@ -47,15 +53,23 @@ import org.processmining.framework.plugin.annotations.PluginVariant;
 import org.processmining.framework.plugin.impl.DependsOnUnknownException;
 import org.processmining.framework.plugin.impl.MacroPluginDescriptorImpl;
 import org.processmining.framework.util.Pair;
+import org.processmining.framework.util.PathHacker;
 import org.processmining.framework.util.collection.ComparablePair;
+import org.rapidprom.util.LpSolveUtils;
 import org.w3c.dom.DOMException;
 import org.xml.sax.SAXException;
+
+import com.rapidminer.tools.SystemInfoUtilities;
 
 public class RapidProMPluginManager implements PluginManager {
 
 	private static final char PACKAGE_SEPARATOR = '.';
 	private static final char URL_SEPARATOR = '/';
 	private static final char INNER_CLASS_MARKER = '$';
+
+	private static final String JAVA_TMP_DIR = System.getProperty("java.io.tmpdir");
+
+	private static final String PROM_NS = "org/processmining";
 
 	private final Set<Class<?>> knownObjectTypes = new HashSet<Class<?>>();
 
@@ -206,6 +220,7 @@ public class RapidProMPluginManager implements PluginManager {
 	}
 
 	// svzelst@20160808 disable cache checking in RapidProM
+	// svzelst@20160812 allow us to load lpsolve to library path
 	private void scanUrl(URL url, PackageDescriptor pack, ClassLoader loader) {
 		// PluginCacheEntry cached = new PluginCacheEntry(url, Boot.VERBOSE,
 		// pack);
@@ -216,27 +231,64 @@ public class RapidProMPluginManager implements PluginManager {
 		// }
 		// } else {
 		try {
+			JarFile jarFile = new JarFile(new File(url.toURI()));
 			InputStream is = url.openStream();
 			JarInputStream jis = new JarInputStream(is);
 			JarEntry je;
 			List<String> loadedClasses = new ArrayList<String>();
 
+			File lpsolveDir = new File(JAVA_TMP_DIR + File.separator + "rprom_lpsolve_"
+					+ SystemInfoUtilities.getOperatingSystem() + "_" + SystemInfoUtilities.getJVMArchitecture());
+			boolean unjarLpSolve = !lpsolveDir.exists();
+			String lpsolveLibraryEntry = LpSolveUtils.getOSBasedLpSolvePath(SystemInfoUtilities.getOperatingSystem(),
+					SystemInfoUtilities.getJVMArchitecture());
+			Collection<File> lpSolveFiles = new HashSet<>();
+
 			while ((je = jis.getNextJarEntry()) != null) {
-				if (!je.isDirectory() && je.getName().endsWith(CLASS_EXTENSION)) {
-					String loadedClass = loadClassFromFile(loader, url, je.getName(), pack);
-					if (loadedClass != null) {
-						loadedClasses.add(loadedClass);
+				if (!je.isDirectory()) {
+					if (je.getName().endsWith(CLASS_EXTENSION) && je.getName().contains(PROM_NS)) {
+						String loadedClass = loadClassFromFile(loader, url, je.getName(), pack);
+						if (loadedClass != null) {
+							loadedClasses.add(loadedClass);
+						}
+					} else if (je.getName().contains(lpsolveLibraryEntry) && unjarLpSolve) {
+						if (!lpsolveDir.exists()) {
+							lpsolveDir.mkdir();
+						}
+						lpSolveFiles.add(loadLpSolveLibraryFile(je, jarFile, lpsolveDir));
 					}
 				}
 			}
 			jis.close();
 			is.close();
 
+			// load lpsolve libraries to path.
+			PathHacker.addLibraryPathFromDirectory(lpsolveDir);
+
 			// cached.update(loadedClasses);
-		} catch (IOException e) {
+		} catch (IOException | URISyntaxException e) {
 			fireError(url, e, null);
 		}
 		// }
+	}
+
+	private File loadLpSolveLibraryFile(JarEntry je, JarFile jarFile, File targetDir) {
+		File destination = new File(targetDir, je.getName());
+		new File(destination.getParent()).mkdirs();
+		assert (destination.getParentFile().isDirectory());
+		try {
+			destination.createNewFile();
+			InputStream in = new BufferedInputStream(jarFile.getInputStream(je));
+			OutputStream out = new BufferedOutputStream(new FileOutputStream(destination));
+			IOUtils.copy(in, out);
+			out.flush();
+			out.close();
+			in.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return destination;
+
 	}
 
 	private String loadClassFromFile(ClassLoader loader, URL url, String classFilename, PackageDescriptor pack) {

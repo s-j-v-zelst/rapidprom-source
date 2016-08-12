@@ -13,22 +13,22 @@ repositories {
     jcenter()
 	maven { url 'https://maven.rapidminer.com/content/groups/public/' }
 	ivy {
-		url "https://github.com/rapidprom/libraries/raw/master/"
+		url "https://github.com/rapidprom/rapidprom-libraries/raw/${project.properties["version"]}/prom/"
 		layout "pattern", {
 			artifact "[module]-[revision]/[module]-[revision].[ext]"
 			artifact "[module]-[revision]/[artifact].[ext]"
-			ivy "[module]-[revision]/ivy-[module]-[revision]-${project.properties["version"]}.xml"
+			ivy "[module]-[revision]/ivy-[module]-[revision].xml"
 		}
 	}
 	ivy {
-		url "https://github.com/rapidprom/libraries/raw/master/thirdparty/lib/"
+		url "https://github.com/rapidprom/rapidprom-libraries/raw/${project.properties["version"]}/thirdparty/lib/"
 		layout "pattern", {
 			artifact "[module]-[revision]/[module]-[revision].[ext]"
 			ivy "[module]-[revision]/ivy-[module]-[revision].xml"
 		}
 	}
 	ivy {
-		url "https://github.com/rapidprom/libraries/raw/master/thirdparty/resource/"
+		url "https://github.com/rapidprom/rapidprom-libraries/raw/${project.properties["version"]}/thirdparty/resource/"
 		layout "pattern", {
 			artifact "[module]-[revision]/[module]-[revision].[ext]"
 			ivy "[module]-[revision]/ivy-[module]-[revision].xml"
@@ -77,8 +77,7 @@ extensionConfig {
 // Define third party library dependencies
 dependencies {
 	
-	compile group:"org.rapidprom", name:"ProM-Framework", version:"29527", configuration:"compile"
-
+	compile group:"org.rapidprom", name:"ProM-Framework", version:"29527"
 	compile "org.rapidprom:AcceptingPetriNet:6.5.62"
 	compile "org.rapidprom:AlphaMiner:6.5.47"
 	compile "org.rapidprom:Animation:6.5.50"
@@ -87,7 +86,7 @@ dependencies {
 	compile "org.rapidprom:BPMN:6.5.56"
 	compile "org.rapidprom:BPMNConversions:6.5.48"
 	compile "org.rapidprom:CPNet:6.5.84"
-	compile "org.rapidprom:DataAwareReplayer:6.5.453"
+	compile "org.rapidprom:DataAwareReplayer:6.7.511"
 	compile "org.rapidprom:DataPetriNets:6.5.291"
 	compile "org.rapidprom:DottedChart:6.5.17"
 	compile "org.rapidprom:EvolutionaryTreeMiner:6.5.53"
