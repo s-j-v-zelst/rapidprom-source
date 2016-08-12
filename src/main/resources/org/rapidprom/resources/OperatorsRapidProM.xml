@@ -58,6 +58,11 @@
                 <class>org.rapidprom.operators.conformance.PerformanceConformanceAnalysisOperator</class>
                 <icon>checks.png</icon>
             </operator>
+            <operator>
+            	<key>etc_1_align_precision</key>
+            	<class>org.rapidprom.operators.conformance.ETCPrecisionOperator</class>
+            	<icon>checks.png</icon>
+            </operator>
         </group>
         <group key="conversion">
             <operator>
