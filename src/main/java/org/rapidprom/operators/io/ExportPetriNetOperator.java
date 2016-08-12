@@ -29,16 +29,12 @@ public class ExportPetriNetOperator
 		switch (format) {
 		case EPNML:
 			PnmlExportNetToEPNML exporterEPNML = new PnmlExportNetToEPNML();
-			exporterEPNML.exportPetriNetToEPNMLFile(
-					RapidProMGlobalContext.instance().getFutureResultAwarePluginContext(PnmlExportNetToEPNML.class),
-					object, file);
+			exporterEPNML.exportPetriNetToEPNMLFile(RapidProMGlobalContext.instance().getPluginContext(), object, file);
 			break;
 		case PNML:
 		default:
 			PnmlExportNetToPNML exporterPNML = new PnmlExportNetToPNML();
-			exporterPNML.exportPetriNetToPNMLFile(
-					RapidProMGlobalContext.instance().getFutureResultAwarePluginContext(PnmlExportNetToPNML.class),
-					object, file);
+			exporterPNML.exportPetriNetToPNMLFile(RapidProMGlobalContext.instance().getPluginContext(), object, file);
 			break;
 		}
 	}
