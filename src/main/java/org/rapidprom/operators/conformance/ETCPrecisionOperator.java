@@ -13,8 +13,6 @@ import javassist.tools.rmi.ObjectNotFoundException;
 import org.processmining.framework.connections.ConnectionCannotBeObtained;
 import org.processmining.framework.plugin.PluginContext;
 import org.processmining.models.semantics.IllegalTransitionException;
-import org.processmining.plugins.alignetc.AlignETCPlugin;
-import org.processmining.plugins.alignetc.AlignETCSettings;
 import org.processmining.plugins.alignetc.core.ReplayAutomaton;
 import org.processmining.plugins.alignetc.result.AlignETCResult;
 import org.processmining.plugins.petrinet.replayresult.PNMatchInstancesRepResult;
@@ -58,21 +56,6 @@ public class ETCPrecisionOperator extends Operator {
 
 	public ETCPrecisionOperator(OperatorDescription description) {
 		super(description);
-
-//		this.metaData = new ExampleSetMetaData();
-//		AttributeMetaData amd1 = new AttributeMetaData(NAMECOL,
-//				Ontology.STRING);
-//		amd1.setRole(AttributeColumn.REGULAR);
-//		amd1.setNumberOfMissingValues(new MDInteger(0));
-//		metaData.addAttribute(amd1);
-//		AttributeMetaData amd2 = new AttributeMetaData(VALUECOL,
-//				Ontology.NUMERICAL);
-//		amd2.setRole(AttributeColumn.REGULAR);
-//		amd2.setNumberOfMissingValues(new MDInteger(0));
-//		metaData.addAttribute(amd2);
-//		metaData.setNumberOfExamples(2);
-//		getTransformer()
-//				.addRule(new GenerateNewMDRule(outputMetrics, this.metaData));
 	}
 
 	@Override
@@ -84,49 +67,51 @@ public class ETCPrecisionOperator extends Operator {
 
 		PluginContext pluginContext = RapidProMGlobalContext.instance().getPluginContext();
 
+
 		PetriNetIOObject net = input1.getData(PetriNetIOObject.class);
 		PNRepResultIOObject alignment = input2.getData(PNRepResultIOObject.class);
 		
 		//Convert to n-alignments object
 		Collection<AllSyncReplayResult> col = new ArrayList<AllSyncReplayResult>();
-		for (SyncReplayResult rep : alignment.getArtifact()) {
-
-			//Get all the attributes of the 1-alignment result
-			List<List<Object>> nodes = new ArrayList<List<Object>>();
-			nodes.add(rep.getNodeInstance());
-
-			List<List<StepTypes>> types = new ArrayList<List<StepTypes>>();
-			types.add(rep.getStepTypes());
-
-			SortedSet<Integer> traces = rep.getTraceIndex();
-			boolean rel = rep.isReliable();
-
-			//Create a n-alignment result with this attributes
-			AllSyncReplayResult allRep = new AllSyncReplayResult(nodes, types, -1, rel);
-			allRep.setTraceIndex(traces);//The creator not allow add the set directly
-			col.add(allRep);
+		double precision = 0;
+		if(alignment.getArtifact()!=null){
+			for (SyncReplayResult rep : alignment.getArtifact()) {
+	
+				//Get all the attributes of the 1-alignment result
+				List<List<Object>> nodes = new ArrayList<List<Object>>();
+				nodes.add(rep.getNodeInstance());
+	
+				List<List<StepTypes>> types = new ArrayList<List<StepTypes>>();
+				types.add(rep.getStepTypes());
+	
+				SortedSet<Integer> traces = rep.getTraceIndex();
+				boolean rel = rep.isReliable();
+	
+				//Create a n-alignment result with this attributes
+				AllSyncReplayResult allRep = new AllSyncReplayResult(nodes, types, -1, rel);
+				allRep.setTraceIndex(traces);//The creator not allow add the set directly
+				col.add(allRep);
+			}
+			PNMatchInstancesRepResult alignments = new PNMatchInstancesRepResult(col);
+	
+			AlignETCResult res = new AlignETCResult();
+	
+			ReplayAutomaton ra = null;
+			try {
+				ra = new ReplayAutomaton(pluginContext, alignments, net.getArtifact());
+			} catch (ConnectionCannotBeObtained e1) {
+				e1.printStackTrace();
+			}
+			ra.cut(getParameterAsDouble(PARAMETER_1));
+			
+			try {
+				ra.extend(net.getArtifact(), net.getInitialMarking());
+			} catch (IllegalTransitionException | ObjectNotFoundException e1) {
+				e1.printStackTrace();
+			}
+			ra.conformance(res);
+			precision = res.ap;
 		}
-		PNMatchInstancesRepResult alignments = new PNMatchInstancesRepResult(col);
-
-		AlignETCPlugin etc = new AlignETCPlugin();
-		AlignETCResult res = new AlignETCResult();
-		AlignETCSettings sett = new AlignETCSettings(res);
-
-		ReplayAutomaton ra = null;
-		try {
-			ra = new ReplayAutomaton(pluginContext, alignments, net.getArtifact());
-		} catch (ConnectionCannotBeObtained e1) {
-			e1.printStackTrace();
-		}
-		ra.cut(0d); // TODO: turn the threshold parameter into a RapidProm parameter
-		
-		try {
-			ra.extend(net.getArtifact(), net.getInitialMarking());
-		} catch (IllegalTransitionException | ObjectNotFoundException e1) {
-			e1.printStackTrace();
-		}
-		ra.conformance(res);
-		
 			
 		ExampleSet es = null;
 		MemoryExampleTable table = null;
@@ -136,7 +121,7 @@ public class ETCPrecisionOperator extends Operator {
 		attributes.add(AttributeFactory.createAttribute(this.VALUECOL,
 				Ontology.NUMERICAL));
 		table = new MemoryExampleTable(attributes);
-		fillTableWithRow(table, "Precision", res.ap, attributes);
+		fillTableWithRow(table, "Precision", precision, attributes);
 		
 		es = table.createExampleSet();
 		outputMetrics.deliver(es);
