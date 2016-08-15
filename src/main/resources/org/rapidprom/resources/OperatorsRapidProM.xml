@@ -290,4 +290,11 @@
                 </operator>
             </group>
         </group>
+        <group key="utility">
+            <operator>
+                <key>rprom_free_memory</key>
+                <class>org.rapidprom.operators.util.RapidProMMemoryCleanUpOperator</class>
+                <icon>wrench.png</icon>
+            </operator>
+        </group>
 </operators>

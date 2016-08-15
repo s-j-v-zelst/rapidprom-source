@@ -34,5 +34,4 @@ public class RapidProMPluginContext extends AbstractPluginContext {
 	protected PluginContext createTypedChildContext(String label) {
 		return new RapidProMPluginContext(this, label);
 	}
-
 }
