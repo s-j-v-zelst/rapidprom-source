@@ -93,7 +93,7 @@ dependencies {
 	compile "org.rapidprom:EventStream:6.5.72"
 	compile "org.rapidprom:FeaturePrediction:6.5.61"
 	compile "org.rapidprom:Fuzzy:6.5.33"
-	compile "org.rapidprom:GraphViz:6.5.142"
+	compile "org.rapidprom:GraphViz:6.6.178"
 	compile "org.rapidprom:GuideTreeMiner:6.5.18"
 	compile "org.rapidprom:HeuristicsMiner:6.5.49"
 	compile "org.rapidprom:HybridILPMiner:6.5.104"
@@ -118,6 +118,5 @@ dependencies {
 	compile "org.rapidprom:TSPetriNet:6.5.35"
 	compile "org.rapidprom:Uma:6.5.46"
 	compile "org.rapidprom:Woflan:6.5.44"
-	compile "org.rapidprom:EventStream:6.5.72"
 	compile "org.rapidprom:XESLite:6.5.168"
 }
