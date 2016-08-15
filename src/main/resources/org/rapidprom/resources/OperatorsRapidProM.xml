@@ -221,6 +221,40 @@
                 <key>timestamp_sort</key>
                 <class>org.rapidprom.operators.logmanipulation.TimestampSortOperator</class>
             </operator>
+            <operator>
+            	<key>contain_only_complete_log</key>
+            	<class>org.rapidprom.operators.niek.OnlyContainCompleteEventsOperator</class>
+            </operator>
+            <operator>
+       			<key>add_noisy_activities_log</key>
+       			<class>org.rapidprom.operators.niek.AddNoisyActivitiesToLogOperator</class>
+   			</operator>
+            <group key="log_projections">
+            	<operator>
+			 		<key>entopy_projections_greedy</key>
+			 		<class>org.rapidprom.operators.niek.GreedyEntropyBasedLogFilterOperator</class>
+			   	</operator>
+			   	<operator>
+			 		<key>entopy_projections_global</key>
+			 		<class>org.rapidprom.operators.niek.EntropyBasedLogFilterOperator</class>
+			   	</operator>
+			   	<operator>
+			 		<key>kl_projections_greedy</key>
+			 		<class>org.rapidprom.operators.niek.GreedyKLBasedLogFilterOperator</class>
+			   	</operator>
+			   	<operator>
+			 		<key>frequency_projections_1</key>
+			 		<class>org.rapidprom.operators.niek.FrequencyBasedLogFilter1Operator</class>
+			   	</operator>
+			   	<operator>
+			 		<key>frequency_projections_2</key>
+			 		<class>org.rapidprom.operators.niek.FrequencyBasedLogFilter2Operator</class>
+			   	</operator>
+			   	<operator>
+			 		<key>random_projections</key>
+			 		<class>org.rapidprom.operators.niek.RandomLogFilterOperator</class>
+			   	</operator>
+            </group>
         </group> 
         <group key="streams">
             <group key="analysis">

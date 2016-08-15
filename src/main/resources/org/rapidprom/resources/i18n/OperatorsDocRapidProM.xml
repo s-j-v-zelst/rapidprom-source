@@ -49,7 +49,56 @@
     </group>
     
     
-    <!-- IMPORTERS -->
+   <!-- IMPORTERS -->
+   <operator>
+        <name>Only contain lifecycle 'complete' events</name>
+        <Synopyis>Removes all events with another lifecycle than 'complete'</Synopyis>
+        <help></help>
+ 		<key>contain_only_complete_log</key>
+   </operator>
+   <operator>
+        <name>Add noisy activities to event log</name>
+        <Synopyis>Adds noisy activities to log</Synopyis>
+        <help></help>
+        <key>add_noisy_activities_log</key>
+   </operator>
+   <operator>
+        <name>Apply entropy-based projections to log (greedy)</name>
+        <Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
+        <help></help>
+ 		<key>entopy_projections_greedy</key>
+   </operator>
+   <operator>
+        <name>Apply entropy-based projections to log (global)</name>
+        <Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
+        <help></help>
+ 		<key>entopy_projections_global</key>
+   </operator>
+   <operator>
+        <name>Apply KL-divergence-based projections to log (greedy)</name>
+        <Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
+        <help></help>
+ 		<key>kl_projections_greedy</key>
+   </operator>
+   <operator>
+        <name>Apply frequency-based projections to log (ascendingly)</name>
+        <Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
+        <help></help>
+ 		<key>frequency_projections_1</key>
+   </operator>
+   <operator>
+        <name>Apply frequency-based projections to log (descendingly)</name>
+        <Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
+        <help></help>
+ 		<key>frequency_projections_2</key>
+   </operator>
+   <operator>
+        <name>Apply random projections to log</name>
+        <Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
+        <help></help>
+ 		<key>random_projections</key>
+   </operator>
+    
    <operator>
         <name>Calculate ETC 1-align precision</name>
         <Synopyis>Calculate precision using 1-align ETC conformance</Synopyis>
