@@ -54,23 +54,23 @@ public class ExampleSetToXLogConversionOperator extends Operator {
 
 	private static final String DEFAULT_VALUE_OPTIONAL = "<ignore>";
 	private static final String GLOBAL_INVALID = "__INVALID__";
+	private static final String PARAMETER_DEFAULT_EVENT_IDENTIFIER = "E:concept:name";
 	private static final String PARAMETER_DEFAULT_EVENT_LIFECYCLE_TRANSITION = "E:lifecycle:transition";
 	private static final String PARAMETER_DEFAULT_EVENT_RESOURCE = "E:org:resource";
 	private static final String PARAMETER_DEFAULT_EVENT_RESOURCE_GROUP = DEFAULT_VALUE_OPTIONAL;
 	private static final String PARAMETER_DEFAULT_EVENT_RESOURCE_ROLE = DEFAULT_VALUE_OPTIONAL;
 	private static final String PARAMETER_DEFAULT_EVENT_TIMESTAMP = "E:time:timestamp";
 	private static final String PARAMETER_DEFAULT_TRACE_IDENTIFIER = "T:concept:name";
-	private static final String PARAMETER_DEFAULT_EVENT_IDENTIFIER = "E:concept:name";
 	private static final String PARAMETER_DESC_EVENT_IDENTIFIER = "Please select an attribute of the example set to act as an event identifier";
-	private static final String PARAMETER_DESC_INLCUDE_EVENT_LIFECYCLE_TRANSITION = "Please set this option to true if the data contains lifecycle transition information, and, you want to incorporate this in the resulting event log.";
 	private static final String PARAMETER_DESC_EVENT_LIFECYCLE_TRANSITION = "Please select an (optional) attribute of the example set to act as lifecycle transition information";
 	private static final String PARAMETER_DESC_EVENT_RESOURCE = "Please select an (optional) attribute of the example set that signifies the resource that executed the event";
 	private static final String PARAMETER_DESC_EVENT_RESOURCE_GROUP = "Please select an (optional) attribute of the example set that signifies the resource group of the resource that executed the event";
 	private static final String PARAMETER_DESC_EVENT_RESOURCE_ROLE = "Please select an (optional) attribute of the example set that signifies the role of the resource that executed the event";
-	private static final String PARAMETER_DESC_INCLUDE_EVENT_TIME_STAMP = "Please set this option to true if the data contains timestamp information, and, you want to incorporate this in the resulting event log";
 	private static final String PARAMETER_DESC_EVENT_TIMESTAMP = "Please select an (optional) attribute of the example set to act as an event timestamp";
-	private static final String PARAMETER_DESC_INCLUDE_ORGANIZATIONAL = "Please set this option to true if the data contains information about the organizational perspective of the process, and, you want to incorporate this in the resulting event log. The organizational perspective contains three attributes: resource, role and group. If you only want to use one of these, don't add the organziational perspective just select that all other data should be added as and attribute.";
 	private static final String PARAMETER_DESC_INCLUDE_ALL_DATA = "Please set this option to true if all (non-used) data columns should be added as event attributes. The attributes will have a key value event_attr:[name_of_column].";
+	private static final String PARAMETER_DESC_INCLUDE_EVENT_TIME_STAMP = "Please set this option to true if the data contains timestamp information, and, you want to incorporate this in the resulting event log";
+	private static final String PARAMETER_DESC_INCLUDE_ORGANIZATIONAL = "Please set this option to true if the data contains information about the organizational perspective of the process, and, you want to incorporate this in the resulting event log. The organizational perspective contains three attributes: resource, role and group. If you only want to use one of these, don't add the organziational perspective just select that all other data should be added as and attribute.";
+	private static final String PARAMETER_DESC_INLCUDE_EVENT_LIFECYCLE_TRANSITION = "Please set this option to true if the data contains lifecycle transition information, and, you want to incorporate this in the resulting event log.";
 	// private static final String PARAMETER_DESC_REORDER_BY_TIMESTAMP = "If the
 	// example set contains timestamps, this option will reorder the events
 	// within traces based on their time-stamps";
@@ -78,30 +78,37 @@ public class ExampleSetToXLogConversionOperator extends Operator {
 	// private static final boolean PARAMETER_KEY_DEFAULT_REORDER_BY_TIMESTAMP =
 	// false;
 	private static final String PARAMETER_KEY_EVENT_IDENTIFIER = "event_identifier";
-	private static final String PARAMETER_KEY_INCLUDE_EVENT_LIFECYCLE_TRANSITION = "include_lifecycle_transition_information";
 	private static final String PARAMETER_KEY_EVENT_LIFECYCLE_TRANSITION = "event_lifecycle_transition";
 	private static final String PARAMETER_KEY_EVENT_RESOURCE = "event_resource";
 	private static final String PARAMETER_KEY_EVENT_RESOURCE_GROUP = "event_resource_group";
 	private static final String PARAMETER_KEY_EVENT_RESOURCE_ROLE = "event_resource_role";
-	private static final String PARAMETER_KEY_INCLUDE_EVENT_TIME_STAMP = "include_time_stamps";
 	private static final String PARAMETER_KEY_EVENT_TIMESTAMP = "event_time_stamp";
+	private static final String PARAMETER_KEY_INCLUDE_ALL_DATA = "include_all_columns_as_event_attributes";
+	private static final String PARAMETER_KEY_INCLUDE_EVENT_LIFECYCLE_TRANSITION = "include_lifecycle_transition_information";
+	private static final String PARAMETER_KEY_INCLUDE_EVENT_TIME_STAMP = "include_time_stamps";
 	private static final String PARAMETER_KEY_INCLUDE_ORGANIZATIONAL = "include_organizational_perspective";
 	// private static final String PARAMETER_KEY_REORDER_BY_TIMESTAMP =
 	// "reorder_by_time_stamp";
 	private static final String PARAMETER_KEY_TRACE_IDENTIFIER = "trace_identifier";
-	private static final String PARAMETER_KEY_INCLUDE_ALL_DATA = "include_all_columns_as_event_attributes";
-
-	private Collection<String> reservedColumns = new HashSet<>();
 
 	/** defining the ports */
 	private InputPort inputExampleSet = getInputPorts().createPort("example set (Data Table)",
 			new ExampleSetMetaData());
+
 	private OutputPort outputLog = getOutputPorts().createPort("event log (ProM Event Log)");
+	private Collection<String> reservedColumns = new HashSet<>();
 
 	public ExampleSetToXLogConversionOperator(OperatorDescription description) {
 		super(description);
 		getTransformer().addRule(new GenerateNewMDRule(outputLog, XLogIOObject.class));
 		inputExampleSet.addPrecondition(new ExampleSetNumberOfAttributesPrecondition(inputExampleSet, 2));
+	}
+
+	private List<ParameterType> addAllDataParameterType(List<ParameterType> params) {
+		ParameterType allData = new ParameterTypeBoolean(PARAMETER_KEY_INCLUDE_ALL_DATA,
+				PARAMETER_DESC_INCLUDE_ALL_DATA, true, false);
+		params.add(allData);
+		return params;
 	}
 
 	private XLog addClassifiers(XLog log, boolean lifecycle) {
@@ -179,6 +186,13 @@ public class ExampleSetToXLogConversionOperator extends Operator {
 		lifecycleTransition.registerDependencyCondition(
 				new BooleanParameterCondition(this, PARAMETER_KEY_INCLUDE_EVENT_LIFECYCLE_TRANSITION, true, true));
 		params.add(lifecycleTransition);
+		return params;
+	}
+
+	private List<ParameterType> addOrganizationalPerspectiveSelector(List<ParameterType> params) {
+		ParameterTypeBoolean orgPerspective = new ParameterTypeBoolean(PARAMETER_KEY_INCLUDE_ORGANIZATIONAL,
+				PARAMETER_DESC_INCLUDE_ORGANIZATIONAL, false, false);
+		params.add(orgPerspective);
 		return params;
 	}
 
@@ -410,6 +424,24 @@ public class ExampleSetToXLogConversionOperator extends Operator {
 		return event;
 	}
 
+	private Collection<String> determineReservedColumns() {
+		Collection<String> reserved = new HashSet<>();
+		reserved.add(getDynamicParameterTypeValue(PARAMETER_KEY_TRACE_IDENTIFIER));
+		reserved.add(getDynamicParameterTypeValue(PARAMETER_KEY_EVENT_IDENTIFIER));
+		if (isUseTime()) {
+			reserved.add(getDynamicParameterTypeValue(PARAMETER_KEY_EVENT_TIMESTAMP));
+		}
+		if (isUseLifeCycle()) {
+			reserved.add(getDynamicParameterTypeValue(PARAMETER_KEY_EVENT_LIFECYCLE_TRANSITION));
+		}
+		if (isUseOrganizational()) {
+			reserved.add(getDynamicParameterTypeValue(PARAMETER_KEY_EVENT_RESOURCE));
+			reserved.add(getDynamicParameterTypeValue(PARAMETER_KEY_EVENT_RESOURCE_ROLE));
+			reserved.add(getDynamicParameterTypeValue(PARAMETER_KEY_EVENT_RESOURCE_GROUP));
+		}
+		return reserved;
+	}
+
 	@Override
 	public void doWork() throws OperatorException {
 		Logger logger = LogService.getRoot();
@@ -428,24 +460,6 @@ public class ExampleSetToXLogConversionOperator extends Operator {
 		outputLog.deliver(new XLogIOObject(log, RapidProMGlobalContext.instance().getPluginContext()));
 		logger.log(Level.INFO,
 				"End: Table to Event Log conversion (" + (System.currentTimeMillis() - time) / 1000 + " sec)");
-	}
-
-	private Collection<String> determineReservedColumns() {
-		Collection<String> reserved = new HashSet<>();
-		reserved.add(getDynamicParameterTypeValue(PARAMETER_KEY_TRACE_IDENTIFIER));
-		reserved.add(getDynamicParameterTypeValue(PARAMETER_KEY_EVENT_IDENTIFIER));
-		if (isUseTime()) {
-			reserved.add(getDynamicParameterTypeValue(PARAMETER_KEY_EVENT_TIMESTAMP));
-		}
-		if (isUseLifeCycle()) {
-			reserved.add(getDynamicParameterTypeValue(PARAMETER_KEY_EVENT_LIFECYCLE_TRANSITION));
-		}
-		if (isUseOrganizational()) {
-			reserved.add(getDynamicParameterTypeValue(PARAMETER_KEY_EVENT_RESOURCE));
-			reserved.add(getDynamicParameterTypeValue(PARAMETER_KEY_EVENT_RESOURCE_ROLE));
-			reserved.add(getDynamicParameterTypeValue(PARAMETER_KEY_EVENT_RESOURCE_GROUP));
-		}
-		return reserved;
 	}
 
 	private String getDynamicParameterTypeValue(String key) {
@@ -473,18 +487,8 @@ public class ExampleSetToXLogConversionOperator extends Operator {
 		return params;
 	}
 
-	private List<ParameterType> addAllDataParameterType(List<ParameterType> params) {
-		ParameterType allData = new ParameterTypeBoolean(PARAMETER_KEY_INCLUDE_ALL_DATA,
-				PARAMETER_DESC_INCLUDE_ALL_DATA, true, false);
-		params.add(allData);
-		return params;
-	}
-
-	private List<ParameterType> addOrganizationalPerspectiveSelector(List<ParameterType> params) {
-		ParameterTypeBoolean orgPerspective = new ParameterTypeBoolean(PARAMETER_KEY_INCLUDE_ORGANIZATIONAL,
-				PARAMETER_DESC_INCLUDE_ORGANIZATIONAL, false, false);
-		params.add(orgPerspective);
-		return params;
+	private boolean isIncludeAllData() {
+		return getParameterAsBoolean(PARAMETER_KEY_INCLUDE_ALL_DATA);
 	}
 
 	private boolean isUseLifeCycle() {
@@ -497,10 +501,6 @@ public class ExampleSetToXLogConversionOperator extends Operator {
 
 	private boolean isUseTime() {
 		return getParameterAsBoolean(PARAMETER_KEY_INCLUDE_EVENT_TIME_STAMP);
-	}
-
-	private boolean isIncludeAllData() {
-		return getParameterAsBoolean(PARAMETER_KEY_INCLUDE_ALL_DATA);
 	}
 
 	private XLog processExampleAsEvent(XFactory factory, XLog log, ExampleSet data, Example example,

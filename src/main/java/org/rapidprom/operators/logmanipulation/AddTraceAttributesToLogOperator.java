@@ -99,14 +99,12 @@ public class AddTraceAttributesToLogOperator extends Operator {
 
 	private HashMap<String, XTrace> buildTraceMap(XLog xlog) {
 		HashMap<String, XTrace> map = new HashMap<>();
-
 		for (XTrace t : xlog) {
 			String name = XConceptExtension.instance().extractName(t);
 			if (name != null) {
 				map.put(name, t);
 			}
 		}
-
 		return map;
 	}
 
@@ -114,7 +112,6 @@ public class AddTraceAttributesToLogOperator extends Operator {
 			throws UndefinedParameterError {
 
 		HashMap<String, XTrace> traceMap = buildTraceMap(xLog);
-
 		Iterator<Example> iterator = es.iterator();
 		while (iterator.hasNext()) {
 			Example example = iterator.next();
