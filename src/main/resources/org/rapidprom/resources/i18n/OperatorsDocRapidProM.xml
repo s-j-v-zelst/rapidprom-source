@@ -43,9 +43,19 @@
       <name>Streams</name>
     </group>
     
+    <group>
+        <key>utility</key>
+        <name>Utility</name>
+    </group>
+    
     
     <!-- IMPORTERS -->
-
+   <operator>
+        <name>Calculate ETC 1-align precision</name>
+        <Synopyis>Calculate precision using 1-align ETC conformance</Synopyis>
+        <help></help>
+ 		<key>etc_1_align_precision</key>
+   </operator>
    <operator>
         <name>Measure Model Precision based on alignments</name>
         <synopsis>Measures model precision and generalization based on pre-calculated alignments, as defined in: http://dx.doi.org/10.6100/IR770080</synopsis>
@@ -446,6 +456,15 @@
 		<synopsis> This extracts data from the traces contained in an event log, such as relative occurrence, etc... </synopsis>
 		<help> An Event log is required as input </help>		
         <key>case_data_extractor</key>                
+    </operator>
+    
+    
+    <!-- UTILITY -->
+    <operator>
+        <name>Free Memory (RapidProM)</name>
+        <synopsis> This operator tries to free the memory used by RapidProM (and also Rapid Miner itself). </synopsis>
+        <help> This operator tries to free the memory used by RapidProM (and also Rapid Miner itself). It does so by clearing the Plugin Context object (which is originating from the ProM framework, i.e., the base of RapidProM)</help>
+        <key>rprom_free_memory</key>
     </operator>
 	
 </operatorHelp>
