@@ -11,14 +11,12 @@ public class XLogIOObjectDefaultRenderer extends AbstractRapidProMIOObjectRender
 
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
+		return "XLog default renderer";
 	}
 
 	@Override
 	protected JComponent runVisualization(XLogIOObject ioObject) {
 
-		LogDialogInitializer i = new LogDialogInitializer();
 		SlickerOpenLogSettings o = new SlickerOpenLogSettings();
 
 		return o.showLogVis(ioObject.getPluginContext(), ioObject.getArtifact());
