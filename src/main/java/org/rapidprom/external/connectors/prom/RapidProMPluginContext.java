@@ -34,4 +34,13 @@ public class RapidProMPluginContext extends AbstractPluginContext {
 	protected PluginContext createTypedChildContext(String label) {
 		return new RapidProMPluginContext(this, label);
 	}
+
+	@Override
+	public void clear() {
+		for (PluginContext c : getChildContexts()) {
+			c.clear();
+		}
+		super.clear();
+	}
+
 }
