@@ -93,7 +93,7 @@ dependencies {
 	compile "org.rapidprom:EventStream:6.5.72"
 	compile "org.rapidprom:FeaturePrediction:6.5.61"
 	compile "org.rapidprom:Fuzzy:6.5.33"
-	compile "org.rapidprom:GraphViz:6.7.183"
+	compile "org.rapidprom:GraphViz:6.7.185"
 	compile "org.rapidprom:GuideTreeMiner:6.5.18"
 	compile "org.rapidprom:HeuristicsMiner:6.5.49"
 	compile "org.rapidprom:HybridILPMiner:6.5.104"
