@@ -29,6 +29,8 @@ public class RapidProMMemoryCleanUpOperator extends MemoryCleanUp {
 		
 		context.clear();
 
+		((RapidProMPluginContext) context).renewExecutor();
+
 		super.doWork();
 	}
 

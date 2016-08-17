@@ -108,7 +108,9 @@ public class ETCPrecisionOperator extends Operator {
 				ra.extend(net.getArtifact(), net.getInitialMarking());
 			} catch (IllegalTransitionException | ObjectNotFoundException e1) {
 				e1.printStackTrace();
-			}
+			} catch (StackOverflowError e){
+				e.printStackTrace();
+			};
 			ra.conformance(res);
 			precision = res.ap;
 		}
