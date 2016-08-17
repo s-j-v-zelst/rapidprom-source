@@ -119,4 +119,5 @@ dependencies {
 	compile "org.rapidprom:Uma:6.5.46"
 	compile "org.rapidprom:Woflan:6.5.44"
 	compile "org.rapidprom:XESLite:6.5.168"
+	compile "com.googlecode.matrix-toolkits-java:mtj:1.0.4"
 }

@@ -515,5 +515,11 @@
         <help> This operator tries to free the memory used by RapidProM (and also Rapid Miner itself). It does so by clearing the Plugin Context object (which is originating from the ProM framework, i.e., the base of RapidProM)</help>
         <key>rprom_free_memory</key>
     </operator>
+    <operator>
+    	<name>Clean up Threads (RapidProM)</name>
+        <synopsis>This operator kills all threads which seems to be spawned by RapidProM operators that were not killed properly. WARNING: might kill too much leading to unexpected behavior.</synopsis>
+		<help>This operator kills all threads which seems to be spawned by RapidProM operators that were not killed properly. WARNING: might kill too much leading to unexpected behavior.</help>
+		<key>rprom_clear_threads</key>
+    </operator>
 	
 </operatorHelp>
