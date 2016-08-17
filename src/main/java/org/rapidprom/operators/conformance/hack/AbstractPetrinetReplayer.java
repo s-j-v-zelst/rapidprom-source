@@ -12,6 +12,7 @@ import gnu.trove.map.hash.TObjectIntHashMap;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -23,9 +24,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import nl.tue.astar.AStarException;
 import nl.tue.astar.Tail;
@@ -67,11 +65,6 @@ import org.processmining.plugins.petrinet.replayer.annotations.PNReplayAlgorithm
 import org.processmining.plugins.petrinet.replayresult.PNRepResult;
 import org.processmining.plugins.petrinet.replayresult.StepTypes;
 import org.processmining.plugins.replayer.replayresult.SyncReplayResult;
-
-import com.google.common.util.concurrent.SimpleTimeLimiter;
-import com.google.common.util.concurrent.TimeLimiter;
-import com.google.common.util.concurrent.Uninterruptibles;
-import com.rapidminer.tools.LogService;
 
 @KeepInProMCache
 @PNReplayAlgorithm
@@ -477,8 +470,9 @@ public abstract class AbstractPetrinetReplayer<T extends Tail, D extends Abstrac
 				callables.add(new AlignmentCallable(j, trace, unUsedIndices, trace2orgTrace, thread));
 			}
 			ExecutorService service = Executors.newFixedThreadPool(threads);
-			result = callWithTimeout(service, callables, (long)timeout, TimeUnit.SECONDS, true);
-
+			result = callWithTimeout(service, callables, (long) timeout, TimeUnit.SECONDS);
+			service.shutdownNow();
+			
 			long maxStateCount = 0;
 			//			long ui = System.currentTimeMillis();
 			for (Result f : result) {
@@ -510,36 +504,44 @@ public abstract class AbstractPetrinetReplayer<T extends Tail, D extends Abstrac
 		return null;// debug code
 	}
 
-	public <T> List<T> callWithTimeout(ExecutorService executor, List<Callable<T>> callable, long timeoutDuration,
-			TimeUnit timeoutUnit, boolean amInterruptible) throws Exception {
-		List<Future<T>> futures = executor.invokeAll(callable);
+	public <T> List<T> callWithTimeout(ExecutorService executor, List<Callable<T>> callables, long timeoutDuration,
+			TimeUnit timeoutUnit) throws InterruptedException {
+		List<Future<T>> futures = new ArrayList<Future<T>>(callables.size());
+		for(Callable<T> callable : callables)
+			futures.add(executor.submit(callable));
 		Map<Future<T>, T> futureToValueMap = new HashMap<Future<T>, T>();
 		List<T> values = new ArrayList<T>(futures.size());
+		Set<Future<T>> remainingFutures = new HashSet<Future<T>>(futures);
+		long startTime = System.currentTimeMillis();
+		long timePassed = 0;
+		while(!remainingFutures.isEmpty() && timePassed<timeoutUnit.toMillis(timeoutDuration)){
+			Set<Future<T>> processedFutures = new HashSet<Future<T>>();
+			for(Future<T> future : remainingFutures){
+				T t = null;
+				try {
+					t = future.get(1, TimeUnit.NANOSECONDS);
+				} catch (ExecutionException | TimeoutException | InterruptedException e) {
+					continue;
+				} // timeoutUnit.sleep() already did the waiting for all threads, should now be instant
+				futureToValueMap.put(future, t);
+				processedFutures.add(future);
+			}
+			remainingFutures.removeAll(processedFutures);
+			Thread.sleep(timeoutUnit.toMillis(timeoutDuration)/20);
+			timePassed = System.currentTimeMillis()-startTime;
+		}
+		for(Future<T> future : remainingFutures)
+			future.cancel(true);
+
 		for(Future<T> future : futures){
-			try {
-				if (amInterruptible) {
-					try {
-						T t = future.get(timeoutDuration, timeoutUnit);
-						futureToValueMap.put(future, t);
-					} catch (InterruptedException e) {
-						future.cancel(true);
-						futureToValueMap.put(future, null);
-					}
-				} else {
-					T t = Uninterruptibles.getUninterruptibly(future, timeoutDuration, timeoutUnit);
-					futureToValueMap.put(future, t);
-				}
-			} catch (ExecutionException e) {
-				futureToValueMap.put(future, null);
-			} catch (TimeoutException e) {
+			if(futureToValueMap.containsKey(future))
+				values.add(futureToValueMap.get(future));
+			else{
 				future.cancel(true);
-				futureToValueMap.put(future, null);
+				values.add(null);
 			}
 		}
-		for(Future<T> future : futures){
-			values.add(futureToValueMap.get(future));
-		}
-		executor.shutdownNow();
+
 		return values;
 	}
 	
@@ -682,9 +684,6 @@ public abstract class AbstractPetrinetReplayer<T extends Tail, D extends Abstrac
 		}
 
 		public Result call() throws Exception {
-			Logger logger = Logger.getGlobal();
-			logger.log(Level.INFO, "conformance thread: "+Thread.currentThread().getName());
-			
 			Result result = new Result();
 			result.trace = j;
 			result.filteredTrace = trace;
@@ -693,14 +692,11 @@ public abstract class AbstractPetrinetReplayer<T extends Tail, D extends Abstrac
 
 			// long start = System.nanoTime();
 			long start = System.currentTimeMillis();
-
 			try{
 				result.record = (PRecord) thread.getOptimalRecord();
 			}catch(AStarException e){
-				if(e.getMessage().equals("Time-out")){
+				if(e.getMessage().equals("Time-out"))
 					thread.close();
-					logger.log(Level.INFO, "attempting to kill thread due to time-out:     "+Thread.currentThread().getName());
-				}
 				return null;
 			}
 			//long end = System.nanoTime();
@@ -715,8 +711,6 @@ public abstract class AbstractPetrinetReplayer<T extends Tail, D extends Abstrac
 			result.queuedStates = thread.getQueuedStateCount();
 			result.states = thread.getVisitedStateCount();
 			result.milliseconds = end - start;
-			logger.log(Level.INFO, "attempting to kill thread due to reaching end: "+Thread.currentThread().getName());
-			// TODO: try running a cleanup here...
 			return result;
 		}
 	}

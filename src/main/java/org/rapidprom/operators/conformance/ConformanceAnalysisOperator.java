@@ -8,8 +8,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -41,7 +39,6 @@ import org.rapidprom.operators.conformance.hack.AbstractPetrinetReplayer;
 import org.rapidprom.operators.conformance.hack.PetrinetReplayerWithILP;
 import org.rapidprom.operators.conformance.hack.PetrinetReplayerWithoutILP;
 
-import com.google.common.util.concurrent.SimpleTimeLimiter;
 import com.google.common.util.concurrent.UncheckedTimeoutException;
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.ExampleSet;
@@ -197,24 +194,16 @@ public class ConformanceAnalysisOperator extends AbstractRapidProMDiscoveryOpera
 		logger.log(Level.INFO, "Start: replay log on petri net for conformance checking");
 		long time = System.currentTimeMillis();
 
-		SimpleTimeLimiter limiter = new SimpleTimeLimiter(Executors.newSingleThreadExecutor());
 		PluginContext pluginContext = RapidProMGlobalContext.instance()
 				.getFutureResultAwarePluginContext(PNLogReplayer.class);
 
 		PNRepResult repResult = null;
 
 		try {
-			alignments = limiter.callWithTimeout(new ALIGNMENT_CALCULATOR(pluginContext),
-					getParameterAsInt(PARAMETER_2_KEY), TimeUnit.SECONDS, true);
+			alignments = new ALIGNMENT_CALCULATOR(pluginContext).call();
 			repResult = alignments.getArtifact();
 
 			output.deliver(alignments);
-
-		} catch (UncheckedTimeoutException e1) {
-			pluginContext.getProgress().cancel();
-			Thread.currentThread().interrupt();
-			logger.log(Level.INFO, "Conformance Checker timed out.");
-			output.deliver(new PNRepResultIOObject(null, pluginContext, null, null, null));
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -226,7 +215,7 @@ public class ConformanceAnalysisOperator extends AbstractRapidProMDiscoveryOpera
 				+ (System.currentTimeMillis() - time) / 1000 + " sec)");
 	}
 
-	class ALIGNMENT_CALCULATOR implements Callable<PNRepResultIOObject> {
+	class ALIGNMENT_CALCULATOR {
 
 		PluginContext pluginContext;
 
@@ -234,7 +223,6 @@ public class ConformanceAnalysisOperator extends AbstractRapidProMDiscoveryOpera
 			pluginContext = input;
 		}
 
-		@Override
 		public PNRepResultIOObject call() throws Exception {
 
 			XLogIOObject xLog = new XLogIOObject(getXLog(), pluginContext);

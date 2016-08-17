@@ -9,7 +9,7 @@ import org.processmining.framework.plugin.impl.AbstractPluginContext;
 
 public class RapidProMPluginContext extends AbstractPluginContext {
 
-	private final ExecutorService executor;
+	private ExecutorService executor;
 
 	public RapidProMPluginContext(GlobalContext context, String label) {
 		super(context, label);
@@ -25,6 +25,11 @@ public class RapidProMPluginContext extends AbstractPluginContext {
 		}
 	}
 
+	public void renewExecutor(){
+		executor.shutdownNow();
+		executor = Executors.newCachedThreadPool();
+	}
+	
 	public void closeExecutor(){
 		executor.shutdownNow();
 	}
