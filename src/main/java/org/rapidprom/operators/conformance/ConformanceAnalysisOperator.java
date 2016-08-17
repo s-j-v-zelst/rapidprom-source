@@ -26,9 +26,6 @@ import org.processmining.models.graphbased.directed.petrinet.PetrinetGraph;
 import org.processmining.models.graphbased.directed.petrinet.elements.Place;
 import org.processmining.models.graphbased.directed.petrinet.elements.Transition;
 import org.processmining.models.semantics.petrinet.Marking;
-import org.processmining.plugins.astar.petrinet.AbstractPetrinetReplayer;
-import org.processmining.plugins.astar.petrinet.PetrinetReplayerWithILP;
-import org.processmining.plugins.astar.petrinet.PetrinetReplayerWithoutILP;
 import org.processmining.plugins.connectionfactories.logpetrinet.TransEvClassMapping;
 import org.processmining.plugins.petrinet.replayer.PNLogReplayer;
 import org.processmining.plugins.petrinet.replayer.algorithms.IPNReplayParameter;
@@ -40,6 +37,9 @@ import org.rapidprom.ioobjects.PNRepResultIOObject;
 import org.rapidprom.ioobjects.PetriNetIOObject;
 import org.rapidprom.ioobjects.XLogIOObject;
 import org.rapidprom.operators.abstr.AbstractRapidProMDiscoveryOperator;
+import org.rapidprom.operators.conformance.hack.AbstractPetrinetReplayer;
+import org.rapidprom.operators.conformance.hack.PetrinetReplayerWithILP;
+import org.rapidprom.operators.conformance.hack.PetrinetReplayerWithoutILP;
 
 import com.google.common.util.concurrent.SimpleTimeLimiter;
 import com.google.common.util.concurrent.UncheckedTimeoutException;
@@ -212,6 +212,7 @@ public class ConformanceAnalysisOperator extends AbstractRapidProMDiscoveryOpera
 
 		} catch (UncheckedTimeoutException e1) {
 			pluginContext.getProgress().cancel();
+			Thread.currentThread().interrupt();
 			logger.log(Level.INFO, "Conformance Checker timed out.");
 			output.deliver(new PNRepResultIOObject(null, pluginContext, null, null, null));
 
@@ -330,7 +331,7 @@ public class ConformanceAnalysisOperator extends AbstractRapidProMDiscoveryOpera
 
 		PNRepResult result = null;
 		try {
-			result = replayEngine.replayLog(pluginContext, net, log, mapping, parameters);
+			result = replayEngine.replayLog(pluginContext, net, log, mapping, parameters, getParameterAsInt(PARAMETER_2_KEY));
 
 		} catch (AStarException e) {
 			e.printStackTrace();
