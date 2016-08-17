@@ -1,6 +1,6 @@
 package org.rapidprom.external.connectors.prom;
 
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.processmining.framework.plugin.GlobalContext;
@@ -9,7 +9,7 @@ import org.processmining.framework.plugin.impl.AbstractPluginContext;
 
 public class RapidProMPluginContext extends AbstractPluginContext {
 
-	private final Executor executor;
+	private final ExecutorService executor;
 
 	public RapidProMPluginContext(GlobalContext context, String label) {
 		super(context, label);
@@ -25,8 +25,12 @@ public class RapidProMPluginContext extends AbstractPluginContext {
 		}
 	}
 
+	public void closeExecutor(){
+		executor.shutdownNow();
+	}
+	
 	@Override
-	public Executor getExecutor() {
+	public ExecutorService getExecutor() {
 		return executor;
 	}
 
