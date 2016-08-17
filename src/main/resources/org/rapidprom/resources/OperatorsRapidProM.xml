@@ -58,6 +58,11 @@
                 <class>org.rapidprom.operators.conformance.PerformanceConformanceAnalysisOperator</class>
                 <icon>checks.png</icon>
             </operator>
+            <operator>
+            	<key>etc_1_align_precision</key>
+            	<class>org.rapidprom.operators.conformance.ETCPrecisionOperator</class>
+            	<icon>checks.png</icon>
+            </operator>
         </group>
         <group key="conversion">
             <operator>
@@ -284,5 +289,12 @@
                     <class>org.rapidprom.operators.streams.util.StopXSRunnableOperator</class>
                 </operator>
             </group>
+        </group>
+        <group key="utility">
+            <operator>
+                <key>rprom_free_memory</key>
+                <class>org.rapidprom.operators.util.RapidProMMemoryCleanUpOperator</class>
+                <icon>wrench.png</icon>
+            </operator>
         </group>
 </operators>
