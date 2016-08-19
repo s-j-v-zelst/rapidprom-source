@@ -33,7 +33,14 @@ repositories {
 			artifact "[module]-[revision]/[module]-[revision].[ext]"
 			ivy "[module]-[revision]/ivy-[module]-[revision].xml"
 		}
-	}	
+	}
+	ivy {
+		url "http://git.yerappa.com/gitbucket/TUE-PhD/DatabaseProcessMining-Repository/raw/master/Releases/"
+		layout "pattern", {
+			artifact "[module]/[module]-[revision].[ext]"
+			ivy "[module]/[module]-[revision]-ivy.xml"
+		}
+	}
 }
 
 extensionConfig {
@@ -119,4 +126,30 @@ dependencies {
 	compile "org.rapidprom:Uma:6.5.46"
 	compile "org.rapidprom:Woflan:6.5.44"
 	compile "org.rapidprom:XESLite:6.5.168"
+//	compile "db-process-mining:OpenSLEX:0.6"
+//	compile "db-process-mining:DAPOQ-Lang:0.7"
+	
+	compile files('../../../DAPOQ-Lang/ivy/jars/*.jar')
+//	compile files('/home/eduardo/Code/workspace/DatabaseProcessMining-Repository/Releases/DAPOQ-Lang/DAPOQ-Lang-0.8.jar')
+	compile files('../../../OpenSLEX/ivy/jars/*.jar')
+}
+
+apply plugin: 'groovy'
+
+sourceSets {
+    main {
+    	sourceSets.main.java.srcDirs = []
+		sourceSets.main.groovy.srcDirs = [ 'src/main/java',
+										  '../../../DAPOQ-Lang/src/',
+        								  '../../../DAPOQ-Lang/target/generated-sources/antlr4/',
+        								  '../../../OpenSLEX/src/']
+        resources {
+            srcDir 'src/main/resources'
+            include '**/*'
+        }
+        resources {
+            srcDir '../../../OpenSLEX/src/'
+            include '**/*.sql'
+        }
+    }
 }
