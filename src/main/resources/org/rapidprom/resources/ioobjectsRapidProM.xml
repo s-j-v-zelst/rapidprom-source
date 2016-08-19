@@ -179,4 +179,15 @@
 		class="org.rapidprom.ioobjects.streams.XSRunnableIOObject"
 		reportable="false">
 	</ioobject>
+	<!-- PADAS -->
+	<ioobject name="SLEXMMIOObject"
+		class="org.rapidprom.ioobjects.padas.SLEXMMIOObject"
+		reportable="false">
+		<renderer>org.rapidprom.ioobjectrenderers.padas.SLEXMMIOObjectRenderer</renderer>
+	</ioobject>
+	<ioobject name="SLEXMMSubSetIOObject"
+		class="org.rapidprom.ioobjects.padas.SLEXMMSubSetIOObject"
+		reportable="false">
+		<renderer>org.rapidprom.ioobjectrenderers.padas.SLEXMMIOSubSetObjectRenderer</renderer>
+	</ioobject>
 </ioobjects>

@@ -48,7 +48,11 @@
         <name>Utility</name>
     </group>
     
-    
+    <group>
+        <key>padas</key>
+        <name>PADAS</name>
+    </group>
+
     <!-- IMPORTERS -->
    <operator>
         <name>Calculate ETC 1-align precision</name>
@@ -266,7 +270,7 @@
   
        <operator>
         <name>Evolutionary Tree Miner (Process Tree)</name>
-        <synopsis>Discovers a Process Tree from an event log using the Evolutionary Tree Miner described in: http://dx.doi.org/10.6100/IR780920. The Evolutionary Tree Miner (or ETM) is an evolutionary algorithm to discover a process model (in our case a process tree) from an event log. It does so by creating several process models, checking how good they are (w.r.t the event log) using several quality dimensions, and then slightly modifying the best ones in the hope that they will become even better. By repeating this, and always keeping a list of the best ones found so far, the ETM will discover better and better process models. The main advantage is that many quality dimensions can be used to define what a ‘better’ process model is.</synopsis>
+        <synopsis>Discovers a Process Tree from an event log using the Evolutionary Tree Miner described in: http://dx.doi.org/10.6100/IR780920. The Evolutionary Tree Miner (or ETM) is an evolutionary algorithm to discover a process model (in our case a process tree) from an event log. It does so by creating several process models, checking how good they are (w.r.t the event log) using several quality dimensions, and then slightly modifying the best ones in the hope that they will become even better. By repeating this, and always keeping a list of the best ones found so far, the ETM will discover better and better process models. The main advantage is that many quality dimensions can be used to define what a ï¿½betterï¿½ process model is.</synopsis>
         <help>Mine a Process Using the ETM Algorithm from an event log.</help>
     	<key>etm_miner</key>
   	  </operator>
@@ -458,7 +462,6 @@
         <key>case_data_extractor</key>                
     </operator>
     
-    
     <!-- UTILITY -->
     <operator>
         <name>Free Memory (RapidProM)</name>
@@ -466,5 +469,36 @@
         <help> This operator tries to free the memory used by RapidProM (and also Rapid Miner itself). It does so by clearing the Plugin Context object (which is originating from the ProM framework, i.e., the base of RapidProM)</help>
         <key>rprom_free_memory</key>
     </operator>
-	
+    
+    <!-- PADAS -->
+	<operator>
+	    <name>DAPOQ-Lang Query </name>
+		<synopsis>Executes a DAPOQ-Lang Query on a SLEX Meta Model </synopsis>
+		<help> A SLEX Meta Model is required as input </help>		
+        <key>dapoq_lang_query</key>                
+    </operator>
+    <operator>
+	    <name>SLEXMM Meta Model Importer </name>
+		<synopsis>Imports a SLEX Meta Model </synopsis>
+		<help> A file is required as input </help>		
+        <key>import_slex_mm</key>
+    </operator>
+    <operator>
+	    <name>SLEXMM Meta Model Generator </name>
+		<synopsis>Generates a SLEX Meta Model from several inputs</synopsis>
+		<help>A Data Model, a set of events and versions, logs and process definitions are required as input</help>		
+        <key>generate_slex_mm</key>
+    </operator>
+    <operator>
+	    <name>PADAS Log Splitter</name>
+		<synopsis>Split a set of events into traces according to some criteria</synopsis>
+		<help>A Data Model and a set of events are required as input</help>		
+        <key>padas_split_log</key>
+    </operator>
+    <operator>
+	    <name>DAPOQ-Lang Result to ExampleSet</name>
+		<synopsis>Transforms the results of a DAPOQ-Lang query into an ExampleSet</synopsis>
+		<help>A result of a DAPOQ-Lang query is required as input</help>		
+        <key>dapoql_result_to_exampleset</key>
+    </operator>
 </operatorHelp>

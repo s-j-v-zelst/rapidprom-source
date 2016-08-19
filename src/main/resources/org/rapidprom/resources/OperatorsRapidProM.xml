@@ -297,4 +297,26 @@
                 <icon>wrench.png</icon>
             </operator>
         </group>
+        <group key="padas">
+        	<operator>
+        		<key>dapoq_lang_query</key>
+        		<class>org.rapidprom.operators.padas.DAPOQLangQueryOperator</class>
+        	</operator>
+        	<operator>
+        		<key>import_slex_mm</key>
+        		<class>org.rapidprom.operators.padas.ImportSLEXMMOperator</class>
+        	</operator>
+        	<operator>
+        		<key>generate_slex_mm</key>
+        		<class>org.rapidprom.operators.padas.GenerateSLEXMMOperator</class>
+        	</operator>
+        	<operator>
+        		<key>padas_split_log</key>
+        		<class>org.rapidprom.operators.padas.PADASLogSplitterOperator</class>
+        	</operator>
+        	<operator>
+        		<key>dapoql_result_to_exampleset</key>
+        		<class>org.rapidprom.operators.padas.SLEXMMSubSetToExampleSetConversionOperator</class>
+        	</operator>
+        </group>
 </operators>
