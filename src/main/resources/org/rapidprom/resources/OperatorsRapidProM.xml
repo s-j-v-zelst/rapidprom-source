@@ -297,4 +297,38 @@
                 <icon>wrench.png</icon>
             </operator>
         </group>
+        <group key="generation">
+            	<operator>
+                    <key>generate_process_tree</key>
+                    <class>org.rapidprom.operators.generation.GenerateNewickTreeOperator</class>
+                </operator>
+                <operator>
+                    <key>generate_log</key>
+                    <class>org.rapidprom.operators.generation.GenerateEventLogOperator</class>
+                </operator>
+                <operator>
+                    <key>convert_newickTree_to_processTree</key>
+                    <class>org.rapidprom.operators.generation.ConvertNewickTreeToProcessTree</class>
+                </operator>
+                <operator>
+                    <key>generate_noisy_log_event</key>
+                    <class>org.rapidprom.operators.generation.GenerateNoisyLogOperator</class>
+                </operator>
+                <operator>
+                    <key>generate_noisy_log_trace</key>
+                    <class>org.rapidprom.operators.generation.GenerateNoisyLog2Operator</class>
+                </operator>
+                <operator>
+                    <key>log_cross_validation</key>
+                    <class>org.rapidprom.operators.validation.XLogKFoldCrossValidationOperator</class>
+                </operator>
+                <operator>
+                    <key>log_split</key>
+                    <class>org.rapidprom.operators.logmanipulation.SplitXLogOperator</class>
+                </operator>
+                <operator>
+                    <key>unique_paths_calculator</key>
+                    <class>org.rapidprom.operators.generation.NoUniquePathsCalculatorOperator</class>
+                </operator>
+            </group>
 </operators>

@@ -48,6 +48,11 @@
         <name>Utility</name>
     </group>
     
+    <group>
+    	<key>generation</key>
+    	<name>Generation</name>
+    </group>
+    
     
     <!-- IMPORTERS -->
    <operator>
@@ -465,6 +470,68 @@
         <synopsis> This operator tries to free the memory used by RapidProM (and also Rapid Miner itself). </synopsis>
         <help> This operator tries to free the memory used by RapidProM (and also Rapid Miner itself). It does so by clearing the Plugin Context object (which is originating from the ProM framework, i.e., the base of RapidProM)</help>
         <key>rprom_free_memory</key>
+    </operator>
+    
+    <operator>
+		<name>Generate Newick Tree Collection </name>
+		<synopsis>  </synopsis>
+		<help> </help>
+		<key>generate_process_tree</key>
+	</operator>
+	<operator>
+		<name>Generate Event Log from Newick Tree</name>
+		<synopsis>  </synopsis>
+		<help> </help>
+		<key>generate_log</key>
+	</operator>
+	
+	<operator>
+		<name>Convert Newick Tree to Process Tree</name>
+		<synopsis>  </synopsis>
+		<help> </help>
+        <key>convert_newickTree_to_processTree</key>
+    </operator>
+    
+    <operator>
+    	<name>Generate Noisy Log (Event Level)</name>
+		<synopsis>This operator creates a log with noise: each trace of the original log is modified until it no longer fits the given petri net.</synopsis>
+		<help> </help>
+        <key>generate_noisy_log_event</key>      
+    </operator>
+    
+     <operator>
+    	<name>Generate Noisy Log (Trace Level)</name>
+		<synopsis>This operator creates a log with noise: each trace of the original log is modified until it no longer fits the given petri net.</synopsis>
+		<help> </help>
+        <key>generate_noisy_log_trace</key>      
+    </operator>
+    
+    <operator>
+	    <name>Case Data Extractor </name>
+		<synopsis> This extracts data from the traces contained in an event log, such as relative occurrence, etc... </synopsis>
+		<help> An Event log is required as input </help>		
+        <key>case_data_extractor</key>                
+    </operator>
+	
+	
+	<operator>
+	    <name>Log Cross Validation </name>
+		<synopsis> This operator splits an event log and does k-fold cross validation </synopsis>
+		<help> An Event log is required as input </help>
+        <key>log_cross_validation</key>
+    </operator>
+    <operator>
+        <name>Split Log</name>
+		<synopsis> This operator splits an event log in two sublogs according to the split ratio </synopsis>
+		<help> An Event log is required as input </help>
+        <key>log_split</key>                    
+    </operator>
+    
+    <operator>
+        <name>Number of Unique Paths</name>
+		<synopsis>This operator calculate the number of unique paths within a process tree</synopsis>
+		<help>The output is an exampleset with a single cell containing the number of unique paths of the process tree given as input, and the parameter value.</help>
+        <key>unique_paths_calculator</key>
     </operator>
 	
 </operatorHelp>
