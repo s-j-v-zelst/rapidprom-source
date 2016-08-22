@@ -24,6 +24,7 @@ import org.processmining.openslex.metamodel.SLEXMMProcess;
 import org.processmining.openslex.metamodel.SLEXMMRelation;
 import org.processmining.openslex.metamodel.SLEXMMStorageMetaModel;
 import org.processmining.openslex.metamodel.SLEXMMStorageMetaModelImpl;
+import org.processmining.openslex.metamodel.SLEXMMUtils;
 import org.rapidprom.ioobjectrenderers.padas.SLEXMMIOObjectVisualizationType;
 import org.rapidprom.ioobjects.padas.SLEXMMIOObject;
 
@@ -639,11 +640,11 @@ public class GenerateSLEXMMOperator extends Operator {
 								long tEndTimestamp = endTimePerVersion
 										.get(tvid);
 
-								if (beforeOrEqual(tStartTimestamp,sEndTimestamp)
-										&& afterOrEqual(tEndTimestamp,sStartTimestamp)) {
-									long relationStartTimestamp = latest(
+								if (SLEXMMUtils.beforeOrEqual(tStartTimestamp,sEndTimestamp)
+										&& SLEXMMUtils.afterOrEqual(tEndTimestamp,sStartTimestamp)) {
+									long relationStartTimestamp = SLEXMMUtils.latest(
 											sStartTimestamp, tStartTimestamp);
-									long relationEndTimestamp = earliest(
+									long relationEndTimestamp = SLEXMMUtils.earliest(
 											sEndTimestamp, tEndTimestamp);
 
 									SLEXMMRelation rel = mm.createRelation(vId,
@@ -667,31 +668,7 @@ public class GenerateSLEXMMOperator extends Operator {
 		mm.commit();
 	}
 	
-	private boolean beforeOrEqual(long a, long b) {
-		return (a <= b || a == -2 || b == -1);
-	}
 	
-	private boolean afterOrEqual(long a, long b) {
-		return (a >= b || a == -1 || b == -2);
-	}
-	
-	private long latest(long a, long b) {
-		if (a == -1 || b == -1) {
-			return -1;
-		} else {
-			return Math.max(a,b);
-		}
-	}
-	
-	private long earliest(long a, long b) {
-		if (a == -2 || b == -2) {
-			return -2;
-		} else if (a == -1 || b == -1) {
-			return Math.max(a,b);
-		} else {
-			return Math.min(a,b);
-		}
-	}
 	
 	private boolean isEmptyAnnotation(String v) {
 		return (v == null || v.isEmpty() || v.equalsIgnoreCase("?"));
