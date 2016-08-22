@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.deckfour.xes.classification.XEventNameClassifier;
 import org.deckfour.xes.model.XLog;
 import org.processmining.framework.plugin.PluginContext;
 import org.processmining.ptandloggenerator.parameters.NoiseGeneratorSettings;
@@ -81,7 +82,7 @@ public class GenerateNoisyLog2Operator extends AbstractRapidProMDiscoveryOperato
 		XLog result = null;
 		try {
 			result = noiseGenerator.addNoise(pluginContext, log, petriNet.getArtifact(), petriNet.getInitialMarking(),
-					petriNet.getFinalMarking(), getXEventClassifier(), settings);
+					petriNet.getFinalMarking(), new XEventNameClassifier(), settings);
 		} catch (ObjectNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

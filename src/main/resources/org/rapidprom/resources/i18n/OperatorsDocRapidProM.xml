@@ -533,5 +533,12 @@
 		<help>The output is an exampleset with a single cell containing the number of unique paths of the process tree given as input, and the parameter value.</help>
         <key>unique_paths_calculator</key>
     </operator>
+    
+    <operator>
+        <name>Boolean Conformance checker</name>
+		<synopsis>This operator replays an event log into a Petri net, and it decides whether traces perfectly fit the model (1) or not (0).</synopsis>
+		<help>The output is an exampleset with a row for each trace, indicating if it fits the  petri net or not.</help>
+        <key>boolean_conformance_checker</key>   
+    </operator>
 	
 </operatorHelp>

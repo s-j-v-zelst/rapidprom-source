@@ -49,6 +49,11 @@
                 <icon>checks.png</icon>
             </operator>
             <operator>
+                <key>boolean_conformance_checker</key>
+                <class>org.rapidprom.operators.conformance.BooleanConformanceCheckerOperator</class>
+                <icon>checks.png</icon>
+            </operator>
+            <operator>
                 <key>measure_precision</key>
                 <class>org.rapidprom.operators.conformance.MeasurePrecisionAnalysisOperator</class>
                 <icon>checks.png</icon>
