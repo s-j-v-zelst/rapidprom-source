@@ -65,7 +65,7 @@ public class DAPOQLangQueryOperator extends Operator {
 		
 		int i = 1;
 		for (SLEXMMSubSetIOObject item : listInpt) {
-			DAPOQLVariable v = new DAPOQLVariable("_v"+i, item.getType(), item.getMapResults());
+			DAPOQLVariable v = new DAPOQLVariable("v"+i, item.getType(), item.getMapResults());
 			vars.add(v);
 			i++;
 		}
