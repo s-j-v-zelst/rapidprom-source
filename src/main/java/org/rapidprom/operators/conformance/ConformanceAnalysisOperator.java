@@ -551,11 +551,20 @@ public class ConformanceAnalysisOperator extends AbstractRapidProMDiscoveryOpera
 				SyncReplayResult next = iterator2.next();
 				DataRowFactory factory = new DataRowFactory(DataRowFactory.TYPE_DOUBLE_ARRAY, '.');
 				Object[] vals = new Object[7];
+				if(next.isReliable()){
 				vals[2] = next.getInfo().get(PNRepResult.TRACEFITNESS);
 				vals[3] = next.getInfo().get(PNRepResult.MOVELOGFITNESS);
 				vals[4] = next.getInfo().get(PNRepResult.MOVEMODELFITNESS);
 				vals[5] = next.getInfo().get(PNRepResult.RAWFITNESSCOST);
 				vals[6] = next.getInfo().get(PNRepResult.NUMSTATEGENERATED);
+				}
+				else{
+					vals[2] = 0;
+					vals[3] = 0;
+					vals[4] = 0;
+					vals[5] = 0;
+					vals[6] = 0;
+				}
 				// convert the list to array
 				Attribute[] attribArray = new Attribute[attributes3.size()];
 				for (int i = 0; i < attributes3.size(); i++) {

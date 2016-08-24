@@ -108,7 +108,7 @@ dependencies {
 	compile "org.rapidprom:PNetAlignmentAnalysis:6.5.35"
 	compile "org.rapidprom:PNAnalysis:6.5.67"
 	compile "org.rapidprom:PNetReplayer:6.5.75"
-	compile "org.rapidprom:PTAndLogGenerator:6.7.84"
+	compile "org.rapidprom:PTAndLogGenerator:6.7.92"
 	compile "org.rapidprom:PTConversions:6.5.3"
 	compile "org.rapidprom:PomPomView:6.5.36"
 	compile "org.rapidprom:SocialNetwork:6.5.35"
