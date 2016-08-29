@@ -540,5 +540,12 @@
 		<help>The output is an exampleset with a row for each trace, indicating if it fits the  petri net or not.</help>
         <key>boolean_conformance_checker</key>   
     </operator>
+    
+    <operator>
+        <name>Count Unique Traces</name>
+		<synopsis>This operator counts the unique traces in a log according to the specified classifier.</synopsis>
+		<help>The output is an exampleset with the number of unique traces in the input log.</help>
+        <key>unique_traces_calculator</key>
+    </operator>
 	
 </operatorHelp>

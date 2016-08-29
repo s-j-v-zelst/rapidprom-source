@@ -3,6 +3,8 @@ package org.rapidprom.operators.discovery;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.deckfour.xes.classification.XEventClassifier;
 import org.deckfour.xes.model.XLog;
@@ -33,6 +35,7 @@ import com.rapidminer.parameter.ParameterTypeCategory;
 import com.rapidminer.parameter.ParameterTypeDouble;
 import com.rapidminer.parameter.UndefinedParameterError;
 import com.rapidminer.parameter.conditions.EqualStringCondition;
+import com.rapidminer.tools.LogService;
 
 public class ILPMinerOperator extends AbstractRapidProMDiscoveryOperator {
 
@@ -58,6 +61,11 @@ public class ILPMinerOperator extends AbstractRapidProMDiscoveryOperator {
 	}
 
 	public void doWork() throws OperatorException {
+		Logger logger = LogService.getRoot();
+		logger.log(Level.INFO, "Start: ILP Miner");
+		long time = System.currentTimeMillis();
+
+		
 		PluginContext context = RapidProMGlobalContext.instance().getPluginContext();
 		XLog log = getXLog();
 		XEventClassifier classifier = getXEventClassifier();
@@ -76,6 +84,8 @@ public class ILPMinerOperator extends AbstractRapidProMDiscoveryOperator {
 
 		PetriNetIOObject petrinetIOObject = new PetriNetIOObject(pn, (Marking) pnAndMarking[1], finalMarking, context);
 		outputPetrinet.deliver(petrinetIOObject);
+		
+		logger.log(Level.INFO, "End: ILP miner (" + (System.currentTimeMillis() - time) / 1000 + " sec)");
 	}
 
 	private Set<LPConstraintType> getConstraintTypes() {

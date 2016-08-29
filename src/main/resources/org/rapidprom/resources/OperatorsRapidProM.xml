@@ -226,6 +226,10 @@
                 <key>timestamp_sort</key>
                 <class>org.rapidprom.operators.logmanipulation.TimestampSortOperator</class>
             </operator>
+            <operator>
+                <key>unique_traces_calculator</key>
+                <class>org.rapidprom.operators.logmanipulation.CountUniqueTracesOperator</class>
+            </operator>
         </group> 
         <group key="streams">
             <group key="analysis">
