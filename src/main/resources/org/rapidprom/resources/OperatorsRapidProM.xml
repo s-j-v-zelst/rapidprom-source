@@ -305,6 +305,11 @@
                 <class>org.rapidprom.operators.util.RapidProMMemoryCleanUpOperator</class>
                 <icon>wrench.png</icon>
             </operator>
+            <operator>
+                <key>rprom_count_pc_size</key>
+                <class>org.rapidprom.operators.util.PluginContextSizeOperator</class>
+                <icon>wrench.png</icon>
+            </operator>
         </group>
         <group key="generation">
             	<operator>

@@ -547,5 +547,12 @@
 		<help>The output is an exampleset with the number of unique traces in the input log.</help>
         <key>unique_traces_calculator</key>
     </operator>
+    
+    <operator>
+        <name>Plugin Context Size</name>
+		<synopsis>This operator measures the size of the connection manager and provided object manager</synopsis>
+		<help>The output is an exampleset with the size of both.</help>
+        <key>rprom_count_pc_size</key>
+    </operator>
 	
 </operatorHelp>
