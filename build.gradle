@@ -86,7 +86,7 @@ dependencies {
 	compile "org.rapidprom:BPMN:6.5.56"
 	compile "org.rapidprom:BPMNConversions:6.5.48"
 	compile "org.rapidprom:CPNet:6.5.84"
-	compile "org.rapidprom:DataAwareReplayer:6.7.558"
+	compile "org.rapidprom:DataAwareReplayer:6.7.561"
 	compile "org.rapidprom:DataPetriNets:6.5.291"
 	compile "org.rapidprom:DottedChart:6.5.17"
 	compile "org.rapidprom:EvolutionaryTreeMiner:6.5.53"
