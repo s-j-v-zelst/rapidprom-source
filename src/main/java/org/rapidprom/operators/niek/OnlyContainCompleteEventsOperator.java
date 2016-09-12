@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.deckfour.xes.model.XAttributeMap;
 import org.deckfour.xes.model.XEvent;
 import org.deckfour.xes.model.XLog;
 import org.deckfour.xes.model.XTrace;
@@ -46,7 +47,15 @@ public class OnlyContainCompleteEventsOperator extends Operator {
 		XLog clone = (XLog) log.clone();
 		for(XTrace trace : clone){
 			List<XEvent> newTrace = new LinkedList<XEvent>();
+			if(trace==null)
+				continue;
 			for(XEvent event : trace){
+				if(event==null)
+					continue;
+				XAttributeMap xam = event.getAttributes();
+				if(xam==null || !xam.containsKey("lifecycle:transition"))
+					continue;
+				
 				if(event.getAttributes().get("lifecycle:transition").toString().equals("complete"))
 					newTrace.add(event);
 			}

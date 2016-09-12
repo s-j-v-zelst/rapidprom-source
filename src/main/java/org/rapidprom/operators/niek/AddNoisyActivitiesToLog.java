@@ -73,6 +73,7 @@ public class AddNoisyActivitiesToLog {
 					if(location>=pos && location<=(pos+trace.size())){// insert in this trace
 						XEvent event = new XEventImpl();
 						event.getAttributes().put("concept:name", new XAttributeLiteralImpl("concept:name", ""+activity));
+						event.getAttributes().put("lifecycle:transition", new XAttributeLiteralImpl("lifecycle:transition", "complete"));
 						trace.add(location-pos, event);
 					}
 					pos+=trace.size()+1;
