@@ -60,7 +60,7 @@ public class EntropyBasedLogFilter{
 		
 		recurseProjectionSetShrink(sizeAllSet, bestProjectionForSize, bestEntropyPerLength);
 		for(Integer key : bestProjectionForSize.keySet()){
-			if(key<sizeAllSet.size()){
+			if(key>2 && key<sizeAllSet.size()){
 				XLog tempLog = LogUtils.projectLogOnEventNames(log, bestProjectionForSize.get(key));
 				tempLog.getAttributes().put("concept:name", new XAttributeLiteralImpl("concept:name", "size "+key));
 				logs.add(tempLog);

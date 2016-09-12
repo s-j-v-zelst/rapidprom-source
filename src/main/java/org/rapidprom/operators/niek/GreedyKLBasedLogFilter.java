@@ -81,9 +81,11 @@ public class GreedyKLBasedLogFilter{
 		recurseProjectionSetShrink(sizeAllSet, bestProjectionForSize);
 		List<XLog> logs = new ArrayList<XLog>();
 		for(Integer key : bestProjectionForSize.keySet()){
-			XLog tempLog = projectLogOnEventNames(log, bestProjectionForSize.get(key));
-			tempLog.getAttributes().put("concept:name", new XAttributeLiteralImpl("concept:name", "size "+key));
-			logs.add(tempLog);
+			if(key>2){
+				XLog tempLog = projectLogOnEventNames(log, bestProjectionForSize.get(key));
+				tempLog.getAttributes().put("concept:name", new XAttributeLiteralImpl("concept:name", "size "+key));
+				logs.add(tempLog);
+			}
 		}
 		
 		// manual garbage collection

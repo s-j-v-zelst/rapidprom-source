@@ -123,6 +123,7 @@ public class ETCPrecisionOperator extends Operator {
 		attributes.add(AttributeFactory.createAttribute(this.VALUECOL,
 				Ontology.NUMERICAL));
 		table = new MemoryExampleTable(attributes);
+
 		fillTableWithRow(table, "Precision", precision, attributes);
 		
 		es = table.createExampleSet();

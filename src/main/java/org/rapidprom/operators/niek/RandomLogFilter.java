@@ -63,6 +63,8 @@ public class RandomLogFilter{
 		int size = activities.size();
 		for(XEventClass activityToRemove : sortedActivities){
 			currentActivities.remove(activityToRemove);
+			if(currentActivities.size()<=2)
+				break;
 			size--;
 			XLog tempLog = projectLogOnEventNames(log, getNames(currentActivities));
 			tempLog.getAttributes().put("concept:name", new XAttributeLiteralImpl("concept:name", "size "+size));
