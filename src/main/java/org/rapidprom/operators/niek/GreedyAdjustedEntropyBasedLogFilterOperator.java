@@ -19,14 +19,14 @@ import com.rapidminer.operator.ports.OutputPort;
 import com.rapidminer.operator.ports.metadata.GenerateNewMDRule;
 import com.rapidminer.tools.LogService;
 
-public class FrequencyBasedLogFilter1Operator extends Operator {
+public class GreedyAdjustedEntropyBasedLogFilterOperator extends Operator {
 
 	private InputPort inputXLog = getInputPorts()
 			.createPort("event log (ProM Event Log)", XLogIOObject.class);
 	private OutputPort outputEventLog = getOutputPorts()
 			.createPort("event log collection (ProM Event Log)");
 
-	public FrequencyBasedLogFilter1Operator(OperatorDescription description) {
+	public GreedyAdjustedEntropyBasedLogFilterOperator(OperatorDescription description) {
 		super(description);
 		getTransformer().addRule(new GenerateNewMDRule(outputEventLog,
 				IOObjectCollection.class));
@@ -34,12 +34,12 @@ public class FrequencyBasedLogFilter1Operator extends Operator {
 
 	public void doWork() throws OperatorException {
 		Logger logger = LogService.getRoot();
-		logger.log(Level.INFO, "Start: Filter Log Frequency (least frequent first)");
+		logger.log(Level.INFO, "Start: Filter Log using Entropy (Greedy)");
 		long time = System.currentTimeMillis();
 
 		IOObjectCollection<SetStringIOObject> result = new IOObjectCollection<SetStringIOObject>();
 
-		FrequencyBasedLogFilter1 filterer = new FrequencyBasedLogFilter1();
+		GreedyAdjustedEntropyBasedLogFilter filterer = new GreedyAdjustedEntropyBasedLogFilter();
 
 		XLogIOObject logWrapper = inputXLog.getData(XLogIOObject.class);
 
@@ -51,7 +51,7 @@ public class FrequencyBasedLogFilter1Operator extends Operator {
 		
 		outputEventLog.deliver(result);
 
-		logger.log(Level.INFO, "End: Filter Log using Frequency (least frequent first)"
+		logger.log(Level.INFO, "End: Filter Log using Entropy (Greedy) ("
 				+ (System.currentTimeMillis() - time) / 1000 + " sec)");
 	}
 

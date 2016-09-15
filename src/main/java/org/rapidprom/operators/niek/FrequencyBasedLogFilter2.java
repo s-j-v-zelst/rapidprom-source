@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -51,8 +52,8 @@ public class FrequencyBasedLogFilter2{
 	
 	@UITopiaVariant(affiliation = UITopiaVariant.EHV, author = "N. Tax", email = "n.tax@tue.nl")
 	@PluginVariant(variantLabel = "Filter Log using Frequency (most frequent first)", requiredParameterLabels = {0})
-	public List<XLog> getProjections(PluginContext context, XLog log) {
-		List<XLog> logs = new ArrayList<XLog>();
+	public List<Set<String>> getProjections(PluginContext context, XLog log) {
+		List<Set<String>> logs = new LinkedList<Set<String>>();
 
 		// build initial set
 		XLogInfo info = XLogInfoFactory.createLogInfo(log, new XEventNameClassifier());
@@ -67,7 +68,7 @@ public class FrequencyBasedLogFilter2{
 			size--;
 			XLog tempLog = projectLogOnEventNames(log, getNames(currentActivities));
 			tempLog.getAttributes().put("concept:name", new XAttributeLiteralImpl("concept:name", "size "+size));
-			logs.add(tempLog);
+			logs.add(getNames(currentActivities));
 		}
 		Collections.reverse(logs);
 		return logs;

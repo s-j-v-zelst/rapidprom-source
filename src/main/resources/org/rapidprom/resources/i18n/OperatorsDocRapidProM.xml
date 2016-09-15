@@ -63,6 +63,12 @@
         <key>add_noisy_activities_log</key>
    </operator>
    <operator>
+   		<name>Apply projection set to log</name>
+   		<Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
+        <help></help>
+   		<key>apply_log_projection</key>
+   </operator>
+   <operator>
         <name>Apply entropy-based projections to log (greedy)</name>
         <Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
         <help></help>
@@ -98,6 +104,12 @@
         <help></help>
  		<key>random_projections</key>
    </operator>
+   <operator>
+   		<name>Apply adjusted entropy-based projections to log (greedy)</name>
+ 		<Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
+        <help></help>
+        <key>entropy_adjusted_projections</key>
+  	</operator>
     
    <operator>
         <name>Calculate ETC 1-align precision</name>

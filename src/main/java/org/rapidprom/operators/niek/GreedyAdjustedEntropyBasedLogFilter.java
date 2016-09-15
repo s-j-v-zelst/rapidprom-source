@@ -1,5 +1,6 @@
 package org.rapidprom.operators.niek;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -11,35 +12,54 @@ import org.deckfour.xes.classification.XEventClass;
 import org.deckfour.xes.classification.XEventClasses;
 import org.deckfour.xes.classification.XEventNameClassifier;
 import org.deckfour.xes.info.XLogInfoFactory;
+import org.deckfour.xes.model.XEvent;
 import org.deckfour.xes.model.XLog;
+import org.deckfour.xes.model.XTrace;
 import org.processmining.contexts.uitopia.annotations.UITopiaVariant;
 import org.processmining.framework.plugin.PluginContext;
 import org.processmining.framework.plugin.annotations.Plugin;
 import org.processmining.framework.plugin.annotations.PluginVariant;
+import org.processmining.plugins.InductiveMiner.MultiSet;
 import org.processmining.plugins.InductiveMiner.graphs.Graph;
 
 import com.google.common.math.DoubleMath;
 
 
 @Plugin(
-		name = "Filter Log using Entropy (Global)", 
+		name = "Filter Log using Adjusted Entropy (Greedy)", 
 		parameterLabels = {"Input Log"}, 
 	    returnLabels = {"Logs"}, 
 	    returnTypes = { List.class }
 		)
-public class EntropyBasedLogFilter{
+public class GreedyAdjustedEntropyBasedLogFilter{
 	private XLog log;
 	private Map<Integer, Set<String>> bestProjectionForSize;
-	private Map<Integer, Double> bestEntropyPerLength;
 	private Set<Set<String>> hashset;
 	
+	public static XLog projectLogOnEventNames(final XLog log, final Set<String> eventSet){
+		XLog logClone = (XLog) log.clone();
+		Set<XTrace> traceRemoveSet = new HashSet<XTrace>();
+		for(XTrace trace : logClone){
+			Set<XEvent> eventRemoveSet = new HashSet<XEvent>();
+			for(XEvent event : trace){
+				if(!eventSet.contains(event.getAttributes().get("concept:name").toString()))
+					eventRemoveSet.add(event);						
+			}
+			for(XEvent removeEvent : eventRemoveSet)
+				trace.remove(removeEvent);
+			if(trace.size()==0)
+				traceRemoveSet.add(trace);
+		}
+		for(XTrace removeTrace : traceRemoveSet)
+			logClone.remove(removeTrace);
+		return logClone;
+	}
 	
 	@UITopiaVariant(affiliation = UITopiaVariant.EHV, author = "N. Tax", email = "n.tax@tue.nl")
-	@PluginVariant(variantLabel = "Filter Log using Entropy (Global)", requiredParameterLabels = {0})
+	@PluginVariant(variantLabel = "Filter Log using Adjusted Entropy (Greedy)", requiredParameterLabels = {0})
 	public List<Set<String>> getProjections(PluginContext context, XLog log) {
 		this.log = log;
 		bestProjectionForSize = new HashMap<Integer, Set<String>>();
-		bestEntropyPerLength = new HashMap<Integer, Double>();
 		hashset = new HashSet<Set<String>>();
 		
 		// build initial set
@@ -48,34 +68,57 @@ public class EntropyBasedLogFilter{
 		for(int i=0; i<info.size(); i++){
 			sizeAllSet.add(info.getByIndex(i).getId());
 		}
-
-		List<Set<String>> projections = new LinkedList<Set<String>>();
 		
-		recurseProjectionSetShrink(sizeAllSet, bestProjectionForSize, bestEntropyPerLength);
+		recurseProjectionSetShrink(sizeAllSet, bestProjectionForSize);
+		List<Set<String>> logs = new ArrayList<Set<String>>();
 		for(Integer key : bestProjectionForSize.keySet()){
-			if(key>2 && key<sizeAllSet.size()){
-				projections.add(bestProjectionForSize.get(key));
-			}
+			if(key>2)
+				logs.add(bestProjectionForSize.get(key));
 		}
-		return projections;
+		return logs;
 	}
 	
-	public void recurseProjectionSetShrink(Set<String> currentProjection, Map<Integer, Set<String>> bestProjectionForSize, Map<Integer, Double> performanceSet){
-		if(currentProjection.isEmpty() || hashset.contains(currentProjection))
+	public void recurseProjectionSetShrink(Set<String> currentProjection, Map<Integer, Set<String>> bestProjectionForSize){
+		if(currentProjection.isEmpty())
 			return;
 		else{
 			hashset.add(currentProjection);
-			XLog tempLog = LogUtils.projectLogOnEventNames(log, currentProjection);
-			double entropy = getEntropyFromDfpg(ConvertLogToDfpg.log2Dfpg(tempLog));
-			if(!performanceSet.containsKey(currentProjection.size()) || (entropy<performanceSet.get(currentProjection.size()))){
-				performanceSet.put(currentProjection.size(), entropy);
-				bestProjectionForSize.put(currentProjection.size(), currentProjection);
+			double minEntropy = Double.MAX_VALUE;
+			Set<String> argMinEntropy = null;
+			XLog tempLog2 = projectLogOnEventNames(log, currentProjection);
+			Dfpg dfpg2 = ConvertLogToDfpg.log2Dfpg(tempLog2);
+
+			for(String toRemove : currentProjection){
+				Set<String> newSet = new HashSet<String>(currentProjection);
+				newSet.remove(toRemove);
+				XLog tempLog = projectLogOnEventNames(log, newSet);
+				Dfpg dfpg = ConvertLogToDfpg.log2Dfpg(tempLog);
+
+				double entropy = getEntropyFromDfpg(dfpg);
+				MultiSet<XEventClass> xecs = dfpg2.getActivitiesCounts();
+				long count = 0;
+				for(XEventClass xec : xecs.toSet()){
+					if(xec.getId().equals(toRemove)){
+						System.out.println(xec.getId()+" DOES EQUAL "+toRemove+" cardinality set to "+xecs.getCardinalityOf(xec));
+						count = xecs.getCardinalityOf(xec);
+						break;
+					}
+				}
+				double detProb = Math.pow(1d/Math.pow(xecs.toSet().size()+1,2), count-1); // adjust here for deterministicness of activity
+				double detScore = 2*(xecs.toSet().size()+1)*(xecs.toSet().size()+1)*detProb;
+				System.out.println("detScore: "+detScore);
+				entropy-=detScore;
+				System.out.println("Entropy: "+entropy+" with set: "+newSet);
+				if(entropy<minEntropy){
+					minEntropy = entropy;
+					argMinEntropy = newSet;
+				}
 			}
-		}
-		for(String toRemove : currentProjection){
-			Set<String> newSet = new HashSet<String>(currentProjection);
-			newSet.remove(toRemove);
-			recurseProjectionSetShrink(newSet, bestProjectionForSize, performanceSet);
+			System.err.println("Entropy: "+minEntropy+" with set: "+argMinEntropy);
+
+			System.out.println();
+			bestProjectionForSize.put(argMinEntropy.size(), argMinEntropy);
+			recurseProjectionSetShrink(argMinEntropy, bestProjectionForSize);
 		}
 	}
 	

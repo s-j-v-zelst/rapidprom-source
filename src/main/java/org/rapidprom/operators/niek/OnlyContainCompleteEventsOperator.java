@@ -5,10 +5,13 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.deckfour.xes.classification.XEventClassifier;
+import org.deckfour.xes.classification.XEventNameClassifier;
 import org.deckfour.xes.model.XAttributeMap;
 import org.deckfour.xes.model.XEvent;
 import org.deckfour.xes.model.XLog;
 import org.deckfour.xes.model.XTrace;
+import org.deckfour.xes.model.impl.XAttributeLiteralImpl;
 import org.deckfour.xes.model.impl.XTraceImpl;
 import org.processmining.framework.plugin.PluginContext;
 import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
@@ -53,16 +56,21 @@ public class OnlyContainCompleteEventsOperator extends Operator {
 				if(event==null)
 					continue;
 				XAttributeMap xam = event.getAttributes();
-				if(xam==null || !xam.containsKey("lifecycle:transition"))
+				if(xam==null)
 					continue;
 				
-				if(event.getAttributes().get("lifecycle:transition").toString().equals("complete"))
+				if(!xam.containsKey("lifecycle:transition") || event.getAttributes().get("lifecycle:transition").toString().equals("complete"))
 					newTrace.add(event);
+				if(!xam.containsKey("lifecycle:transition"))
+					xam.put("lifecycle:transition", new XAttributeLiteralImpl("lifecycle:transition", "complete"));
 			}
 			trace = new XTraceImpl(trace.getAttributes());
 			for(XEvent newEvent : newTrace)
 				trace.add(newEvent);
 		}
+		List<XEventClassifier> classifiers = log.getClassifiers();
+		classifiers.clear();
+		classifiers.add(new XEventNameClassifier());
 		
 		PluginContext pluginContext = RapidProMGlobalContext.instance().getPluginContext();
 

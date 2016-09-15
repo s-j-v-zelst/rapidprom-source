@@ -41,7 +41,7 @@ public class GreedyKLBasedLogFilter{
 	
 	@UITopiaVariant(affiliation = UITopiaVariant.EHV, author = "N. Tax", email = "n.tax@tue.nl")
 	@PluginVariant(variantLabel = "Filter Log using KL-divergence (Greedy)", requiredParameterLabels = {0})
-	public List<XLog> getProjections(PluginContext context, XLog log) {
+	public List<Set<String>> getProjections(PluginContext context, XLog log) {
 		this.log = log;
 		bestProjectionForSize = new HashMap<Integer, Set<String>>();
 		hashset = new HashSet<Set<String>>();
@@ -79,13 +79,10 @@ public class GreedyKLBasedLogFilter{
 		}
 		
 		recurseProjectionSetShrink(sizeAllSet, bestProjectionForSize);
-		List<XLog> logs = new ArrayList<XLog>();
+		List<Set<String>> logs = new ArrayList<Set<String>>();
 		for(Integer key : bestProjectionForSize.keySet()){
-			if(key>2){
-				XLog tempLog = projectLogOnEventNames(log, bestProjectionForSize.get(key));
-				tempLog.getAttributes().put("concept:name", new XAttributeLiteralImpl("concept:name", "size "+key));
-				logs.add(tempLog);
-			}
+			if(key>2)
+				logs.add(bestProjectionForSize.get(key));
 		}
 		
 		// manual garbage collection

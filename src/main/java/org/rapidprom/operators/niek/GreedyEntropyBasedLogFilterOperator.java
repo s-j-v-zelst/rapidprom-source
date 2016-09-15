@@ -1,11 +1,13 @@
 package org.rapidprom.operators.niek;
 
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.deckfour.xes.model.XLog;
 import org.processmining.framework.plugin.PluginContext;
 import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
+import org.rapidprom.ioobjects.SetStringIOObject;
 import org.rapidprom.ioobjects.XLogIOObject;
 
 import com.rapidminer.operator.IOObjectCollection;
@@ -35,7 +37,7 @@ public class GreedyEntropyBasedLogFilterOperator extends Operator {
 		logger.log(Level.INFO, "Start: Filter Log using Entropy (Greedy)");
 		long time = System.currentTimeMillis();
 
-		IOObjectCollection<XLogIOObject> result = new IOObjectCollection<XLogIOObject>();
+		IOObjectCollection<SetStringIOObject> result = new IOObjectCollection<SetStringIOObject>();
 
 		GreedyEntropyBasedLogFilter filterer = new GreedyEntropyBasedLogFilter();
 
@@ -43,9 +45,8 @@ public class GreedyEntropyBasedLogFilterOperator extends Operator {
 
 		PluginContext pluginContext = RapidProMGlobalContext.instance().getPluginContext();
 
-		for (XLog log : filterer.getProjections(pluginContext,
-				logWrapper.getArtifact())) {
-			result.add(new XLogIOObject(log, pluginContext));
+		for (Set<String> log : filterer.getProjections(pluginContext, logWrapper.getArtifact())) {
+			result.add(new SetStringIOObject(log, pluginContext));
 		}
 		
 		outputEventLog.deliver(result);

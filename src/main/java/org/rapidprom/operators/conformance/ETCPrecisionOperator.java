@@ -118,10 +118,8 @@ public class ETCPrecisionOperator extends Operator {
 		ExampleSet es = null;
 		MemoryExampleTable table = null;
 		List<Attribute> attributes = new LinkedList<Attribute>();
-		attributes.add(AttributeFactory.createAttribute(this.NAMECOL,
-				Ontology.STRING));
-		attributes.add(AttributeFactory.createAttribute(this.VALUECOL,
-				Ontology.NUMERICAL));
+		attributes.add(AttributeFactory.createAttribute(this.NAMECOL, Ontology.STRING));
+		attributes.add(AttributeFactory.createAttribute(this.VALUECOL, Ontology.NUMERICAL));
 		table = new MemoryExampleTable(attributes);
 
 		fillTableWithRow(table, "Precision", precision, attributes);

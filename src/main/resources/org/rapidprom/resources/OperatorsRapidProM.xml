@@ -254,6 +254,14 @@
 			 		<key>random_projections</key>
 			 		<class>org.rapidprom.operators.niek.RandomLogFilterOperator</class>
 			   	</operator>
+ 			   	<operator>
+			 		<key>entropy_adjusted_projections</key>
+			 		<class>org.rapidprom.operators.niek.GreedyAdjustedEntropyBasedLogFilterOperator</class>
+			   	</operator>
+			   	<operator>
+			 		<key>apply_log_projection</key>
+			 		<class>org.rapidprom.operators.niek.ApplyProjectionOperator</class>
+			   	</operator>
             </group>
         </group> 
         <group key="streams">
