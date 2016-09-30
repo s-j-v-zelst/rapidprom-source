@@ -99,24 +99,19 @@ public class GreedyAdjustedEntropyBasedLogFilter{
 				long count = 0;
 				for(XEventClass xec : xecs.toSet()){
 					if(xec.getId().equals(toRemove)){
-						System.out.println(xec.getId()+" DOES EQUAL "+toRemove+" cardinality set to "+xecs.getCardinalityOf(xec));
 						count = xecs.getCardinalityOf(xec);
 						break;
 					}
 				}
 				double detProb = Math.pow(1d/Math.pow(xecs.toSet().size()+1,2), count-1); // adjust here for deterministicness of activity
 				double detScore = 2*(xecs.toSet().size()+1)*(xecs.toSet().size()+1)*detProb;
-				System.out.println("detScore: "+detScore);
 				entropy-=detScore;
-				System.out.println("Entropy: "+entropy+" with set: "+newSet);
 				if(entropy<minEntropy){
 					minEntropy = entropy;
 					argMinEntropy = newSet;
 				}
 			}
-			System.err.println("Entropy: "+minEntropy+" with set: "+argMinEntropy);
 
-			System.out.println();
 			bestProjectionForSize.put(argMinEntropy.size(), argMinEntropy);
 			recurseProjectionSetShrink(argMinEntropy, bestProjectionForSize);
 		}
