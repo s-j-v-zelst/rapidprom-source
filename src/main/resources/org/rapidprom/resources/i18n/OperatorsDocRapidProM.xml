@@ -205,6 +205,13 @@
   </operator>
   
   <operator>
+  		<name>Local Process Model Discovery</name>
+  		<synopsis>This operator can be used to mine a collection of Petri Nets that describe local behavior in the process</synopsis>
+  		<help>This operator can be used to mine a collection of Petri Nets that describe local behavior in the process</help>
+ 		<key>mine_lpms</key>
+  </operator>
+  
+  <operator>
         <name>Genetic Miner (Heuristics Net)</name>
         <synopsis>This operator can be used to execute the Genetic Miner discovery algorithm.</synopsis>
         <help>This operator can be used to execute the Genetic Miner algorithm which provides a Heuristics Net. As input a log file is needed.</help>

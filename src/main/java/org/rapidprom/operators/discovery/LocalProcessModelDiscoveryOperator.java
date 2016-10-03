@@ -11,12 +11,8 @@ import org.processmining.lpm.dialogs.LocalProcessModelParameters;
 import org.processmining.lpm.discovery.LocalProcessModelDiscovery;
 import org.processmining.lpm.plugins.UnpackAlignmentScoredAcceptingPetriNetArrayImpl;
 import org.processmining.lpm.util.AlignmentScoredAcceptingPetriNetArrayImpl;
-import org.processmining.plugins.heuristicsnet.miner.heuristics.miner.FlexibleHeuristicsMinerPlugin;
-import org.processmining.plugins.heuristicsnet.miner.heuristics.miner.settings.HeuristicsMinerSettings;
 import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.AcceptingPetriNetArrayIOObject;
-import org.rapidprom.ioobjects.HeuristicsNetIOObject;
-import org.rapidprom.ioobjects.PetriNetIOObject;
 import org.rapidprom.ioobjects.ProcessTreeIOObject;
 import org.rapidprom.operators.abstr.AbstractRapidProMDiscoveryOperator;
 
@@ -27,6 +23,7 @@ import com.rapidminer.operator.ports.metadata.GenerateNewMDRule;
 import com.rapidminer.parameter.ParameterType;
 import com.rapidminer.parameter.ParameterTypeBoolean;
 import com.rapidminer.parameter.ParameterTypeDouble;
+import com.rapidminer.parameter.ParameterTypeInt;
 import com.rapidminer.parameter.UndefinedParameterError;
 import com.rapidminer.tools.LogService;
 
@@ -69,7 +66,7 @@ public class LocalProcessModelDiscoveryOperator extends AbstractRapidProMDiscove
 	
 	public LocalProcessModelDiscoveryOperator(OperatorDescription description) {
 		super(description);
-		getTransformer().addRule(new GenerateNewMDRule(output, ProcessTreeIOObject.class));
+		getTransformer().addRule(new GenerateNewMDRule(output, AcceptingPetriNetArrayIOObject.class));
 	}
 	
 	public void doWork() throws OperatorException {
@@ -93,30 +90,57 @@ public class LocalProcessModelDiscoveryOperator extends AbstractRapidProMDiscove
 		logger.log(Level.INFO, "End: lpm discovery (" + (System.currentTimeMillis() - time) / 1000 + " sec)");
 	}
 
-	public List<ParameterType> getParameterTypes() {
+	public List<ParameterType> getParameterTypes(LocalProcessModelParameters lpmp) {
 		List<ParameterType> parameterTypes = super.getParameterTypes();
 
-		ParameterTypeDouble parameter1 = new ParameterTypeDouble(PARAMETER_1_KEY, PARAMETER_1_DESCR, 0, 100, 5);
+		ParameterTypeInt parameter1 = new ParameterTypeInt(PARAMETER_1_KEY, PARAMETER_1_DESCR, 1, 5, lpmp.getNumTransitions());
 		parameterTypes.add(parameter1);
 
-		ParameterTypeDouble parameter2 = new ParameterTypeDouble(PARAMETER_2_KEY, PARAMETER_2_DESCR, 0, 100, 90);
+		ParameterTypeInt parameter2 = new ParameterTypeInt(PARAMETER_2_KEY, PARAMETER_2_DESCR, 0, 500, lpmp.getTop_k());
 		parameterTypes.add(parameter2);
 
-		ParameterTypeDouble parameter3 = new ParameterTypeDouble(PARAMETER_3_KEY, PARAMETER_3_DESCR, 0, 100, 90);
+		ParameterTypeBoolean parameter3 = new ParameterTypeBoolean(PARAMETER_3_KEY, PARAMETER_3_DESCR, lpmp.isDuplicateTransitions());
 		parameterTypes.add(parameter3);
 
-		ParameterTypeDouble parameter4 = new ParameterTypeDouble(PARAMETER_4_KEY, PARAMETER_4_DESCR, 0, 100, 90);
+		ParameterTypeBoolean parameter4 = new ParameterTypeBoolean(PARAMETER_4_KEY, PARAMETER_4_DESCR, lpmp.isUseSeq());
 		parameterTypes.add(parameter4);
 
-		ParameterTypeDouble parameter5 = new ParameterTypeDouble(PARAMETER_5_KEY, PARAMETER_5_DESCR, 0, 100, 90);
+		ParameterTypeBoolean parameter5 = new ParameterTypeBoolean(PARAMETER_5_KEY, PARAMETER_5_DESCR, lpmp.isUseAnd());
 		parameterTypes.add(parameter5);
 
-		ParameterTypeBoolean parameter6 = new ParameterTypeBoolean(PARAMETER_6_KEY, PARAMETER_6_DESCR, true);
+		ParameterTypeBoolean parameter6 = new ParameterTypeBoolean(PARAMETER_6_KEY, PARAMETER_6_DESCR, lpmp.isUseOr());
 		parameterTypes.add(parameter6);
 
-		ParameterTypeBoolean parameter7 = new ParameterTypeBoolean(PARAMETER_7_KEY, PARAMETER_6_DESCR, false);
+		ParameterTypeBoolean parameter7 = new ParameterTypeBoolean(PARAMETER_7_KEY, PARAMETER_7_DESCR, lpmp.isUseXor());
 		parameterTypes.add(parameter7);
 
+		ParameterTypeBoolean parameter8 = new ParameterTypeBoolean(PARAMETER_8_KEY, PARAMETER_8_DESCR, lpmp.isUseXorloop());
+		parameterTypes.add(parameter8);
+
+		ParameterTypeInt parameter9 = new ParameterTypeInt(PARAMETER_9_KEY, PARAMETER_9_DESCR, 0, lpmp.getMaxActivityFrequencyInLog(), lpmp.getFrequencyMinimum());
+		parameterTypes.add(parameter9);
+
+		ParameterTypeDouble parameter10 = new ParameterTypeDouble(PARAMETER_10_KEY, PARAMETER_10_DESCR, 0, 1, lpmp.getDeterminismMinimum());
+		parameterTypes.add(parameter10);
+
+		ParameterTypeDouble parameter11 = new ParameterTypeDouble(PARAMETER_11_KEY, PARAMETER_11_DESCR, 0, 1, lpmp.getSupportWeight());
+		parameterTypes.add(parameter11);
+		
+		ParameterTypeDouble parameter12 = new ParameterTypeDouble(PARAMETER_12_KEY, PARAMETER_12_DESCR, 0, 1, lpmp.getLanguageFitWeight());
+		parameterTypes.add(parameter12);
+
+		ParameterTypeDouble parameter13 = new ParameterTypeDouble(PARAMETER_13_KEY, PARAMETER_13_DESCR, 0, 1, lpmp.getConfidenceWeight());
+		parameterTypes.add(parameter13);
+
+		ParameterTypeDouble parameter14 = new ParameterTypeDouble(PARAMETER_14_KEY, PARAMETER_14_DESCR, 0, 1, lpmp.getCoverageWeight());
+		parameterTypes.add(parameter14);
+
+		ParameterTypeDouble parameter15 = new ParameterTypeDouble(PARAMETER_15_KEY, PARAMETER_15_DESCR, 0, 1, lpmp.getDeterminismWeight());
+		parameterTypes.add(parameter15);
+
+		ParameterTypeDouble parameter16 = new ParameterTypeDouble(PARAMETER_16_KEY, PARAMETER_16_DESCR, 0, 1, lpmp.getAvgNumFiringsWeight());
+		parameterTypes.add(parameter16);		
+		
 		return parameterTypes;
 	}
 

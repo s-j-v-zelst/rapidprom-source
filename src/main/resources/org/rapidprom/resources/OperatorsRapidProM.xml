@@ -147,7 +147,11 @@
                 <class>org.rapidprom.operators.discovery.FuzzyMinerOperator</class>
                 <icon>hardhat.png</icon>
             </operator>
-            
+            <operator>
+            	<key>mine_lpms</key>
+            	<class>org.rapidprom.operators.discovery.LocalProcessModelDiscoveryOperator</class>
+            	<icon>hardhat.png</icon>
+            </operator>
         </group>
         <group key="export">
             <operator>
