@@ -96,7 +96,7 @@ dependencies {
 	compile "org.rapidprom:DataAwareReplayer:6.7.563"
 	compile "org.rapidprom:DataPetriNets:6.5.291"
 	compile "org.rapidprom:DottedChart:6.5.17"
-	compile "org.rapidprom:EvolutionaryTreeMiner:6.5.53"
+	compile "org.rapidprom:EvolutionaryTreeMiner:6.5.96"
 	compile "org.rapidprom:EventStream:6.5.72"
 	compile "org.rapidprom:FeaturePrediction:6.5.61"
 	compile "org.rapidprom:Fuzzy:6.5.33"
@@ -125,13 +125,13 @@ dependencies {
 	compile "org.rapidprom:TSPetriNet:6.5.35"
 	compile "org.rapidprom:Uma:6.5.46"
 	compile "org.rapidprom:Woflan:6.5.44"
-	compile "org.rapidprom:XESLite:6.5.168"
+	compile "org.rapidprom:XESLite:6.7.217"
 //	compile "db-process-mining:OpenSLEX:0.6"
 //	compile "db-process-mining:DAPOQ-Lang:0.7"
 	
-	compile files('../../../DAPOQ-Lang/ivy/jars/*.jar')
+	compile files('../../DAPOQ-Lang/ivy/jars/*.jar')
 //	compile files('/home/eduardo/Code/workspace/DatabaseProcessMining-Repository/Releases/DAPOQ-Lang/DAPOQ-Lang-0.8.jar')
-	compile files('../../../OpenSLEX/ivy/jars/*.jar')
+	compile files('../../OpenSLEX/ivy/jars/*.jar')
 }
 
 apply plugin: 'groovy'
@@ -140,9 +140,9 @@ sourceSets {
     main {
     	sourceSets.main.java.srcDirs = []
 		sourceSets.main.groovy.srcDirs = [ 'src/main/java',
-										  '../../../DAPOQ-Lang/src/',
-        								  '../../../DAPOQ-Lang/target/generated-sources/antlr4/',
-        								  '../../../OpenSLEX/src/']
+										  '../../DAPOQ-Lang/src/',
+        								  '../../DAPOQ-Lang/target/generated-sources/antlr4/',
+        								  '../../OpenSLEX/src/']
         resources {
             srcDir 'src/main/resources'
             include '**/*'

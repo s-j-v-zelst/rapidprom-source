@@ -19,15 +19,6 @@ import com.rapidminer.example.ExampleSet;
 
 public class DataModelMM {
 
-	public static final String AT_DATAMODEL = "datamodel";
-	public static final String AT_CLASS = "class";
-	public static final String AT_ATNAME = "attribute_name";
-	public static final String AT_RS_NAME = "relationship_name";
-	public static final String AT_RS_CLASS_SOURCE = "class_source";
-	public static final String AT_RS_CLASS_TARGET = "class_target";
-	public static final String AT_RS_ATNAME_SOURCE = "attribute_source";
-	public static final String AT_RS_ATNAME_TARGET = "attribute_target";
-	
 	private HashMap<String,SLEXMMDataModel> slxdmmap = new HashMap<>();
 	
 	private HashMap<String, // datamodel
@@ -124,12 +115,12 @@ public class DataModelMM {
 //		> kyPerSourceMap = new HashMap<>();
 		
 		Attributes ats = eskeys.getAttributes();
-		Attribute kydm = ats.get(AT_DATAMODEL, false);
-		Attribute kynm = ats.get(AT_RS_NAME, false);
-		Attribute kycls = ats.get(AT_RS_CLASS_SOURCE, false);
-		Attribute kyclt = ats.get(AT_RS_CLASS_TARGET, false);
-		Attribute kyats = ats.get(AT_RS_ATNAME_SOURCE, false);
-		Attribute kyatt = ats.get(AT_RS_ATNAME_TARGET, false);
+		Attribute kydm = ats.get(PADASConstants.AT_DATAMODEL, false);
+		Attribute kynm = ats.get(PADASConstants.AT_RS_NAME, false);
+		Attribute kycls = ats.get(PADASConstants.AT_RS_CLASS_SOURCE, false);
+		Attribute kyclt = ats.get(PADASConstants.AT_RS_CLASS_TARGET, false);
+		Attribute kyats = ats.get(PADASConstants.AT_RS_ATNAME_SOURCE, false);
+		Attribute kyatt = ats.get(PADASConstants.AT_RS_ATNAME_TARGET, false);
 		
 		if (kydm == null || kynm == null || kycls == null ||
 				kyclt == null || kyats == null || kyatt == null) {
@@ -226,9 +217,9 @@ public class DataModelMM {
 			ExampleSet esclasses) throws Exception {
 
 		Attributes ats = esclasses.getAttributes();
-		Attribute atdm = ats.get(AT_DATAMODEL, false);
-		Attribute atcl = ats.get(AT_CLASS, false);
-		Attribute atnm = ats.get(AT_ATNAME, false);
+		Attribute atdm = ats.get(PADASConstants.AT_DATAMODEL, false);
+		Attribute atcl = ats.get(PADASConstants.AT_CLASS, false);
+		Attribute atnm = ats.get(PADASConstants.AT_ATNAME, false);
 
 		if (atdm == null || atcl == null || atnm == null) {
 			throw new Exception("Required attributes not present");

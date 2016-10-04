@@ -33,8 +33,6 @@ import com.rapidminer.example.Attribute;
 import com.rapidminer.example.Attributes;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
-import com.rapidminer.example.table.AttributeFactory;
-import com.rapidminer.example.table.NumericalAttribute;
 import com.rapidminer.operator.Annotations;
 import com.rapidminer.operator.IOObjectCollection;
 import com.rapidminer.operator.Operator;
@@ -44,7 +42,6 @@ import com.rapidminer.operator.ports.InputPort;
 import com.rapidminer.operator.ports.OutputPort;
 import com.rapidminer.operator.ports.metadata.GenerateNewMDRule;
 import com.rapidminer.operator.ports.metadata.MetaData;
-import com.rapidminer.operator.preprocessing.filter.attributes.NumericalAttributeFilter;
 import com.rapidminer.parameter.ParameterType;
 import com.rapidminer.parameter.ParameterTypeFile;
 import com.rapidminer.tools.LogService;
@@ -54,30 +51,6 @@ public class GenerateSLEXMMOperator extends Operator {
 	private final static String[] SUPPORTED_FILE_FORMATS = new String[] { "slexmm" };
 	private final static String PARAMETER_KEY = "file";
 	private final static String PARAMETER_DESC = "Select where to save the generated Meta Model.";
-	
-	private final static String EV_EXSET_ANNOTATION_FILE_NAME = "file_name";
-	private final static String EV_EXSET_ANNOTATION_TIMESTAMP = "timestamp";
-	private final static String EV_EXSET_ANNOTATION_TIMESTAMP_FORMAT = "timestamp_format";
-	private final static String EV_EXSET_ANNOTATION_ACTIVITY = "activity";
-	private final static String EV_EXSET_ANNOTATION_ACTIVITY_INSTANCE = "activity_instance";
-	private final static String EV_EXSET_ANNOTATION_LIFECYCLE = "lifecycle";
-	private final static String EV_EXSET_ANNOTATION_RESOURCE = "resource";
-	
-	private final static String VER_EXSET_ANNOTATION_FILE_NAME = "file_name";
-	private final static String VER_EXSET_ANNOTATION_DATAMODEL_NAME = "datamodel_name";
-	private final static String VER_EXSET_ANNOTATION_CLASS_NAME = "class_name";
-	private final static String VER_EXSET_ANNOTATION_START_TIMESTAMP = "start_timestamp";
-	private final static String VER_EXSET_ANNOTATION_END_TIMESTAMP = "end_timestamp";
-	private final static String VER_EXSET_ANNOTATION_TIMESTAMP_FORMAT = "timestamp_format";
-	
-	private final static String EV_TO_VER_MAPPING_EVID_FIELD = "eventId";
-	private final static String EV_TO_VER_MAPPING_VERID_FIELD = "versionId";
-	private final static String EV_TO_VER_MAPPING_LABEL_FIELD = "label";
-	
-	private final static String LOGS_PROC_ID_FIELD = "processId";
-	private final static String LOGS_LOG_ID_FIELD = "logId";
-	private final static String LOGS_TRACE_ID_FIELD = "traceId";
-	private final static String LOGS_EVENT_ID_FIELD = "eventId";
 
 	private InputPort inputDMClasses = getInputPorts().createPort (
 			"Classes definition", ExampleSet.class);
@@ -208,10 +181,10 @@ public class GenerateSLEXMMOperator extends Operator {
 		HashMap<Integer,HashSet<Integer>> actsToProc = new HashMap<>();
 		
 		Attributes atts = exsLogs.getAttributes();
-		Attribute procIdAt = atts.get(LOGS_PROC_ID_FIELD, false);
-		Attribute logIdAt = atts.get(LOGS_LOG_ID_FIELD, false);
-		Attribute traceIdAt = atts.get(LOGS_TRACE_ID_FIELD, false);
-		Attribute eventIdAt = atts.get(LOGS_EVENT_ID_FIELD, false);
+		Attribute procIdAt = atts.get(PADASConstants.LOGS_PROC_ID_FIELD, false);
+		Attribute logIdAt = atts.get(PADASConstants.LOGS_LOG_ID_FIELD, false);
+		Attribute traceIdAt = atts.get(PADASConstants.LOGS_TRACE_ID_FIELD, false);
+		Attribute eventIdAt = atts.get(PADASConstants.LOGS_EVENT_ID_FIELD, false);
 		
 		long i = 0;
 		
@@ -293,9 +266,9 @@ public class GenerateSLEXMMOperator extends Operator {
 			HashMap<Double,Integer> evIdMap, HashMap<Double,Integer> verIdMap) throws Exception {
 		
 		Attributes atts = exsEvToObjV.getAttributes();
-		Attribute evIdAt = atts.get(EV_TO_VER_MAPPING_EVID_FIELD, false);
-		Attribute verIdAt = atts.get(EV_TO_VER_MAPPING_VERID_FIELD, false);
-		Attribute labelAt = atts.get(EV_TO_VER_MAPPING_LABEL_FIELD, false);
+		Attribute evIdAt = atts.get(PADASConstants.EV_TO_VER_MAPPING_EVID_FIELD, false);
+		Attribute verIdAt = atts.get(PADASConstants.EV_TO_VER_MAPPING_VERID_FIELD, false);
+		Attribute labelAt = atts.get(PADASConstants.EV_TO_VER_MAPPING_LABEL_FIELD, false);
 		
 		long i = 0;
 		
@@ -535,12 +508,12 @@ public class GenerateSLEXMMOperator extends Operator {
 		for (ExampleSet verExSet : verColList) {
 			
 			Annotations an = verExSet.getAnnotations();
-			String file_name = an.getAnnotation(VER_EXSET_ANNOTATION_FILE_NAME);
-			String datamodel_name = an.getAnnotation(VER_EXSET_ANNOTATION_DATAMODEL_NAME);
-			String class_name = an.getAnnotation(VER_EXSET_ANNOTATION_CLASS_NAME);
-			String startTimestamp = an.getAnnotation(VER_EXSET_ANNOTATION_START_TIMESTAMP);
-			String endTimestamp = an.getAnnotation(VER_EXSET_ANNOTATION_END_TIMESTAMP);
-			String timestampFormat = an.getAnnotation(VER_EXSET_ANNOTATION_TIMESTAMP_FORMAT);
+			String file_name = an.getAnnotation(PADASConstants.VER_EXSET_ANNOTATION_FILE_NAME);
+			String datamodel_name = an.getAnnotation(PADASConstants.VER_EXSET_ANNOTATION_DATAMODEL_NAME);
+			String class_name = an.getAnnotation(PADASConstants.VER_EXSET_ANNOTATION_CLASS_NAME);
+			String startTimestamp = an.getAnnotation(PADASConstants.VER_EXSET_ANNOTATION_START_TIMESTAMP);
+			String endTimestamp = an.getAnnotation(PADASConstants.VER_EXSET_ANNOTATION_END_TIMESTAMP);
+			String timestampFormat = an.getAnnotation(PADASConstants.VER_EXSET_ANNOTATION_TIMESTAMP_FORMAT);
 			Attribute attId = verExSet.getAttributes().getId();
 			if (attId == null) {
 				throw new Exception("no Id attribute set in ExampleSet "+verExSet.getName()); 
@@ -687,13 +660,13 @@ public class GenerateSLEXMMOperator extends Operator {
 			HashMap<String,SLEXMMActivity> actMap = new HashMap<>();
 			
 			Annotations an = evExSet.getAnnotations();
-			String file_name = an.getAnnotation(EV_EXSET_ANNOTATION_FILE_NAME);
-			String timestamp = an.getAnnotation(EV_EXSET_ANNOTATION_TIMESTAMP);
-			String timestampFormat = an.getAnnotation(EV_EXSET_ANNOTATION_TIMESTAMP_FORMAT);
-			String activity = an.getAnnotation(EV_EXSET_ANNOTATION_ACTIVITY);
-			String activity_ins = an.getAnnotation(EV_EXSET_ANNOTATION_ACTIVITY_INSTANCE);
-			String lifecycle = an.getAnnotation(EV_EXSET_ANNOTATION_LIFECYCLE);
-			String resource = an.getAnnotation(EV_EXSET_ANNOTATION_RESOURCE);
+			String file_name = an.getAnnotation(PADASConstants.EV_EXSET_ANNOTATION_FILE_NAME);
+			String timestamp = an.getAnnotation(PADASConstants.EV_EXSET_ANNOTATION_TIMESTAMP);
+			String timestampFormat = an.getAnnotation(PADASConstants.EV_EXSET_ANNOTATION_TIMESTAMP_FORMAT);
+			String activity = an.getAnnotation(PADASConstants.EV_EXSET_ANNOTATION_ACTIVITY);
+			String activity_ins = an.getAnnotation(PADASConstants.EV_EXSET_ANNOTATION_ACTIVITY_INSTANCE);
+			String lifecycle = an.getAnnotation(PADASConstants.EV_EXSET_ANNOTATION_LIFECYCLE);
+			String resource = an.getAnnotation(PADASConstants.EV_EXSET_ANNOTATION_RESOURCE);
 			
 			SimpleDateFormat dateFormatter = null;
 			if (timestampFormat != null) {
