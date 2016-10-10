@@ -7,10 +7,12 @@ import java.util.logging.Logger;
 import org.deckfour.xes.model.XLog;
 import org.processmining.acceptingpetrinet.models.AcceptingPetriNetArray;
 import org.processmining.framework.plugin.PluginContext;
+import org.processmining.framework.plugin.PluginExecutionResult;
 import org.processmining.lpm.dialogs.LocalProcessModelParameters;
 import org.processmining.lpm.discovery.LocalProcessModelDiscovery;
 import org.processmining.lpm.plugins.UnpackAlignmentScoredAcceptingPetriNetArrayImpl;
 import org.processmining.lpm.util.AlignmentScoredAcceptingPetriNetArrayImpl;
+import org.processmining.plugins.petrinet.behavioralanalysis.woflan.Woflan;
 import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.AcceptingPetriNetArrayIOObject;
 import org.rapidprom.ioobjects.ProcessTreeIOObject;
@@ -29,6 +31,7 @@ import com.rapidminer.tools.LogService;
 
 public class LocalProcessModelDiscoveryOperator extends AbstractRapidProMDiscoveryOperator{
 	OutputPort output = getOutputPorts().createPort("model (ProM ProcessTree)");
+	LocalProcessModelParameters lpmp;
 	
 	// Parameter keys (also used as description)
 	public static final String PARAMETER_1_KEY = "Maximum number of transitions in LPMs",
@@ -74,12 +77,12 @@ public class LocalProcessModelDiscoveryOperator extends AbstractRapidProMDiscove
 		logger.log(Level.INFO, "Start: lpm discovery");
 		long time = System.currentTimeMillis();
 
-		LocalProcessModelParameters lpmDiscoverySettings = getConfiguration(getXLog());
+		lpmp = getConfiguration(getXLog());
 
 		LocalProcessModelDiscovery lpmd = new LocalProcessModelDiscovery();
-		PluginContext pluginContext = RapidProMGlobalContext.instance().getPluginContext();
-
-		AlignmentScoredAcceptingPetriNetArrayImpl result = lpmd.runHeadless(pluginContext, lpmDiscoverySettings);
+		PluginContext pluginContext = RapidProMGlobalContext.instance().getFutureResultAwarePluginContext(LocalProcessModelDiscovery.class);		
+		
+		AlignmentScoredAcceptingPetriNetArrayImpl result = lpmd.runHeadless(pluginContext, lpmp);
 		UnpackAlignmentScoredAcceptingPetriNetArrayImpl unpacker = new UnpackAlignmentScoredAcceptingPetriNetArrayImpl();
 		AcceptingPetriNetArray array = unpacker.unpack(pluginContext, result);
 		
@@ -90,9 +93,11 @@ public class LocalProcessModelDiscoveryOperator extends AbstractRapidProMDiscove
 		logger.log(Level.INFO, "End: lpm discovery (" + (System.currentTimeMillis() - time) / 1000 + " sec)");
 	}
 
-	public List<ParameterType> getParameterTypes(LocalProcessModelParameters lpmp) {
+	@Override
+	public List<ParameterType> getParameterTypes() {
 		List<ParameterType> parameterTypes = super.getParameterTypes();
-
+		if(lpmp==null)
+			lpmp = new LocalProcessModelParameters();
 		ParameterTypeInt parameter1 = new ParameterTypeInt(PARAMETER_1_KEY, PARAMETER_1_DESCR, 1, 5, lpmp.getNumTransitions());
 		parameterTypes.add(parameter1);
 
@@ -145,30 +150,32 @@ public class LocalProcessModelDiscoveryOperator extends AbstractRapidProMDiscove
 	}
 
 	private LocalProcessModelParameters getConfiguration(XLog log) {
-		LocalProcessModelParameters lpmDiscoverySettings = new LocalProcessModelParameters();
 		try {
-			lpmDiscoverySettings.setNumTransitions(getParameterAsInt(PARAMETER_1_KEY));
-			lpmDiscoverySettings.setTop_k(getParameterAsInt(PARAMETER_2_KEY));
-			lpmDiscoverySettings.setDuplicateTransitions(getParameterAsBoolean(PARAMETER_3_KEY));
+			lpmp.setDiscoveryLog(log);
+			lpmp.setEvaluationLog(log);
 			
-			lpmDiscoverySettings.setUseSeq(getParameterAsBoolean(PARAMETER_4_KEY));
-			lpmDiscoverySettings.setUseAnd(getParameterAsBoolean(PARAMETER_5_KEY));
-			lpmDiscoverySettings.setUseOr(getParameterAsBoolean(PARAMETER_6_KEY));
-			lpmDiscoverySettings.setUseXor(getParameterAsBoolean(PARAMETER_7_KEY));
-			lpmDiscoverySettings.setUseXorloop(getParameterAsBoolean(PARAMETER_8_KEY));
+			lpmp.setNumTransitions(getParameterAsInt(PARAMETER_1_KEY));
+			lpmp.setTop_k(getParameterAsInt(PARAMETER_2_KEY));
+			lpmp.setDuplicateTransitions(getParameterAsBoolean(PARAMETER_3_KEY));
 			
-			lpmDiscoverySettings.setFrequencyMinimum(getParameterAsInt(PARAMETER_9_KEY));
-			lpmDiscoverySettings.setDeterminismMinimum(getParameterAsDouble(PARAMETER_10_KEY));
+			lpmp.setUseSeq(getParameterAsBoolean(PARAMETER_4_KEY));
+			lpmp.setUseAnd(getParameterAsBoolean(PARAMETER_5_KEY));
+			lpmp.setUseOr(getParameterAsBoolean(PARAMETER_6_KEY));
+			lpmp.setUseXor(getParameterAsBoolean(PARAMETER_7_KEY));
+			lpmp.setUseXorloop(getParameterAsBoolean(PARAMETER_8_KEY));
 			
-			lpmDiscoverySettings.setSupportWeight(getParameterAsDouble(PARAMETER_11_KEY));
-			lpmDiscoverySettings.setLanguageFitWeight(getParameterAsDouble(PARAMETER_12_KEY));
-			lpmDiscoverySettings.setConfidenceWeight(getParameterAsDouble(PARAMETER_13_KEY));
-			lpmDiscoverySettings.setCoverageWeight(getParameterAsDouble(PARAMETER_14_KEY));
-			lpmDiscoverySettings.setDeterminismWeight(getParameterAsDouble(PARAMETER_15_KEY));
-			lpmDiscoverySettings.setAvgNumFiringsWeight(getParameterAsDouble(PARAMETER_16_KEY));
+			lpmp.setFrequencyMinimum(getParameterAsInt(PARAMETER_9_KEY));
+			lpmp.setDeterminismMinimum(getParameterAsDouble(PARAMETER_10_KEY));
+			
+			lpmp.setSupportWeight(getParameterAsDouble(PARAMETER_11_KEY));
+			lpmp.setLanguageFitWeight(getParameterAsDouble(PARAMETER_12_KEY));
+			lpmp.setConfidenceWeight(getParameterAsDouble(PARAMETER_13_KEY));
+			lpmp.setCoverageWeight(getParameterAsDouble(PARAMETER_14_KEY));
+			lpmp.setDeterminismWeight(getParameterAsDouble(PARAMETER_15_KEY));
+			lpmp.setAvgNumFiringsWeight(getParameterAsDouble(PARAMETER_16_KEY));
 		} catch (UndefinedParameterError e) {
 			e.printStackTrace();
 		}
-		return lpmDiscoverySettings;
+		return lpmp;
 	}
 }
