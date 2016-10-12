@@ -6,6 +6,18 @@
 		<renderer>org.rapidprom.ioobjectrenderers.AcceptingPetriNetIOObjectRenderer</renderer>
 	</ioobject>
 	<ioobject
+		name="Local Process Model"
+		class="org.rapidprom.ioobjects.LocalProcessModelIOObject"
+		reportable="false">
+		<renderer>org.rapidprom.ioobjectrenderers.LocalProcessModelIOObjectRenderer</renderer>
+	</ioobject>
+	<ioobject
+		name="Local Process Model Ranking"
+		class="org.rapidprom.ioobjects.LocalProcessModelRankingIOObject"
+		reportable="false">
+		<renderer>org.rapidprom.ioobjectrenderers.LocalProcessModelRankingIOObjectRenderer</renderer>
+	</ioobject>
+	<ioobject
 		name="CPNModelProM"
 		class="org.rapidprom.ioobjects.CPNModelIOObject"
 		reportable="true">
