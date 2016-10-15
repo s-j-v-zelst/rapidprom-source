@@ -99,7 +99,7 @@ dependencies {
 	compile "org.rapidprom:HybridILPMiner:6.7.116"
 	compile "org.rapidprom:InductiveMiner:6.7.297"
 	compile "org.rapidprom:InductiveVisualMiner:6.5.274"
-	compile "org.rapidprom:LocalProcessModelDiscovery:6.7.21"
+	compile "org.rapidprom:LocalProcessModelDiscovery:6.7.23"
 	compile "org.rapidprom:Log:6.7.293"
 	compile "org.rapidprom:LogDialog:6.5.42"
 	compile "org.rapidprom:LogProjection:6.5.38"
