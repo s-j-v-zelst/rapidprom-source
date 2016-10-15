@@ -65,6 +65,11 @@
             </operator>
         </group>
         <group key="conversion">
+        	<operator>
+        		<key>extract_petrinets_from_lpm</key>
+        		<class>org.rapidprom.operators.conversion.ExtractLocalProcessModelsFromRankingOperator</class>
+        		<icon>objects_transform.png</icon>
+        	</operator>
             <operator>
                 <key>convert_petrinet_to_bpmn</key>
                 <class>org.rapidprom.operators.conversion.PetriNetToBpmnConversionOperator</class>

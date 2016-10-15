@@ -130,6 +130,12 @@
 		<key>discovery_of_the_process_data-flow_(decision-tree_miner)</key>
 	</operator>
   <operator>
+  		<name>Extract Petri Nets from LPM ranking</name>
+  		<synopsis>This operator extracts Petri nets objects from a ranking of Local Process Models.</synopsis>
+  		<help>To use this operator you need a Local Process Model ranking as input</help>
+  		<key>extract_petrinets_from_lpm</key>
+  </operator>
+  <operator>
   		<name>Petri Net to BPMN</name>
         <synopsis>This operator transforms a Petri net into a BPMN diagram. The conversion used is described in http://dx.doi.org/10.1007/s10270-015-0502-0</synopsis>
         <help>For using this operator, you need a petri net as input.  </help>
@@ -206,7 +212,7 @@
   
   <operator>
   		<name>Local Process Model Discovery</name>
-  		<synopsis>This operator can be used to mine a collection of Petri Nets that describe local behavior in the process</synopsis>
+  		<synopsis>This operator mines a collection of Petri Nets that describe local behavior in the process, using the algorithm described in: https://arxiv.org/abs/1606.06066.</synopsis>
   		<help>This operator can be used to mine a collection of Petri Nets that describe local behavior in the process</help>
  		<key>mine_lpms</key>
   </operator>

@@ -18,7 +18,7 @@ public class LocalProcessModelRankingIOObjectRenderer
 	@Override
 	protected JComponent runVisualization(LocalProcessModelRankingIOObject ioObject) {
 		VisualizeLocalProcessModelRankingDotPlugin visualizer = new VisualizeLocalProcessModelRankingDotPlugin();
-		return visualizer.visualize((UIPluginContext)ioObject.getPluginContext(), ioObject.getArtifact());
+		return visualizer.visualize(ioObject.getPluginContext(), ioObject.getArtifact());
 	}
 
 }
