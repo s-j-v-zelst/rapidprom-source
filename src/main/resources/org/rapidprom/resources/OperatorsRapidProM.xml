@@ -70,6 +70,16 @@
         		<class>org.rapidprom.operators.conversion.ExtractLocalProcessModelsFromRankingOperator</class>
         		<icon>objects_transform.png</icon>
         	</operator>
+        	<operator>
+        		<key>filter_lpms_for_diversity</key>
+        		<class>org.rapidprom.operators.conversion.FilterLocalProcessModelRankingForDiversityOperator</class>
+        		<icon>objects_transform.png</icon>
+        	</operator>
+     	    <operator>
+        		<key>rerank_lpms_for_diversity</key>
+        		<class>org.rapidprom.operators.conversion.RerankLocalProcessModelRankingForDiversityOperator</class>
+        		<icon>objects_transform.png</icon>
+        	</operator>
             <operator>
                 <key>convert_petrinet_to_bpmn</key>
                 <class>org.rapidprom.operators.conversion.PetriNetToBpmnConversionOperator</class>

@@ -216,6 +216,18 @@
   		<help>This operator can be used to mine a collection of Petri Nets that describe local behavior in the process</help>
  		<key>mine_lpms</key>
   </operator>
+  <operator>
+  		<name>Diversify Local Process Model ranking by filtering</name>
+  		<synopsis>This operator filters out similar Local Process Models to diversity the obtained Local Process Model ranking</synopsis>
+  		<help>This operator filters out similar Local Process Models to diversity the obtained Local Process Model ranking</help>
+    	<key>filter_lpms_for_diversity</key>
+  </operator>
+  <operator>
+  		<name>Diversify Local Process Model ranking by re-ranking</name>
+  		<synopsis>This operator re-ranks out the Local Process Models by taking into account a new diversity score as well as the old LPM score</synopsis>
+  		<help>This operator re-ranks out the Local Process Models by taking into account a new diversity score as well as the old LPM score</help>
+    	<key>rerank_lpms_for_diversity</key>
+  </operator>
   
   <operator>
         <name>Genetic Miner (Heuristics Net)</name>
