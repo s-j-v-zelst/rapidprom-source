@@ -37,9 +37,8 @@ public class RapidProMPluginContext extends AbstractPluginContext {
 
 	@Override
 	public void clear() {
-		for (PluginContext c : getChildContexts()) {
+		for (PluginContext c : getChildContexts())
 			c.clear();
-		}
 		super.clear();
 	}
 
