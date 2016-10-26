@@ -28,9 +28,8 @@ public class ReduceSilentTransitionsOperator extends Operator {
 
 	private static final String VARIATION = "Preserve:",
 			VARIATION_DESCR = "The reduction rules can be applied for reducing the silent "
-					+ "transitions of a petri net while preserving soundness or behavior, "
-					+ "or while keeping the sinks and sources of the original petri net.";
-	private static final String SOUNDNESS = "Soundness", BEHAVIOR = "Behavior", RETAIN = "Retain Sink/Source places";
+					+ "transitions of a petri net while preserving soundness or behavior";
+	private static final String SOUNDNESS = "Soundness", BEHAVIOR = "Behavior";
 
 	public ReduceSilentTransitionsOperator(OperatorDescription description) {
 		super(description);
@@ -54,10 +53,6 @@ public class ReduceSilentTransitionsOperator extends Operator {
 				result = reducer.runPreserveSoundness(pluginContext,
 						inputPetrinet.getData(PetriNetIOObject.class).getArtifact(),
 						inputPetrinet.getData(PetriNetIOObject.class).getInitialMarking());
-			else {
-				result[0] = reducer.runWF(pluginContext, inputPetrinet.getData(PetriNetIOObject.class).getArtifact());
-				result[1] = inputPetrinet.getData(PetriNetIOObject.class).getInitialMarking();
-			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -72,7 +67,7 @@ public class ReduceSilentTransitionsOperator extends Operator {
 	public List<ParameterType> getParameterTypes() {
 		List<ParameterType> parameterTypes = super.getParameterTypes();
 
-		String[] options = new String[] { SOUNDNESS, BEHAVIOR, RETAIN };
+		String[] options = new String[] { SOUNDNESS, BEHAVIOR };
 
 		ParameterTypeCategory variation = new ParameterTypeCategory(VARIATION, VARIATION_DESCR, options, 0);
 		parameterTypes.add(variation);
