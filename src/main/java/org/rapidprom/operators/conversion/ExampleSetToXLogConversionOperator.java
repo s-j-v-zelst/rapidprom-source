@@ -19,6 +19,7 @@ import org.deckfour.xes.extension.std.XLifecycleExtension;
 import org.deckfour.xes.extension.std.XOrganizationalExtension;
 import org.deckfour.xes.extension.std.XTimeExtension;
 import org.deckfour.xes.factory.XFactory;
+import org.deckfour.xes.factory.XFactoryNaiveImpl;
 import org.deckfour.xes.model.XAttributeLiteral;
 import org.deckfour.xes.model.XAttributeMap;
 import org.deckfour.xes.model.XEvent;
@@ -28,6 +29,7 @@ import org.deckfour.xes.model.impl.XAttributeLiteralImpl;
 import org.deckfour.xes.model.impl.XAttributeMapImpl;
 import org.deckfour.xes.model.impl.XAttributeTimestampImpl;
 import org.processmining.xeslite.external.XFactoryExternalStore;
+import org.processmining.xeslite.lite.factory.XFactoryLiteImpl;
 import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.XLogIOObject;
 import org.rapidprom.operators.ports.metadata.ExampleSetNumberOfAttributesPrecondition;
@@ -46,12 +48,15 @@ import com.rapidminer.operator.ports.metadata.ExampleSetMetaData;
 import com.rapidminer.operator.ports.metadata.GenerateNewMDRule;
 import com.rapidminer.parameter.ParameterType;
 import com.rapidminer.parameter.ParameterTypeBoolean;
+import com.rapidminer.parameter.ParameterTypeCategory;
 import com.rapidminer.parameter.UndefinedParameterError;
 import com.rapidminer.parameter.conditions.BooleanParameterCondition;
 import com.rapidminer.tools.LogService;
 
 public class ExampleSetToXLogConversionOperator extends Operator {
 
+	private static final String NAIVE = "Naive", LIGHT_WEIGHT_SEQ_ID = "Lightweight & Sequential IDs",
+			MAP_DB = "Buffered by MAPDB";
 	private static final String DEFAULT_VALUE_OPTIONAL = "<ignore>";
 	private static final String GLOBAL_INVALID = "__INVALID__";
 	private static final String PARAMETER_DEFAULT_EVENT_IDENTIFIER = "E:concept:name";
@@ -90,6 +95,14 @@ public class ExampleSetToXLogConversionOperator extends Operator {
 	// private static final String PARAMETER_KEY_REORDER_BY_TIMESTAMP =
 	// "reorder_by_time_stamp";
 	private static final String PARAMETER_KEY_TRACE_IDENTIFIER = "trace_identifier";
+
+	private static final String PARAMETER_FACTORY_KEY = "Even Log Factory:",
+			PARAMETER_FACTORY_DESCR = "Select the implementing importer, importers differ in terms of performance: "
+					+ "The \"Naive\" importer loads the Log completely in memory (faster, but more memory usage). "
+					+ "The \"Buffered by MAPDB\" importer loads only log, trace and event ids, "
+					+ "and the rest of the data (mainly attribute values) are stored in disk by MapDB "
+					+ "(slower, but less memory usage). "
+					+ "The \"Lightweight & Sequential IDs\" importer is a balance between the \"Naive\" and the \"Buffered by MapDB\" importers";;
 
 	/** defining the ports */
 	private InputPort inputExampleSet = getInputPorts().createPort("example set (Data Table)",
@@ -278,8 +291,22 @@ public class ExampleSetToXLogConversionOperator extends Operator {
 
 	private XLog constructLogByExampleSet(ExampleSet data) {
 		// XFactory factory = XFactoryRegistry.instance().currentDefault();
-		XFactory factory = new XFactoryExternalStore.MapDBDiskImpl();
 
+		XFactory factory = null;
+		try {
+			if (getParameterAsString(PARAMETER_FACTORY_KEY).equals(NAIVE))
+				factory = new XFactoryNaiveImpl();
+			else if(getParameterAsString(PARAMETER_FACTORY_KEY).equals(LIGHT_WEIGHT_SEQ_ID))
+				factory = new XFactoryLiteImpl();
+			else
+				factory = new XFactoryExternalStore.MapDBDiskImpl();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		if(factory == null)
+			factory = new XFactoryNaiveImpl();
+		
 		XLog log = createLog(factory, getParameterAsBoolean(PARAMETER_KEY_INCLUDE_EVENT_LIFECYCLE_TRANSITION));
 
 		log = addExtensions(log, isUseLifeCycle(), isUseTime(), isUseOrganizational());
@@ -475,6 +502,11 @@ public class ExampleSetToXLogConversionOperator extends Operator {
 	@Override
 	public List<ParameterType> getParameterTypes() {
 		List<ParameterType> params = super.getParameterTypes();
+
+		ParameterTypeCategory importer = new ParameterTypeCategory(PARAMETER_FACTORY_KEY, PARAMETER_FACTORY_DESCR,
+				new String[] { NAIVE, LIGHT_WEIGHT_SEQ_ID, MAP_DB }, 0, false);
+		params.add(importer);
+
 		params = addTraceIdentificationParameterType(params);
 		params = addEventIdentificationParameterType(params);
 		params = addTimeStampParameterTypes(params);
