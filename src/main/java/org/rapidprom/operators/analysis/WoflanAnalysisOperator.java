@@ -65,7 +65,7 @@ public class WoflanAnalysisOperator extends Operator {
 				woflanDiagnosisIOObject = limiter.callWithTimeout(new WOFLANER(pluginContext), Long.MAX_VALUE,
 						TimeUnit.SECONDS, true);
 
-			outputString[0][1] = woflanDiagnosisIOObject.getArtifact().toString().contains("The net is sound") ? "Sound"
+			outputString[0][1] = woflanDiagnosisIOObject.getArtifact().isSound() ? "Sound"
 					: "Unsound";
 			outputString[1][1] = woflanDiagnosisIOObject.getArtifact().toString();
 			outputWoflan.deliver(woflanDiagnosisIOObject);
