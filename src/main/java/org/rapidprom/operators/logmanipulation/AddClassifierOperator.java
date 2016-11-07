@@ -1,10 +1,12 @@
 package org.rapidprom.operators.logmanipulation;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.deckfour.xes.classification.XEventAndClassifier;
+import org.deckfour.xes.classification.XEventClassifier;
 import org.deckfour.xes.classification.XEventLifeTransClassifier;
 import org.deckfour.xes.classification.XEventNameClassifier;
 import org.deckfour.xes.classification.XEventResourceClassifier;
@@ -13,11 +15,13 @@ import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.XLogIOObject;
 import org.rapidprom.operators.ports.metadata.XLogIOObjectMetaData;
 
+import com.rapidminer.operator.IOObject;
 import com.rapidminer.operator.Operator;
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
 import com.rapidminer.operator.ports.InputPort;
 import com.rapidminer.operator.ports.OutputPort;
+import com.rapidminer.operator.ports.metadata.GenerateNewMDRule;
 import com.rapidminer.operator.ports.metadata.MetaData;
 import com.rapidminer.parameter.ParameterType;
 import com.rapidminer.parameter.ParameterTypeCategory;
@@ -36,6 +40,8 @@ public class AddClassifierOperator extends Operator {
 
 	public AddClassifierOperator(OperatorDescription description) {
 		super(description);
+		getTransformer().addRule(new XLogMetaData(outputEventLog, XLogIOObject.class));
+
 	}
 
 	public void doWork() throws OperatorException {
@@ -47,11 +53,6 @@ public class AddClassifierOperator extends Operator {
 		XLogIOObject logObject = inputXLog.getData(XLogIOObject.class);
 
 		XLog newLog = (XLog) logObject.getArtifact().clone();
-		XLogIOObjectMetaData mdC = null;
-		MetaData md = inputXLog.getMetaData();
-
-		if (md != null && md instanceof XLogIOObjectMetaData)
-			mdC = (XLogIOObjectMetaData) md;
 
 		switch (getParameterAsString(PARAMETER_1_KEY)) {
 		case NONE:
@@ -71,15 +72,47 @@ public class AddClassifierOperator extends Operator {
 		}
 
 		XLogIOObject result = new XLogIOObject(newLog, RapidProMGlobalContext.instance().getPluginContext());
-
-		if (mdC != null) {
-			mdC.getXEventClassifiers().clear();
-			mdC.getXEventClassifiers().addAll(newLog.getClassifiers());
-			outputEventLog.deliverMD(md);
-		}
-
 		outputEventLog.deliver(result);
 		logger.log(Level.INFO, "End: add classifier (" + (System.currentTimeMillis() - time) / 1000 + " sec)");
+	}
+
+	public MetaData getGeneratedMetaData() throws OperatorException {
+		getLogger().fine("Generating meta data for " + this.getName());
+		List<XEventClassifier> classifiers = new ArrayList<XEventClassifier>();
+
+		try {
+			XLog newLog = inputXLog.getData(XLogIOObject.class).getArtifact();
+
+			if (newLog != null && newLog.getClassifiers() != null)
+				classifiers.addAll(newLog.getClassifiers());
+		} catch (Exception e) {
+			
+		}
+		try {
+
+			switch (getParameterAsString(PARAMETER_1_KEY)) {
+			case NONE:
+				break;
+			case EN:
+				classifiers.add(new XEventNameClassifier());
+
+				break;
+			case EN_LT:
+				classifiers.add(new XEventAndClassifier(new XEventNameClassifier(), new XEventLifeTransClassifier()));
+				break;
+			case EN_LT_RE:
+				classifiers.add(new XEventAndClassifier(new XEventNameClassifier(), new XEventLifeTransClassifier(),
+						new XEventResourceClassifier()));
+				break;
+			}
+
+		} catch (Exception e) {
+			return new XLogIOObjectMetaData();
+		}
+		if (!classifiers.isEmpty())
+			return new XLogIOObjectMetaData(classifiers);
+		else
+			return new XLogIOObjectMetaData();
 	}
 
 	public List<ParameterType> getParameterTypes() {
@@ -91,6 +124,24 @@ public class AddClassifierOperator extends Operator {
 		parameterTypes.add(parameterType2);
 
 		return parameterTypes;
+	}
+
+	class XLogMetaData extends GenerateNewMDRule {
+
+		public XLogMetaData(OutputPort outputPort, Class<? extends IOObject> clazz) {
+			super(outputPort, clazz);
+		}
+
+		@Override
+		public void transformMD() {
+			try {
+				outputEventLog.deliverMD(getGeneratedMetaData());
+			} catch (OperatorException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
 	}
 
 }

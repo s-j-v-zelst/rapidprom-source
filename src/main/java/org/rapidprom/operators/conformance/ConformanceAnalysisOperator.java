@@ -8,7 +8,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,9 +39,9 @@ import org.rapidprom.ioobjects.PNRepResultIOObject;
 import org.rapidprom.ioobjects.PetriNetIOObject;
 import org.rapidprom.ioobjects.XLogIOObject;
 import org.rapidprom.operators.abstr.AbstractRapidProMDiscoveryOperator;
+import org.rapidprom.operators.util.ExecutorServiceRapidProM;
 
 import com.google.common.util.concurrent.SimpleTimeLimiter;
-import com.google.common.util.concurrent.UncheckedTimeoutException;
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.example.table.AttributeFactory;
@@ -197,9 +196,9 @@ public class ConformanceAnalysisOperator extends AbstractRapidProMDiscoveryOpera
 		logger.log(Level.INFO, "Start: replay log on petri net for conformance checking");
 		long time = System.currentTimeMillis();
 
-		SimpleTimeLimiter limiter = new SimpleTimeLimiter(Executors.newSingleThreadExecutor());
 		PluginContext pluginContext = RapidProMGlobalContext.instance()
 				.getFutureResultAwarePluginContext(PNLogReplayer.class);
+		SimpleTimeLimiter limiter = new SimpleTimeLimiter(new ExecutorServiceRapidProM(pluginContext));
 
 		PNRepResult repResult = null;
 
@@ -210,13 +209,9 @@ public class ConformanceAnalysisOperator extends AbstractRapidProMDiscoveryOpera
 
 			output.deliver(alignments);
 
-		} catch (UncheckedTimeoutException e1) {
-			pluginContext.getProgress().cancel();
+		} catch (Exception e1) {
 			logger.log(Level.INFO, "Conformance Checker timed out.");
 			output.deliver(new PNRepResultIOObject(null, pluginContext, null, null, null));
-
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 
 		fillTables(repResult);

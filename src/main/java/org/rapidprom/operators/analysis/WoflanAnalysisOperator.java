@@ -2,7 +2,6 @@ package org.rapidprom.operators.analysis;
 
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -12,9 +11,9 @@ import org.processmining.plugins.petrinet.behavioralanalysis.woflan.Woflan;
 import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.PetriNetIOObject;
 import org.rapidprom.ioobjects.WoflanDiagnosisIOObject;
+import org.rapidprom.operators.util.ExecutorServiceRapidProM;
 
 import com.google.common.util.concurrent.SimpleTimeLimiter;
-import com.google.common.util.concurrent.UncheckedTimeoutException;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.example.ExampleSetFactory;
 import com.rapidminer.operator.Operator;
@@ -53,10 +52,12 @@ public class WoflanAnalysisOperator extends Operator {
 
 		WoflanDiagnosisIOObject woflanDiagnosisIOObject = null;
 		PluginContext pluginContext = RapidProMGlobalContext.instance().getFutureResultAwarePluginContext(Woflan.class);
-		SimpleTimeLimiter limiter = new SimpleTimeLimiter(Executors.newSingleThreadExecutor());
-		Object[][] outputString = new Object[1][1];
+		SimpleTimeLimiter limiter = new SimpleTimeLimiter(new ExecutorServiceRapidProM(pluginContext));
+		Object[][] outputString = new Object[2][2];
 
 		try {
+			outputString[0][0] = "High-Level Diagnosis";
+			outputString[1][0] = "Detailed Diagnosis";
 			if (getParameterAsBoolean(PARAMETER_0_KEY))
 				woflanDiagnosisIOObject = limiter.callWithTimeout(new WOFLANER(pluginContext),
 						getParameterAsInt(PARAMETER_1_KEY), TimeUnit.SECONDS, true);
@@ -64,25 +65,19 @@ public class WoflanAnalysisOperator extends Operator {
 				woflanDiagnosisIOObject = limiter.callWithTimeout(new WOFLANER(pluginContext), Long.MAX_VALUE,
 						TimeUnit.SECONDS, true);
 
-			outputString[0][0] = woflanDiagnosisIOObject.getArtifact().toString();
+			outputString[0][1] = woflanDiagnosisIOObject.getArtifact().isSound() ? "Sound"
+					: "Unsound";
+			outputString[1][1] = woflanDiagnosisIOObject.getArtifact().toString();
 			outputWoflan.deliver(woflanDiagnosisIOObject);
-
-		} catch (UncheckedTimeoutException e) {
-
-			outputString[0][0] = " Woflan could not evaluate soundness in the given time.";
-			logger.log(Level.INFO, "Woflan timed out.");
-
-			pluginContext.getProgress().cancel();
 
 		} catch (Exception e1) {
 
-			e1.printStackTrace();
-			outputString[0][0] = " Error checking soundness.";
-			pluginContext.getProgress().cancel();
+			outputString[0][1] = "Timeout";
+			outputString[1][1] = " Woflan could not evaluate soundness in the given time.";
+			logger.log(Level.INFO, "Woflan timed out.");
 		}
 
 		ExampleSet es = ExampleSetFactory.createExampleSet(outputString);
-
 		outputWoflanString.deliver(es);
 
 		logger.log(Level.INFO, "End: woflan analysis (" + (System.currentTimeMillis() - time) / 1000 + " sec)");
@@ -103,7 +98,7 @@ public class WoflanAnalysisOperator extends Operator {
 
 	class WOFLANER implements Callable<WoflanDiagnosisIOObject> {
 
-		private PluginContext pluginContext;
+		private final PluginContext pluginContext;
 
 		public WOFLANER(PluginContext input) {
 			pluginContext = input;
@@ -115,7 +110,5 @@ public class WoflanAnalysisOperator extends Operator {
 			Woflan woflan = new Woflan();
 			return new WoflanDiagnosisIOObject(woflan.diagnose(pluginContext, petriNet.getArtifact()), pluginContext);
 		}
-
 	}
-
 }
