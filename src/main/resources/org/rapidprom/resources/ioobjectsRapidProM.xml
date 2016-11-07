@@ -68,6 +68,7 @@
         <renderer>org.rapidprom.ioobjectrenderers.XLogIOObjectNewDottedChartRenderer</renderer>
         <renderer>org.rapidprom.ioobjectrenderers.XLogIOObjectOldDottedChartRenderer</renderer>
         <renderer>org.rapidprom.ioobjectrenderers.XLogIOObjectExampleSetRenderer</renderer>
+		<renderer>org.rapidprom.ioobjectrenderers.XLogIOObjectWedgesRenderer</renderer>        
     </ioobject>
     
     <ioobject
