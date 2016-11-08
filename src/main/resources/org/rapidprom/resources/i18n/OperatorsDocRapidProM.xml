@@ -457,7 +457,12 @@
 		<help> An Event log is required as input </help>		
         <key>case_data_extractor</key>                
     </operator>
-    
+    <operator>
+        <name>Reduce Petri Net</name>
+        <synopsis>This operator can be used to reduce a petri using the Murata rules, as defined in &lt;a href="http://dx.doi.org/10.1109/5.24143"&gt;here&lt;/a&gt;. Note that this is an agressive reduction that most probably will remove non-silent transitions from the net. This type of reduction, however, facilitates soundness checking since the structural properties of the net are preserved. Hence, a soundness analysis obtained for a reduced Petri net is valid also for the original net. </synopsis>
+        <help>This operator can be used to execute Murata reduction algorithm which returns a Petri net. As input a Petri Net is needed.</help>
+    <key>reduce_petrinet</key>
+  </operator>
     
     <!-- UTILITY -->
     <operator>
