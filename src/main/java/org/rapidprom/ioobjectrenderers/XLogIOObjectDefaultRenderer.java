@@ -2,7 +2,6 @@ package org.rapidprom.ioobjectrenderers;
 
 import javax.swing.JComponent;
 
-import org.processmining.plugins.log.ui.logdialog.LogDialogInitializer;
 import org.processmining.plugins.log.ui.logdialog.SlickerOpenLogSettings;
 import org.rapidprom.ioobjectrenderers.abstr.AbstractRapidProMIOObjectRenderer;
 import org.rapidprom.ioobjects.XLogIOObject;
