@@ -53,7 +53,7 @@
    <operator>
         <name>Calculate ETC 1-align precision</name>
         <Synopyis>Calculate precision using 1-align ETC conformance</Synopyis>
-        <help></help>
+        <help>This technique uses the Align-ETC precision measurement plugin from ProM. The underlying technique is explained &lt;a href="http://dx.doi.org/10.1007/s10257-014-0234-7"&gt;here&lt;/a&gt;</help>
  		<key>etc_1_align_precision</key>
    </operator>
    <operator>
