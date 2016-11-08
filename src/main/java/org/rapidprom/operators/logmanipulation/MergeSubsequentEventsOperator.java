@@ -14,7 +14,6 @@ import org.processmining.logenhancement.transforming.MergeSubsequentEvents.Merge
 import org.rapidprom.ioobjects.XLogIOObject;
 import org.rapidprom.operators.abstr.AbstractRapidProMLogManipulationOperator;
 
-import com.google.common.collect.ImmutableSet;
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
 import com.rapidminer.operator.ports.OutputPort;
