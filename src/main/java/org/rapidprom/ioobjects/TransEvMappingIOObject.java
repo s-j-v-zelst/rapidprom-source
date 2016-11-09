@@ -11,6 +11,7 @@ import org.rapidprom.ioobjects.abstr.AbstractRapidProMIOObject;
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.example.table.AttributeFactory;
+import com.rapidminer.example.table.DataRow;
 import com.rapidminer.example.table.DataRowFactory;
 import com.rapidminer.example.table.MemoryExampleTable;
 import com.rapidminer.tools.Ontology;
@@ -27,18 +28,23 @@ public class TransEvMappingIOObject extends AbstractRapidProMIOObject<TransEvCla
 
 		Attribute transitionAttr = AttributeFactory.createAttribute("transition", Ontology.NOMINAL);
 		Attribute eventClassAttr = AttributeFactory.createAttribute("eventclass", Ontology.NOMINAL);
-		Attribute[] attributes = new Attribute[] { transitionAttr, eventClassAttr };
 
 		MemoryExampleTable table = new MemoryExampleTable(transitionAttr, eventClassAttr);
 
-		DataRowFactory factory = new DataRowFactory(DataRowFactory.TYPE_INT_ARRAY, '.');
+		DataRowFactory factory = new DataRowFactory(DataRowFactory.TYPE_DOUBLE_ARRAY, '.');
 
-		for (Entry<Transition, XEventClass> entry : getArtifact().entrySet()) {
+		TransEvClassMapping mapping = getArtifact();
+		for (Entry<Transition, XEventClass> entry : mapping.entrySet()) {
 			Transition t = entry.getKey();
 			XEventClass e = entry.getValue();
-			if (e != null) {
-				table.addDataRow(factory.create(new String[] { t.getLabel(), e.getId() }, attributes));
+			DataRow row = factory.create(2);
+			row.set(transitionAttr, transitionAttr.getMapping().mapString(t.getLabel()));
+			if (e == null || mapping.getDummyEventClass().equals(e)) {
+				row.set(eventClassAttr, Double.NaN);
+			} else {
+				row.set(eventClassAttr, eventClassAttr.getMapping().mapString(e.getId()));
 			}
+			table.addDataRow(row);
 		}
 
 		return table.createExampleSet();

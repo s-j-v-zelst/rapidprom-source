@@ -233,23 +233,19 @@ public class CreateTransEvMappingOperator extends Operator {
 		for (Example element : mapping) {
 			String transitionLabel = element.getValueAsString(transAttr);
 			String eventClassLabel = element.getValueAsString(eventAttr);
-			if (transitionLabel != null && eventClassLabel != null) {
+			if (transitionLabel == null && eventClassLabel == null) {
+				inputMapping.addError(new MissingMappingError(inputMapping, "Invalid entry " + element));
+			} else if (transitionLabel == null) {
+				inputMapping.addError(
+						new MissingMappingError(inputMapping, "Missing transition for eventclass " + eventClassLabel));
+			} else {
 				Transition transition = transitions.get(transitionLabel);
-				XEventClass eventClass = eventClasses.getByIdentity(eventClassLabel);
-				if (transition == null && eventClass == null) {
-					inputMapping.addError(new MissingMappingError(inputMapping, "Invalid entry " + element));
-				} else if (transition == null) {
-					inputMapping.addError(
-							new MissingMappingError(inputMapping, "Missing transition for eventclass " + eventClass));
-				} else if (eventClass == null) {
-					inputMapping.addError(
-							new MissingMappingError(inputMapping, "Missing event class for transition " + transition));
+				if (eventClassLabel.equals(Attribute.MISSING_NOMINAL_VALUE)) {
+					activityMapping.put(transition, DUMMY);
 				} else {
+					XEventClass eventClass = eventClasses.getByIdentity(eventClassLabel);
 					activityMapping.put(transition, eventClass);
 				}
-			} else {
-				inputMapping.addError(new MissingMappingError(inputMapping,
-						"Invalid column headers! Should be 'transition' and 'eventclass'!"));
 			}
 		}
 	}

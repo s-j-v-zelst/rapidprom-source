@@ -225,7 +225,7 @@
 	            </operator>        	
 	        	<operator>
 	                <key>abstract_based_on_pattern</key>
-	                <class>org.rapidprom.operators.abstraction.PatternBasedAbstractionOperator</class>
+	                <class>org.rapidprom.operators.abstraction.AbstractLogBasedOnAbstractionModelOperator</class>
 	            </operator>
         	</group>
             <operator>
