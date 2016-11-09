@@ -73,6 +73,9 @@ public final class RapidProMGlobalContext extends AbstractGlobalContext {
 	 * the PluginContext provided by the "PluginContextManager". Basically this
 	 * method mimics some of the internal workings of the ProM framework, e.g.
 	 * setting the future result objects.
+	 * <p>
+	 * This method requires that the supplied class contains a plugin variant
+	 * with the {@link PluginContext} annotation.
 	 * 
 	 * @param classContainingProMPlugin
 	 *            the class that contains the ProM plugin code

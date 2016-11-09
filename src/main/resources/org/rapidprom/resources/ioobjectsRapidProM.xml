@@ -79,6 +79,13 @@
     </ioobject>
     
     <ioobject
+        name="DataPetriNetProM"
+        class="org.rapidprom.ioobjects.DataPetriNetIOObject"
+        reportable="true">
+        <renderer>org.rapidprom.ioobjectrenderers.DataPetriNetIOObjectRenderer</renderer>
+    </ioobject>
+    
+    <ioobject
 		name="Petri Net List"
 		class="org.rapidprom.ioobjects.PetriNetListIOObject"
 		reportable="false">
@@ -125,6 +132,20 @@
 		reportable="true">
 		<renderer>org.rapidprom.ioobjectrenderers.MetricsRepositoryIOObjectRenderer</renderer>
 	</ioobject>
+	
+	<ioobject
+		name="TransEvMappingProM"
+		class="org.rapidprom.ioobjects.TransEvMappingIOObject"
+		reportable="true">
+		<renderer>org.rapidprom.ioobjectrenderers.TransEvMappingIOObjectRenderer</renderer>
+	</ioobject>
+	
+	<ioobject
+		name="AbstractionModelProM"
+		class="org.rapidprom.ioobjects.AbstractionModelIOObject"
+		reportable="true">
+		<renderer>org.rapidprom.ioobjectrenderers.AbstractionModelIOObjectRenderer</renderer>
+	</ioobject>	
 	
 	<!-- STREAMS -->
 	<ioobject

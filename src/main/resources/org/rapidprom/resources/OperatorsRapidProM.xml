@@ -68,11 +68,21 @@
             	<class>org.rapidprom.operators.conformance.ETCPrecisionOperator</class>
             	<icon>checks.png</icon>
             </operator>
+            <operator>
+                <key>create_transevmapping</key>
+                <class>org.rapidprom.operators.conformance.CreateTransEvMappingOperator</class>
+                <icon>objects_transform.png</icon>
+            </operator>            
         </group>
         <group key="conversion">
             <operator>
                 <key>convert_petrinet_to_bpmn</key>
                 <class>org.rapidprom.operators.conversion.PetriNetToBpmnConversionOperator</class>
+                <icon>objects_transform.png</icon>
+            </operator>
+            <operator>
+                <key>convert_petrinet_to_datapetrinet</key>
+                <class>org.rapidprom.operators.conversion.PetriNetToDataPetriNetConversionOperator</class>
                 <icon>objects_transform.png</icon>
             </operator>
             <operator>
@@ -161,6 +171,11 @@
                 <icon>inbox_out.png</icon>
             </operator>
             <operator>
+                <key>export_data_petri_net</key>
+                <class>org.rapidprom.operators.io.ExportDataPetriNetOperator</class>
+                <icon>inbox_out.png</icon>
+            </operator>
+            <operator>
                 <key>export_log</key>
                 <class>org.rapidprom.operators.io.ExportXLogOperator</class>
                 <icon>inbox_out.png</icon>
@@ -192,8 +207,27 @@
                 <class>org.rapidprom.operators.io.ImportPetriNetOperator</class>
                 <icon>inbox_into.png</icon>
             </operator>
+            <operator>
+                <key>import_data_petri_net</key>
+                <class>org.rapidprom.operators.io.ImportDataPetriNetOperator</class>
+                <icon>inbox_into.png</icon>
+            </operator>
         </group>
         <group key="log_manipulation">
+        	<group key="log_abstraction">
+	        	<operator>
+	                <key>create_abstraction_model</key>
+	                <class>org.rapidprom.operators.abstraction.CreateAbstractionModelOperator</class>
+	            </operator>
+	            <operator>
+	                <key>convert_abstraction_model_to_dpn</key>
+	                <class>org.rapidprom.operators.abstraction.ConvertAbstractionModelToDPNOperator</class>
+	            </operator>        	
+	        	<operator>
+	                <key>abstract_based_on_pattern</key>
+	                <class>org.rapidprom.operators.abstraction.PatternBasedAbstractionOperator</class>
+	            </operator>
+        	</group>
             <operator>
                 <key>add_noise_log</key>
                 <class>org.rapidprom.operators.logmanipulation.AddNoiseOperator</class>
@@ -225,6 +259,22 @@
             <operator>
                 <key>timestamp_sort</key>
                 <class>org.rapidprom.operators.logmanipulation.TimestampSortOperator</class>
+            </operator>
+            <operator>
+                <key>merge_subsequent_events</key>
+                <class>org.rapidprom.operators.logmanipulation.MergeSubsequentEventsOperator</class>
+            </operator>
+            <operator>
+                <key>move_common_attributes_to_trace</key>
+                <class>org.rapidprom.operators.logmanipulation.MoveCommonAttributeToTraceOperator</class>
+            </operator>
+            <operator>
+                <key>remove_duplicate_attributes</key>
+                <class>org.rapidprom.operators.logmanipulation.RemoveDuplicateAttributeValuesOperator</class>
+            </operator>
+            <operator>
+                <key>random_sample</key>
+                <class>org.rapidprom.operators.logmanipulation.RandomSampleOperator</class>
             </operator>
         </group> 
         <group key="streams">
