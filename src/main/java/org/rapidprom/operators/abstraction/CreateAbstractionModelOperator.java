@@ -31,6 +31,12 @@ import com.rapidminer.parameter.ParameterType;
 import com.rapidminer.parameter.ParameterTypeString;
 import com.rapidminer.parameter.UndefinedParameterError;
 
+/**
+ * Create an abstraction model (DPN-based) from multiple process patterns.
+ * 
+ * @author F. Mannhardt
+ *
+ */
 public class CreateAbstractionModelOperator extends Operator {
 
 	private static final String ABSTRACTION_MODEL_KEY = "Abstraction Model",

@@ -17,6 +17,13 @@ import com.rapidminer.operator.ports.metadata.GenerateNewMDRule;
 import com.rapidminer.parameter.ParameterType;
 import com.rapidminer.parameter.ParameterTypeBoolean;
 
+/**
+ * Converts the {@link AbstractionModelIOObject} to an
+ * {@link DataPetriNetIOObject}.
+ * 
+ * @author F. Mannhardt
+ *
+ */
 public class ConvertAbstractionModelToDPNOperator extends Operator {
 
 	private static final String SIMPLIFY_MODEL_KEY = "Simplify Model",

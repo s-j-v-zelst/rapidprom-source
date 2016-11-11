@@ -368,6 +368,14 @@
         </help>
     	<key>abstract_based_on_pattern</key>
   	</operator>
+      	 <operator>
+        <name>Expands Model Based on Patterns</name>
+        <synopsis>Expands model based on patterns.</synopsis>
+        <help>
+        	Expands model based on patterns
+        </help>
+    	<key>expand_based_on_pattern</key>
+  	</operator>
     
   	<operator>
         <name>Add Noise</name>

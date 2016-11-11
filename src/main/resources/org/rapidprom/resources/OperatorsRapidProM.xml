@@ -227,6 +227,10 @@
 	                <key>abstract_based_on_pattern</key>
 	                <class>org.rapidprom.operators.abstraction.AbstractLogBasedOnAbstractionModelOperator</class>
 	            </operator>
+	        	<operator>
+	                <key>expand_based_on_pattern</key>
+	                <class>org.rapidprom.operators.abstraction.ExpandAbstractModelOperator</class>
+	            </operator>	            	            
         	</group>
             <operator>
                 <key>add_noise_log</key>

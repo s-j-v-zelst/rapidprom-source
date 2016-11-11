@@ -47,7 +47,17 @@ import com.rapidminer.parameter.ParameterTypeCategory;
 import com.rapidminer.parameter.ParameterTypeInt;
 import com.rapidminer.parameter.UndefinedParameterError;
 
+/**
+ * Creates an {@link TransEvClassMapping} from an {@link Example}. To be used as
+ * input for an alignment.
+ * 
+ * @author F. Mannhardt
+ *
+ */
 public class CreateTransEvMappingOperator extends Operator {
+
+	private static final String EVENTCLASS_COLUMN = "eventclass";
+	public static final String TRANSITION_COLUMN = "transition";
 
 	private interface Matcher {
 
@@ -219,13 +229,13 @@ public class CreateTransEvMappingOperator extends Operator {
 
 	private void applyExampleSetMapping(ExampleSet mapping, XEventClasses eventClasses, PetrinetGraph model,
 			TransEvClassMapping activityMapping) throws OperatorException {
-		Attribute transAttr = mapping.getAttributes().get("transition", false);
+		Attribute transAttr = mapping.getAttributes().get(TRANSITION_COLUMN, false);
 		if (transAttr == null) {
-			throw new OperatorException("Expected column 'transition'!");
+			throw new OperatorException("Expected column '" + TRANSITION_COLUMN + "'!");
 		}
-		Attribute eventAttr = mapping.getAttributes().get("eventclass", false);
+		Attribute eventAttr = mapping.getAttributes().get(EVENTCLASS_COLUMN, false);
 		if (eventAttr == null) {
-			throw new OperatorException("Expected column 'eventclass'!");
+			throw new OperatorException("Expected column '" + EVENTCLASS_COLUMN + "'!");
 		}
 
 		Map<String, Transition> transitions = getTransitions(model);
