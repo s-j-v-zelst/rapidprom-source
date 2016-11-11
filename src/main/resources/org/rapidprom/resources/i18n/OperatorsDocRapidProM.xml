@@ -145,7 +145,7 @@
   		<name>Petri Net to Data Petri net</name>
         <synopsis>This operator transforms a Petri net into a Data Petri net.</synopsis>
         <help>This operator transforms a Petri net into a Data Petri net. The Data Petri net has the same structure as the Petri net, and, initially no variables and guards.</help>
-		<key>convert_petrinet_to_bpmn</key>
+		<key>convert_petrinet_to_datapetrinet</key>
   </operator>  	
   <operator>
   		<name>Transition System to Petri Net </name>

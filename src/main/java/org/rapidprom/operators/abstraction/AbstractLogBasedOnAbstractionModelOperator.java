@@ -210,6 +210,7 @@ public class AbstractLogBasedOnAbstractionModelOperator extends Operator {
 			@Override
 			public void log(Level level, String message) {
 				getProcess().getLog().log(message);
+				System.out.println(message);
 			}
 
 		});

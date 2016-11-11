@@ -35,7 +35,7 @@ public class ConvertAbstractionModelToDPNOperator extends Operator {
 
 	public ConvertAbstractionModelToDPNOperator(OperatorDescription description) {
 		super(description);
-		getTransformer().addRule(new GenerateNewMDRule(output, AbstractionModelIOObject.class));
+		getTransformer().addRule(new GenerateNewMDRule(output, DataPetriNetIOObject.class));
 	}
 
 	@Override

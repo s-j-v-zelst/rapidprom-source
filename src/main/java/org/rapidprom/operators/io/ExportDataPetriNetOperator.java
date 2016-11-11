@@ -12,7 +12,7 @@ import com.rapidminer.operator.OperatorDescription;
 public class ExportDataPetriNetOperator
 		extends AbstractRapidProMExporterOperator<DataPetriNetIOObject, DataPetriNet, String> {
 
-	private static final String PNML = ".pnml";
+	private static final String PNML = "pnml";
 
 	public ExportDataPetriNetOperator(OperatorDescription description) {
 		super(description, DataPetriNetIOObject.class, new String[] { PNML }, PNML);

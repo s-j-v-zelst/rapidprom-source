@@ -61,7 +61,7 @@ public class CreateTransEvMappingOperator extends Operator {
 
 	private interface Matcher {
 
-		boolean matches(String id, String label);
+		int distance(String id, String label);
 
 	}
 
@@ -132,15 +132,22 @@ public class CreateTransEvMappingOperator extends Operator {
 			new XEventNameClassifier(),
 			new XEventAndClassifier(new XEventNameClassifier(), new XEventLifeTransClassifier()) };
 
-	private static TransEvClassMapping createDefaultMappingTransitionsToEventClasses(PetrinetGraph net,
+	private TransEvClassMapping createDefaultMappingTransitionsToEventClasses(PetrinetGraph net,
 			XEventClassifier classifier, XEventClasses eventClasses, Matcher matcher) {
 		TransEvClassMapping activityMapping = new TransEvClassMapping(classifier, DUMMY);
 		for (Transition t : net.getTransitions()) {
 			if (!t.isInvisible()) {
+				int bestDistance = Integer.MAX_VALUE;
+				XEventClass bestClass = null;
 				for (XEventClass eventClass : eventClasses.getClasses()) {
-					if (matcher.matches(eventClass.getId(), t.getLabel())) {
-						activityMapping.put(t, eventClass);
+					int newDistance = matcher.distance(eventClass.getId(), t.getLabel());
+					if (newDistance < bestDistance) {
+						bestDistance = newDistance;
+						bestClass = eventClass;
 					}
+				}
+				if (bestClass != null && bestDistance < getApproximateMatchingDistance()) {
+					activityMapping.put(t, bestClass);
 				}
 			}
 		}
@@ -199,8 +206,8 @@ public class CreateTransEvMappingOperator extends Operator {
 					new Matcher() {
 
 						@Override
-						public boolean matches(String eventClass, String transition) {
-							return eventClass.equalsIgnoreCase(transition);
+						public int distance(String eventClass, String transition) {
+							return eventClass.equalsIgnoreCase(transition) ? 0 : Integer.MAX_VALUE;
 						}
 					});
 		} else if (APPROXIMATE_MATCHING.equals(matchingType)) {
@@ -209,7 +216,7 @@ public class CreateTransEvMappingOperator extends Operator {
 					new Matcher() {
 
 						@Override
-						public boolean matches(String eventClass, String transition) {
+						public int distance(String eventClass, String transition) {
 							return distance.computeDistance(Lists.charactersOf(eventClass),
 									Lists.charactersOf(transition), new SequenceDistance.Equivalence<Character>() {
 
@@ -217,7 +224,7 @@ public class CreateTransEvMappingOperator extends Operator {
 										public boolean equals(Character a, Character b) {
 											return a.equals(b);
 										}
-									}) < getApproximateMatchingDistance();
+									});
 						}
 
 					});
@@ -250,11 +257,21 @@ public class CreateTransEvMappingOperator extends Operator {
 						new MissingMappingError(inputMapping, "Missing transition for eventclass " + eventClassLabel));
 			} else {
 				Transition transition = transitions.get(transitionLabel);
-				if (eventClassLabel.equals(Attribute.MISSING_NOMINAL_VALUE)) {
-					activityMapping.put(transition, DUMMY);
+				if (transition != null) {
+					if (eventClassLabel.equals(Attribute.MISSING_NOMINAL_VALUE)) {
+						activityMapping.put(transition, DUMMY);
+					} else {
+						XEventClass eventClass = eventClasses.getByIdentity(eventClassLabel);
+						if (eventClass != null) {
+							activityMapping.put(transition, eventClass);
+						} else {
+							inputMapping.addError(
+									new MissingMappingError(inputMapping, "Unknown event class " + eventClassLabel));
+						}
+					}
 				} else {
-					XEventClass eventClass = eventClasses.getByIdentity(eventClassLabel);
-					activityMapping.put(transition, eventClass);
+					inputMapping
+							.addError(new MissingMappingError(inputMapping, "Unknown transition " + transitionLabel));
 				}
 			}
 		}
