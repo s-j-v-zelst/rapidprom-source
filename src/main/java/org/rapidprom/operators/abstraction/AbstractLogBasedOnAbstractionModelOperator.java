@@ -91,7 +91,7 @@ public class AbstractLogBasedOnAbstractionModelOperator extends Operator {
 
 	public AbstractLogBasedOnAbstractionModelOperator(OperatorDescription description) {
 		super(description);
-		inputTransitionMapping.addPrecondition(new SimplePrecondition(inputVariableMapping, new MetaData(TransEvMappingIOObject.class), false));
+		inputTransitionMapping.addPrecondition(new SimplePrecondition(inputTransitionMapping, new MetaData(TransEvMappingIOObject.class), true));
 		inputVariableMapping.addPrecondition(new SimplePrecondition(inputVariableMapping, new MetaData(ExampleSet.class), false));
 		inputCosts.addPrecondition(new SimplePrecondition(inputCosts, new MetaData(ExampleSet.class), false));
 		inputCostsData.addPrecondition(new SimplePrecondition(inputCostsData, new MetaData(ExampleSet.class), false));
