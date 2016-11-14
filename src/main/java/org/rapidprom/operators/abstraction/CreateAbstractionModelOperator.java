@@ -23,7 +23,9 @@ import com.rapidminer.operator.Operator;
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
 import com.rapidminer.operator.ResultObjectAdapter;
+import com.rapidminer.operator.SimpleProcessSetupError;
 import com.rapidminer.operator.UserError;
+import com.rapidminer.operator.ProcessSetupError.Severity;
 import com.rapidminer.operator.ports.InputPortExtender;
 import com.rapidminer.operator.ports.OutputPort;
 import com.rapidminer.operator.ports.metadata.GenerateNewMDRule;
@@ -58,36 +60,24 @@ public class CreateAbstractionModelOperator extends Operator {
 	private static final String ABSTRACTION_MODEL_KEY = "Abstraction Model",
 			ABSTRACTION_MODEL_DESCR = "<HTML>Specify how patterns are composed to an integrated abstraction model. "
 					+ "If left empty all patterns can occur in parallel to each other, i.e, for patterns A,B,C, the abstraction model is A*|B*|C*."
-					+ "<h1>Model Syntax</h1>"
-					+ "Initially all abstraction patterns are composed in parallel. "
+					+ "<h1>Model Syntax</h1>" + "Initially all abstraction patterns are composed in parallel. "
 					+ "The composition can be changed by manipulating the formula or by using the context menu (right-click) of the model."
 					+ "Operators can be nested, patterns can appear multiple times and parentheses can be used to indicate preceedence if necessary."
-					+ "<h2>Examples for patterns A and B</h2>"
-					+ "<ul>"
-					+ "<li>'A#B' - A and B can happen in parallel</li>"
-					+ "<li>'A|B' - Either A or B can happen</li>"
-					+ "<li>'A<B' - A must happen before B</li>"
-					+ "<li>'%[A,B]' - A and B can interleave</li>"
-					+ "<li>'A?' - A can happen 1 or 0 times</li>"
-					+ "<li>'A+' - A can happen 1 or multiple times</li>"
+					+ "<h2>Examples for patterns A and B</h2>" + "<ul>"
+					+ "<li>'A#B' - A and B can happen in parallel</li>" + "<li>'A|B' - Either A or B can happen</li>"
+					+ "<li>'A<B' - A must happen before B</li>" + "<li>'%[A,B]' - A and B can interleave</li>"
+					+ "<li>'A?' - A can happen 1 or 0 times</li>" + "<li>'A+' - A can happen 1 or multiple times</li>"
 					+ "<li>'A*' - A can happen 0 or multiple times</li>"
-					+ "<li>'A{n,m}' - A can happen n to m times</li>"
-					+ "</ul>"
-					+ "<h2>Full Syntax</h2>"
-					+ "<pre>"
-					+ "parse		:=	expression <EOF>\r\n" + 
-					"expression	:=	parallel ( ( \"#\" parallel ) )*\r\n" + 
-					"parallel	:=	choice ( ( \"|\" choice ) )*\r\n" + 
-					"choice		:=	sequence ( ( \"<\" sequence ) )*\r\n" + 
-					"sequence	:=	( \"%[\" nary ( \",\" nary )+ \"]\" )\r\n" + 
-					"		|	( \"|[\" nary ( \",\" nary )+ \"]\" )\r\n" + 
-					"		|	( \"#[\" nary ( \",\" nary )+ \"]\" )\r\n" + 
-					"		|	nary\r\n" + 
-					"nary		:=	basic ( ( \"*\" ) | ( \"+\" ) | ( \"?\" ) | ( \"{\" <INTEGER> \",\" ( <INTEGER> | \"*\" ) \"}\" ) )?\r\n" + 
-					"basic		:=	( \"(\" expression \")\" )\r\n" + 
-					"		|	identifier\r\n" + 
-					"identifier	:=	( <IDENTIFIER> | <STRING_LITERAL> )"		
-					+ "</pre></HTML>";
+					+ "<li>'A{n,m}' - A can happen n to m times</li>" + "</ul>" + "<h2>Full Syntax</h2>" + "<pre>"
+					+ "parse		:=	expression <EOF>\r\n" + "expression	:=	parallel ( ( \"#\" parallel ) )*\r\n"
+					+ "parallel	:=	choice ( ( \"|\" choice ) )*\r\n"
+					+ "choice		:=	sequence ( ( \"<\" sequence ) )*\r\n"
+					+ "sequence	:=	( \"%[\" nary ( \",\" nary )+ \"]\" )\r\n"
+					+ "		|	( \"|[\" nary ( \",\" nary )+ \"]\" )\r\n"
+					+ "		|	( \"#[\" nary ( \",\" nary )+ \"]\" )\r\n" + "		|	nary\r\n"
+					+ "nary		:=	basic ( ( \"*\" ) | ( \"+\" ) | ( \"?\" ) | ( \"{\" <INTEGER> \",\" ( <INTEGER> | \"*\" ) \"}\" ) )?\r\n"
+					+ "basic		:=	( \"(\" expression \")\" )\r\n" + "		|	identifier\r\n"
+					+ "identifier	:=	( <IDENTIFIER> | <STRING_LITERAL> )" + "</pre></HTML>";
 
 	private final InputPortExtender inExtender = new InputPortExtender("patterns (Data Petri nets)", getInputPorts(),
 			new MetaData(DataPetriNetIOObject.class), true);
@@ -118,7 +108,8 @@ public class CreateAbstractionModelOperator extends Operator {
 			outputCode.deliver(new AbstractionCodeResult(abstractionModelCode));
 
 		} catch (ParseException | CompositionVisitorException e) {
-			throw new OperatorException("Failed building abstraction model!", e);
+			addError(new SimpleProcessSetupError(Severity.ERROR, getPortOwner(), "Invalid Abstraction Model",
+					e.getMessage()));
 		}
 	}
 

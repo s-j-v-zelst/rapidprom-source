@@ -24,6 +24,7 @@ import org.rapidprom.ioobjects.PetriNetIOObject;
 import org.rapidprom.ioobjects.TransEvMappingIOObject;
 import org.rapidprom.ioobjects.XLogIOObject;
 import org.rapidprom.parameter.ParameterTypeXEventClassifierCategory;
+import org.rapidprom.util.ObjectUtils;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -40,7 +41,9 @@ import com.rapidminer.operator.ports.OutputPort;
 import com.rapidminer.operator.ports.Port;
 import com.rapidminer.operator.ports.PortOwner;
 import com.rapidminer.operator.ports.metadata.GenerateNewMDRule;
+import com.rapidminer.operator.ports.metadata.MetaData;
 import com.rapidminer.operator.ports.metadata.MetaDataError;
+import com.rapidminer.operator.ports.metadata.SimplePrecondition;
 import com.rapidminer.operator.ports.quickfix.QuickFix;
 import com.rapidminer.parameter.ParameterType;
 import com.rapidminer.parameter.ParameterTypeCategory;
@@ -163,13 +166,14 @@ public class CreateTransEvMappingOperator extends Operator {
 	private InputPort inputModel = getInputPorts().createPort("model (ProM Petri net / Data Petri net)",
 			IOObject.class);
 
-	private InputPort inputMapping = getInputPorts().createPort("mapping (Example set)", ExampleSet.class);
+	private InputPort inputMapping = getInputPorts().createPort("mapping (Example set)");
 
 	private OutputPort outputMappingProM = getOutputPorts().createPort("mapping (ProM Transition/Event Class Mapping)");
 	private OutputPort outputMappingExampleSet = getOutputPorts().createPort("mapping (Example set)");
 
 	public CreateTransEvMappingOperator(OperatorDescription description) {
 		super(description);
+		inputMapping.addPrecondition(new SimplePrecondition(inputMapping, new MetaData(ExampleSet.class), false));
 		getTransformer().addRule(new GenerateNewMDRule(outputMappingProM, TransEvMappingIOObject.class));
 		getTransformer().addRule(new GenerateNewMDRule(outputMappingExampleSet, ExampleSet.class));
 	}
@@ -177,8 +181,7 @@ public class CreateTransEvMappingOperator extends Operator {
 	@Override
 	public void doWork() throws OperatorException {
 
-		XLog log = getXLog();
-		ExampleSet mapping = getMapping();
+		XLog log = getXLog();		
 		XEventClasses eventClasses = XUtils.createEventClasses(getClassifier(), log);
 
 		String matchingType = getParameterAsString(AUTOMATIC_MAPPING_KEY);
@@ -190,7 +193,10 @@ public class CreateTransEvMappingOperator extends Operator {
 
 		TransEvClassMapping activityMapping = automaticMatching(eventClasses, matchingType, model);
 
-		applyExampleSetMapping(mapping, eventClasses, model, activityMapping);
+		ExampleSet mapping = getMapping();
+		if (mapping != null) {
+			applyExampleSetMapping(mapping, eventClasses, model, activityMapping);
+		}
 
 		TransEvMappingIOObject mappingIOObject = new TransEvMappingIOObject(activityMapping, getContext());
 		outputMappingProM.deliver(mappingIOObject);
@@ -308,11 +314,15 @@ public class CreateTransEvMappingOperator extends Operator {
 	}
 
 	private ExampleSet getMapping() throws UserError {
-		return inputMapping.getData(ExampleSet.class);
+		return inputMapping.getDataOrNull(ExampleSet.class);
+	}
+
+	private XLog getXLog() throws UserError {
+		return inputLog.getData(XLogIOObject.class).getArtifact();
 	}
 
 	private PetrinetGraph getModel() throws OperatorException {
-		IOObject pnObject = inputModel.getDataOrNull(IOObject.class);
+		IOObject pnObject = inputModel.getData(IOObject.class);
 		if (pnObject != null) {
 			if (pnObject instanceof PetriNetIOObject) {
 				return ((PetriNetIOObject) pnObject).getArtifact();
@@ -331,7 +341,7 @@ public class CreateTransEvMappingOperator extends Operator {
 		List<ParameterType> params = super.getParameterTypes();
 
 		params.add(new ParameterTypeXEventClassifierCategory(PARAMETER_KEY_EVENT_CLASSIFIER,
-				PARAMETER_DESC_EVENT_CLASSIFIER, new String[] { PARAMETER_DEFAULT_CLASSIFIERS[0].toString() },
+				PARAMETER_DESC_EVENT_CLASSIFIER, ObjectUtils.toString(PARAMETER_DEFAULT_CLASSIFIERS),
 				PARAMETER_DEFAULT_CLASSIFIERS, 0, false, inputLog));
 
 		params.add(new ParameterTypeCategory(AUTOMATIC_MAPPING_KEY, AUTOMATIC_MAPPING_DESCR, MATCHING_TYPES, 0));
@@ -341,9 +351,4 @@ public class CreateTransEvMappingOperator extends Operator {
 
 		return params;
 	}
-
-	private XLog getXLog() throws UserError {
-		return inputLog.getData(XLogIOObject.class).getArtifact();
-	}
-
 }

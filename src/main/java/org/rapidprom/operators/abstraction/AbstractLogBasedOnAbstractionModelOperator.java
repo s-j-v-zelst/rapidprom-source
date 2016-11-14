@@ -91,10 +91,8 @@ public class AbstractLogBasedOnAbstractionModelOperator extends Operator {
 
 	public AbstractLogBasedOnAbstractionModelOperator(OperatorDescription description) {
 		super(description);
-		inputTransitionMapping.addPrecondition(
-				new SimplePrecondition(inputVariableMapping, new MetaData(TransEvMappingIOObject.class), false));
-		inputVariableMapping
-				.addPrecondition(new SimplePrecondition(inputVariableMapping, new MetaData(ExampleSet.class), false));
+		inputTransitionMapping.addPrecondition(new SimplePrecondition(inputVariableMapping, new MetaData(TransEvMappingIOObject.class), false));
+		inputVariableMapping.addPrecondition(new SimplePrecondition(inputVariableMapping, new MetaData(ExampleSet.class), false));
 		inputCosts.addPrecondition(new SimplePrecondition(inputCosts, new MetaData(ExampleSet.class), false));
 		inputCostsData.addPrecondition(new SimplePrecondition(inputCostsData, new MetaData(ExampleSet.class), false));
 		getTransformer().addRule(new GenerateNewMDRule(outputLog, XLogIOObject.class));
@@ -118,18 +116,20 @@ public class AbstractLogBasedOnAbstractionModelOperator extends Operator {
 					model.getInitialMarking(), model.getFinalMarkings(), log, transitionMapping.getEventClassifier(),
 					getDefaultCostLogMove(), getDefaultCostModelMove(), getDefaultCostMissingWrite(),
 					getDefaultCostWrongWrite());
-
 			applyUserDefinedTransitionMapping(transitionMapping, alignmentConfig);
-			try {
-				applyUserDefinedVariableMapping(getVariableMapping(), alignmentConfig);
-			} catch (ExampleSetReaderException e) {
-				inputVariableMapping
-						.addError(new SimpleMetaDataError(Severity.WARNING, inputVariableMapping, e.getMessage()));
-			}
 
 			alignmentConfig.setActivateDataViewCache(false);
 			alignmentConfig.setKeepDataFlowSearchSpace(false);
 			alignmentConfig.setKeepControlFlowSearchSpace(true);
+			
+			if (inputVariableMapping.isConnected()) {
+				try {
+					applyUserDefinedVariableMapping(getVariableMapping(), alignmentConfig);
+				} catch (ExampleSetReaderException e) {
+					inputVariableMapping
+							.addError(new SimpleMetaDataError(Severity.WARNING, inputVariableMapping, e.getMessage()));
+				}
+			}
 
 			if (inputCosts.isConnected()) {
 				try {
