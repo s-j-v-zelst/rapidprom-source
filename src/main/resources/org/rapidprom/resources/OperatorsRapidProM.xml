@@ -280,6 +280,14 @@
                 <key>random_sample</key>
                 <class>org.rapidprom.operators.logmanipulation.RandomSampleOperator</class>
             </operator>
+			<operator>
+                <key>filter_events</key>
+                <class>org.rapidprom.operators.logmanipulation.FilterEventsOperator</class>
+            </operator>
+			<operator>
+                <key>filter_traces</key>
+                <class>org.rapidprom.operators.logmanipulation.FilterTracesOperator</class>
+            </operator>
         </group> 
         <group key="streams">
             <group key="analysis">

@@ -451,6 +451,20 @@
   	</operator>
   	
   	<operator>
+        <name>Filter Events</name>
+        <synopsis>Filters the events of an event log.</synopsis>
+        <help>Filters the events of an event log using a filter query.</help>
+    	<key>filter_events</key>
+  	</operator>
+  	
+    <operator>
+        <name>Filter Traces</name>
+        <synopsis>Filters the traces of an event log.</synopsis>
+        <help>Filters the traces of an event log using a filter query.</help>
+    	<key>filter_traces</key>
+  	</operator>
+  	
+  	<operator>
   		<name>Add Classifier to Event Log</name>
         <synopsis>This operator adds an event classifier to an event log. An event classifier defines how events are identified.</synopsis>
         <help>An event log is needed as input.</help>
