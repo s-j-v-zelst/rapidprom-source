@@ -37,6 +37,7 @@ import org.processmining.plugins.replayer.replayresult.SyncReplayResult;
 import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.PNRepResultIOObject;
 import org.rapidprom.ioobjects.PetriNetIOObject;
+import org.rapidprom.ioobjects.TransEvMappingIOObject;
 import org.rapidprom.ioobjects.XLogIOObject;
 import org.rapidprom.operators.abstr.AbstractRapidProMDiscoveryOperator;
 import org.rapidprom.operators.util.ExecutorServiceRapidProM;
@@ -50,6 +51,7 @@ import com.rapidminer.example.table.DataRowFactory;
 import com.rapidminer.example.table.MemoryExampleTable;
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
+import com.rapidminer.operator.ProcessSetupError.Severity;
 import com.rapidminer.operator.io.AbstractDataReader.AttributeColumn;
 import com.rapidminer.operator.ports.InputPort;
 import com.rapidminer.operator.ports.OutputPort;
@@ -57,14 +59,15 @@ import com.rapidminer.operator.ports.metadata.AttributeMetaData;
 import com.rapidminer.operator.ports.metadata.ExampleSetMetaData;
 import com.rapidminer.operator.ports.metadata.GenerateNewMDRule;
 import com.rapidminer.operator.ports.metadata.MDInteger;
+import com.rapidminer.operator.ports.metadata.MetaData;
+import com.rapidminer.operator.ports.metadata.SimpleMetaDataError;
+import com.rapidminer.operator.ports.metadata.SimplePrecondition;
 import com.rapidminer.parameter.ParameterType;
 import com.rapidminer.parameter.ParameterTypeCategory;
 import com.rapidminer.parameter.ParameterTypeInt;
-import com.rapidminer.parameter.UndefinedParameterError;
 import com.rapidminer.tools.LogService;
 import com.rapidminer.tools.Ontology;
 
-import javassist.tools.rmi.ObjectNotFoundException;
 import nl.tue.astar.AStarException;
 
 public class ConformanceAnalysisOperator extends AbstractRapidProMDiscoveryOperator {
@@ -93,6 +96,7 @@ public class ConformanceAnalysisOperator extends AbstractRapidProMDiscoveryOpera
 	private final String RELIABLE = "Unreliable Alignments Exist";
 
 	private InputPort inputPN = getInputPorts().createPort("model (ProM Petri Net)", PetriNetIOObject.class);
+	private InputPort inputMapping = getInputPorts().createPort("mapping (ProM Transition/Event Class Mapping)");
 	private OutputPort output = getOutputPorts().createPort("alignments (ProM PNRepResult)");
 
 	private OutputPort outputData = getOutputPorts().createPort("example set with metrics (Data Table)");
@@ -109,7 +113,8 @@ public class ConformanceAnalysisOperator extends AbstractRapidProMDiscoveryOpera
 
 	public ConformanceAnalysisOperator(OperatorDescription description) {
 		super(description);
-
+		inputMapping.addPrecondition(
+				new SimplePrecondition(inputMapping, new MetaData(TransEvMappingIOObject.class), false));
 		getTransformer().addRule(new GenerateNewMDRule(output, PNRepResultIOObject.class));
 
 		this.metaData = new ExampleSetMetaData();
@@ -210,10 +215,10 @@ public class ConformanceAnalysisOperator extends AbstractRapidProMDiscoveryOpera
 			output.deliver(alignments);
 
 		} catch (Exception e1) {
-			logger.log(Level.INFO, "Conformance Checker timed out.");
+			logger.log(Level.SEVERE, "Conformance Checker timed out or failed", e1);
 			output.deliver(new PNRepResultIOObject(null, pluginContext, null, null, null));
 		}
-
+		
 		fillTables(repResult);
 
 		logger.log(Level.INFO, "End: replay log on petri net for conformance checking ("
@@ -235,14 +240,10 @@ public class ConformanceAnalysisOperator extends AbstractRapidProMDiscoveryOpera
 			PetriNetIOObject pNet = inputPN.getData(PetriNetIOObject.class);
 
 			PNRepResult repResult = null;
-			try {
-				if (!pNet.hasFinalMarking())
-					pNet.setFinalMarking(getFinalMarking(pNet.getArtifact()));
-				repResult = getAlignment(pluginContext, pNet.getArtifact(), xLog.getArtifact(),
-						pNet.getInitialMarking(), pNet.getFinalMarking());
-			} catch (ObjectNotFoundException e1) {
-				e1.printStackTrace();
-			}
+			if (!pNet.hasFinalMarking())
+				pNet.setFinalMarking(getFinalMarking(pNet.getArtifact()));
+			repResult = getAlignment(pluginContext, pNet.getArtifact(), xLog.getArtifact(),
+					pNet.getInitialMarking(), pNet.getFinalMarking());	
 
 			PNRepResultIOObject result = new PNRepResultIOObject(repResult, pluginContext, pNet, xLog.getArtifact(),
 					constructMapping(pNet.getArtifact(), xLog.getArtifact(), getXEventClassifier()));
@@ -302,13 +303,25 @@ public class ConformanceAnalysisOperator extends AbstractRapidProMDiscoveryOpera
 	// Boudewijn's methods for creating alignments
 
 	public PNRepResult getAlignment(PluginContext pluginContext, PetrinetGraph net, XLog log, Marking initialMarking,
-			Marking finalMarking) throws UndefinedParameterError {
+			Marking finalMarking) throws OperatorException {
 
 		Map<Transition, Integer> costMOS = constructMOSCostFunction(net);
 		XEventClassifier eventClassifier = getXEventClassifier();
 		Map<XEventClass, Integer> costMOT = constructMOTCostFunction(net, log, eventClassifier);
-		TransEvClassMapping mapping = constructMapping(net, log, eventClassifier);
-
+		
+		TransEvClassMapping mapping;		
+		if (inputMapping.isConnected()) {
+			TransEvMappingIOObject mappingIO = inputMapping.getDataOrNull(TransEvMappingIOObject.class);
+			mapping = mappingIO.getArtifact();
+			costMOT.put(mapping.getDummyEventClass(), 0); // add dummy cost
+			if (!eventClassifier.equals(mapping.getEventClassifier())) {
+				inputMapping.addError(new SimpleMetaDataError(Severity.ERROR, inputMapping, "conformance.classifier_does_not_match"));
+				throw new OperatorException("Classifier does not match");
+			}
+		} else {
+			mapping = constructMapping(net, log, eventClassifier);
+		}
+		 
 		AbstractPetrinetReplayer<?, ?> replayEngine = null;
 		if (getParameterAsString(PARAMETER_0_KEY).equals(WITH_ILP))
 			replayEngine = new PetrinetReplayerWithILP();
@@ -326,9 +339,8 @@ public class ConformanceAnalysisOperator extends AbstractRapidProMDiscoveryOpera
 		PNRepResult result = null;
 		try {
 			result = replayEngine.replayLog(pluginContext, net, log, mapping, parameters);
-
 		} catch (AStarException e) {
-			e.printStackTrace();
+			throw new OperatorException("Alignment failed", e);
 		}
 
 		return result;
