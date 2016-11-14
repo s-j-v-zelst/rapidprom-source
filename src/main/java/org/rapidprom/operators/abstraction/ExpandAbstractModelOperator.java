@@ -2,9 +2,12 @@ package org.rapidprom.operators.abstraction;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import org.processmining.dataawareexplorer.utils.PetrinetUtils;
 import org.processmining.datapetrinets.DataPetriNet;
 import org.processmining.datapetrinets.DataPetriNet.PetrinetWithMarkings;
 import org.processmining.datapetrinets.DataPetriNetsWithMarkings;
+import org.processmining.framework.connections.ConnectionCannotBeObtained;
 import org.processmining.framework.plugin.PluginContext;
 import org.processmining.logenhancement.abstraction.PatternBasedModelTransformation;
 import org.processmining.logenhancement.abstraction.model.AbstractionModel;
@@ -12,6 +15,8 @@ import org.processmining.logenhancement.abstraction.model.AbstractionPattern;
 import org.processmining.models.graphbased.directed.petrinet.Petrinet;
 import org.processmining.models.graphbased.directed.petrinet.PetrinetGraph;
 import org.processmining.models.graphbased.directed.petrinet.elements.Transition;
+import org.processmining.models.semantics.petrinet.Marking;
+import org.processmining.plugins.petrinet.reduction.Murata;
 import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.AbstractionModelIOObject;
 import org.rapidprom.ioobjects.PetriNetIOObject;
@@ -58,14 +63,29 @@ public class ExpandAbstractModelOperator extends Operator {
 			}
 		}
 
-		// TODO change in LogEnhancement
 		DataPetriNetsWithMarkings expandedModel = (DataPetriNetsWithMarkings) new PatternBasedModelTransformation()
 				.doTransformModelBasedOnAbstractionPatterns(model, defaultValues);
 
 		PetrinetWithMarkings pnWithMarkings = DataPetriNet.Factory.toPetrinetWithMarkings(expandedModel);
 
-		output.deliver(new PetriNetIOObject(pnWithMarkings.getNet(), pnWithMarkings.getInitialMarking(),
-				pnWithMarkings.getFinalMarkings() != null ? pnWithMarkings.getFinalMarkings()[0] : null, getContext()));
+		PluginContext pluginContext = RapidProMGlobalContext.instance().getFutureResultAwarePluginContext(Murata.class);
+		Murata reducer = new Murata();
+		try {
+			Object[] murateResult = reducer.runPreserveBehavior(pluginContext, pnWithMarkings.getNet(),
+					pnWithMarkings.getInitialMarking());
+			Petrinet net = (Petrinet) murateResult[0];
+
+			Marking initialMarking = PetrinetUtils.guessInitialMarking(net);
+			Marking finalMarking = PetrinetUtils.guessFinalMarking(net);
+
+			output.deliver(new PetriNetIOObject(net, initialMarking, finalMarking, getContext()));
+		} catch (ConnectionCannotBeObtained e) {
+			// could not reduce
+			output.deliver(new PetriNetIOObject(pnWithMarkings.getNet(), pnWithMarkings.getInitialMarking(),
+					pnWithMarkings.getFinalMarkings() != null ? pnWithMarkings.getFinalMarkings()[0] : null,
+					getContext()));
+		}
+
 	}
 
 	private Transition getTransition(String label, PetrinetGraph graph) {

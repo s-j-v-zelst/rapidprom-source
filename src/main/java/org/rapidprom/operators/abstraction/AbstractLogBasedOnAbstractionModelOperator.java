@@ -6,13 +6,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.logging.Level;
-
 import org.deckfour.xes.classification.XEventClasses;
 import org.deckfour.xes.model.XLog;
-import org.deckfour.xes.model.XTrace;
 import org.processmining.datapetrinets.DataPetriNetsWithMarkings;
 import org.processmining.framework.plugin.PluginContext;
+import org.processmining.framework.plugin.PluginContextID;
+import org.processmining.framework.plugin.events.Logger;
+import org.processmining.framework.plugin.events.ProgressEventListener;
 import org.processmining.log.utils.XUtils;
 import org.processmining.logenhancement.abstraction.PatternBasedLogAbstractionPlugin;
 import org.processmining.logenhancement.abstraction.PatternStructureException;
@@ -23,8 +23,6 @@ import org.processmining.models.graphbased.directed.petrinetwithdata.newImpl.Dat
 import org.processmining.plugins.balancedconformance.config.BalancedProcessorConfiguration;
 import org.processmining.plugins.balancedconformance.controlflow.ControlFlowAlignmentException;
 import org.processmining.plugins.balancedconformance.dataflow.exception.DataAlignmentException;
-import org.processmining.plugins.balancedconformance.observer.DataConformancePlusObserverImpl;
-import org.processmining.plugins.balancedconformance.result.BalancedDataAlignmentState;
 import org.processmining.plugins.connectionfactories.logpetrinet.TransEvClassMapping;
 import org.rapidprom.exceptions.ExampleSetReaderException;
 import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
@@ -149,8 +147,6 @@ public class AbstractLogBasedOnAbstractionModelOperator extends Operator {
 				}
 			}
 
-			applyProgressReporter(context, alignmentConfig);
-
 			XLog abstractedLog = PatternBasedLogAbstractionPlugin.abstractPatterns(context, log, abstractionModel,
 					keepUnmatchedEvents, errorRateLimit, alignmentConfig);
 
@@ -182,40 +178,6 @@ public class AbstractLogBasedOnAbstractionModelOperator extends Operator {
 		}
 	}
 
-	private void applyProgressReporter(final PluginContext context, BalancedProcessorConfiguration alignmentConfig) {
-		alignmentConfig.setObserver(new DataConformancePlusObserverImpl(context) {
-
-			@Override
-			public void startAlignment(int numExpectedResults) {
-				super.startAlignment(numExpectedResults);
-				getProgress().setTotal(numExpectedResults);
-			}
-
-			@Override
-			public void calculatedFitness(int resultIndex, XTrace trace, BalancedDataAlignmentState resultState) {
-				super.calculatedFitness(resultIndex, trace, resultState);
-				try {
-					getProgress().step();
-				} catch (ProcessStoppedException e) {
-					context.getProgress().cancel();
-				}
-			}
-
-			@Override
-			public void finishedAlignment() {
-				super.finishedAlignment();
-				getProgress().complete();
-			}
-
-			@Override
-			public void log(Level level, String message) {
-				getProcess().getLog().log(message);
-				System.out.println(message);
-			}
-
-		});
-	}
-
 	private void applyUserDefinedCosts(ExampleSet controlFlowCosts, XLog log, DataPetriNetsWithMarkings model,
 			BalancedProcessorConfiguration alignmentConfig) throws UserError, ExampleSetReaderException {
 		AlignmentCostIO costReader = new AlignmentCostIO();
@@ -244,9 +206,9 @@ public class AbstractLogBasedOnAbstractionModelOperator extends Operator {
 		params.add(new ParameterTypeDouble(ERROR_RATE_KEY, ERROR_RATE_DESCR, 0.0, 1.0, 1.0));
 		params.add(new ParameterTypeInt(CONCURRENT_THREADS_KEY, CONCURRENT_THREADS_DESCR, 1,
 				Runtime.getRuntime().availableProcessors(), Runtime.getRuntime().availableProcessors(), true));
+		params.add(new ParameterTypeInt(COST_WRONG_WRITE_KEY, "Default cost for a wrong write operation.", 0, 100, 1));
 		params.add(
-				new ParameterTypeInt(COST_WRONG_WRITE_KEY, "Default cost for a wrong write operation.", 0, 100, 1));
-		params.add(new ParameterTypeInt(COST_MISSING_WRITE_KEY, "Default cost for a missing write operation.", 0, 100, 1));
+				new ParameterTypeInt(COST_MISSING_WRITE_KEY, "Default cost for a missing write operation.", 0, 100, 1));
 		params.add(new ParameterTypeInt(COST_MODEL_MOVE_KEY, "Default cost for a model move.", 0, 100, 1));
 		params.add(new ParameterTypeInt(COST_LOG_MOVE_KEY, "Default cost for a log move.", 0, 100, 1));
 		return params;
@@ -301,7 +263,47 @@ public class AbstractLogBasedOnAbstractionModelOperator extends Operator {
 	}
 
 	private PluginContext getContext() throws UserError {
-		return RapidProMGlobalContext.instance().getPluginContext();
+		final PluginContext context = RapidProMGlobalContext.instance().getPluginContext();
+		context.getProgressEventListeners().add(new ProgressEventListener() {
+
+			@Override
+			public void changeProgress(int arg0) {
+				try {
+					getProgress().setCompleted(arg0);
+				} catch (ProcessStoppedException e) {
+					context.getProgress().cancel();
+				}
+			}
+
+			@Override
+			public void changeProgressBounds(int arg0, int arg1) {
+				getProgress().setTotal(arg1);
+			}
+
+			@Override
+			public void changeProgressCaption(String arg0) {
+				getLog().log(arg0);
+			}
+
+			@Override
+			public void changeProgressIndeterminate(boolean arg0) {
+				getProgress().setIndeterminate(arg0);
+			}
+
+		});
+		context.getLoggingListeners().add(new Logger() {
+
+			@Override
+			public void log(String arg0, PluginContextID arg1, MessageLevel arg2) {
+				getLog().log(arg0);
+			}
+
+			@Override
+			public void log(Throwable arg0, PluginContextID arg1) {
+				getLog().logError(arg0.toString());
+			}
+		});
+		return context;
 	}
 
 }
