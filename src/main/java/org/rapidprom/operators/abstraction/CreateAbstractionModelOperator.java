@@ -17,13 +17,13 @@ import org.processmining.models.graphbased.directed.petrinet.PetrinetGraph;
 import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.AbstractionModelIOObject;
 import org.rapidprom.ioobjects.DataPetriNetIOObject;
+import org.rapidprom.operators.util.RapidProMProcessSetupError;
 
 import com.rapidminer.operator.IOObjectCollection;
 import com.rapidminer.operator.Operator;
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
 import com.rapidminer.operator.ResultObjectAdapter;
-import com.rapidminer.operator.SimpleProcessSetupError;
 import com.rapidminer.operator.UserError;
 import com.rapidminer.operator.ProcessSetupError.Severity;
 import com.rapidminer.operator.ports.InputPortExtender;
@@ -107,9 +107,8 @@ public class CreateAbstractionModelOperator extends Operator {
 			outputModel.deliver(new AbstractionModelIOObject(abstractionModel, getContext()));
 			outputCode.deliver(new AbstractionCodeResult(abstractionModelCode));
 
-		} catch (ParseException | CompositionVisitorException e) {
-			addError(new SimpleProcessSetupError(Severity.ERROR, getPortOwner(), "Invalid Abstraction Model",
-					e.getMessage()));
+		} catch (final ParseException | CompositionVisitorException e) {
+			addError(new RapidProMProcessSetupError(Severity.ERROR, getPortOwner(), e));
 		}
 	}
 
