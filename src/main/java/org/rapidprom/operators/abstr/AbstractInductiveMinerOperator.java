@@ -7,7 +7,6 @@ import org.processmining.plugins.InductiveMiner.mining.MiningParametersEKS;
 import org.processmining.plugins.InductiveMiner.mining.MiningParametersIM;
 import org.processmining.plugins.InductiveMiner.mining.MiningParametersIMf;
 import org.processmining.plugins.InductiveMiner.mining.MiningParametersIMflc;
-
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.parameter.ParameterType;
 import com.rapidminer.parameter.ParameterTypeCategory;
@@ -18,7 +17,6 @@ public abstract class AbstractInductiveMinerOperator extends AbstractRapidProMDi
 
 	public AbstractInductiveMinerOperator(OperatorDescription description) {
 		super(description);
-		// TODO Auto-generated constructor stub
 	}
 
 	private static final String PARAMETER_1_KEY = "Variation",
@@ -42,6 +40,7 @@ public abstract class AbstractInductiveMinerOperator extends AbstractRapidProMDi
 			IMin = "Inductive Miner - Incompleteness", IMeks = "Inductive Miner - exhaustive K-successor",
 			IMflc = "Inductive Miner - Life cycle";
 
+	@Override
 	public List<ParameterType> getParameterTypes() {
 
 		List<ParameterType> parameterTypes = super.getParameterTypes();
@@ -72,7 +71,6 @@ public abstract class AbstractInductiveMinerOperator extends AbstractRapidProMDi
 			else 
 				throw new IllegalArgumentException("Unknown inductive miner type "+getParameterAsString(PARAMETER_1_KEY));
 			
-
 			miningParameters.setNoiseThreshold((float) getParameterAsDouble(PARAMETER_2_KEY));
 			miningParameters.setClassifier(getXEventClassifier());			
 		} catch (UndefinedParameterError e) {

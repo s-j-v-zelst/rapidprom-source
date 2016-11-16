@@ -4,6 +4,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.processmining.framework.plugin.PluginContext;
+import org.processmining.models.graphbased.AttributeMap;
 import org.processmining.models.graphbased.directed.petrinet.Petrinet;
 import org.processmining.models.semantics.petrinet.Marking;
 import org.processmining.plugins.InductiveMiner.mining.MiningParameters;
@@ -38,10 +39,15 @@ public class InductiveMinerPNOperator extends AbstractInductiveMinerOperator {
 
 		Object[] result = IMPetriNet.minePetriNet(pluginContext, getXLog(), param);
 
-		PetriNetIOObject petrinet = new PetriNetIOObject((Petrinet) result[0], (Marking) result[1], (Marking) result[2],
-				pluginContext);
+		Petrinet net = (Petrinet) result[0];
+		Marking initialMarking = (Marking) result[1];
+		Marking finalMarking = (Marking) result[2];
 
-		output.deliver(petrinet);
+		if (getLabel() != null && !getLabel().isEmpty()) {
+			net.getAttributeMap().put(AttributeMap.LABEL, getLabel());
+		}
+		output.deliver(new PetriNetIOObject(net, initialMarking, finalMarking, pluginContext));
+
 		logger.log(Level.INFO, "End: inductive miner - pn (" + (System.currentTimeMillis() - time) / 1000 + " sec)");
 	}
 }

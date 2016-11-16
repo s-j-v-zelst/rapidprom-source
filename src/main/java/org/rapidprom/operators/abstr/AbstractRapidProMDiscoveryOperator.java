@@ -9,12 +9,14 @@ import org.deckfour.xes.classification.XEventNameClassifier;
 import org.deckfour.xes.model.XLog;
 import org.rapidprom.ioobjects.XLogIOObject;
 import org.rapidprom.parameter.ParameterTypeXEventClassifierCategory;
+import org.rapidprom.util.ObjectUtils;
 
 import com.rapidminer.operator.Operator;
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.UserError;
 import com.rapidminer.operator.ports.InputPort;
 import com.rapidminer.parameter.ParameterType;
+import com.rapidminer.parameter.ParameterTypeString;
 import com.rapidminer.parameter.UndefinedParameterError;
 
 public class AbstractRapidProMDiscoveryOperator extends Operator {
@@ -25,7 +27,11 @@ public class AbstractRapidProMDiscoveryOperator extends Operator {
 	private static final String PARAMETER_KEY_EVENT_CLASSIFIER = "event_classifier";
 	private static final String PARAMETER_DESC_EVENT_CLASSIFIER = "Specifies how to identify events within the event log, as defined in http://www.xes-standard.org/";
 	private static XEventClassifier[] PARAMETER_DEFAULT_CLASSIFIERS = new XEventClassifier[] {
-			new XEventAndClassifier(new XEventNameClassifier(), new XEventLifeTransClassifier())};
+			new XEventAndClassifier(new XEventNameClassifier(), new XEventLifeTransClassifier()),
+			new XEventNameClassifier()};
+	
+	private static final String PARAMETER_LABEL_KEY = "Model label";
+	private static final String PARAMETER_LABEL_DESC = "The label assigned to the discovered model.";
 
 	public AbstractRapidProMDiscoveryOperator(OperatorDescription description) {
 		super(description);
@@ -40,8 +46,9 @@ public class AbstractRapidProMDiscoveryOperator extends Operator {
 		List<ParameterType> params = super.getParameterTypes();
 		params.add(new ParameterTypeXEventClassifierCategory(
 				PARAMETER_KEY_EVENT_CLASSIFIER, PARAMETER_DESC_EVENT_CLASSIFIER,
-				new String[] { PARAMETER_DEFAULT_CLASSIFIERS[0].toString() },
+				ObjectUtils.toString(PARAMETER_DEFAULT_CLASSIFIERS),
 				PARAMETER_DEFAULT_CLASSIFIERS, 0, false, inputXLog));
+		params.add(new ParameterTypeString(PARAMETER_LABEL_KEY, PARAMETER_LABEL_DESC, true, true));
 		return params;
 	}
 
@@ -62,6 +69,10 @@ public class AbstractRapidProMDiscoveryOperator extends Operator {
 	protected XLog getXLog() throws UserError {
 		return ((XLogIOObject) inputXLog.getData(XLogIOObject.class))
 				.getArtifact();
+	}
+	
+	protected String getLabel() throws UndefinedParameterError {
+		return getParameterAsString(PARAMETER_LABEL_KEY);
 	}
 
 }
