@@ -75,8 +75,10 @@ public class FilterEventsOperator extends Operator {
 					+ "<li>Supports filtering by event attributes in form of 'eventName'.'attributeName OP attributeValue'.</li>"
 					+ "<li>Supported operators (OP) are (=, >, <, !=, >=, <=, % (contains), ~ (java regex), some operators only work with numeric/date attributes.</li>"
 					+ "<li>Terms can be connected with (AND, OR) and nested with parens.</li>" + "</ul></HTML>",
-			PARAMETER_FILTER_KEEP_KEY = "Keep events",
-			PARAMETER_FILTER_KEEP_DESC = "Keep events that match the filter query.";
+			PARAMETER_FILTER_KEEP_EVENTS_KEY = "Keep events",
+			PARAMETER_FILTER_KEEP_EVENTS_DESC = "Keep events that match the filter query.",
+			PARAMETER_FILTER_KEEP_EMPTY_TRACES_KEY = "Keep empty traces",
+			PARAMETER_FILTER_KEEP_EMPTY_TRACES_DESC = "Keep traces without events.";
 
 	private InputPort inputLog = getInputPorts().createPort("event log (ProM Event Log)", XLogIOObject.class);
 	private OutputPort outputLog = getOutputPorts().createPort("event log (ProM Event Log)");
@@ -110,7 +112,8 @@ public class FilterEventsOperator extends Operator {
 		XFactory factory = XFactoryRegistry.instance().currentDefault();
 		XLog filteredLog = factory.createLog((XAttributeMap) log.getAttributes().clone());
 
-		boolean keepFiltered = getParameterAsBoolean(PARAMETER_FILTER_KEEP_KEY);
+		boolean keepFiltered = getParameterAsBoolean(PARAMETER_FILTER_KEEP_EVENTS_KEY);
+		boolean keepEmptyTraces = getParameterAsBoolean(PARAMETER_FILTER_KEEP_EMPTY_TRACES_KEY);
 
 		for (XTrace trace : log) {
 			XTrace filteredTrace = factory.createTrace((XAttributeMap) trace.getAttributes().clone());
@@ -121,7 +124,7 @@ public class FilterEventsOperator extends Operator {
 					filteredTrace.add((XEvent) event.clone());
 				}
 			}
-			if (!filteredTrace.isEmpty()) {
+			if (!filteredTrace.isEmpty() || keepEmptyTraces) {
 				filteredLog.add(filteredTrace);
 			}
 		}
@@ -132,13 +135,11 @@ public class FilterEventsOperator extends Operator {
 	public List<ParameterType> getParameterTypes() {
 		List<ParameterType> parameterTypes = super.getParameterTypes();
 
-		ParameterTypeString parameterQuery = new ParameterTypeString(PARAMETER_FILTER_QUERY_KEY,
-				PARAMETER_FILTER_QUERY_DESCR, "");
-		parameterTypes.add(parameterQuery);
-
-		ParameterTypeBoolean parameterKeep = new ParameterTypeBoolean(PARAMETER_FILTER_KEEP_KEY,
-				PARAMETER_FILTER_KEEP_DESC, true);
-		parameterTypes.add(parameterKeep);
+		parameterTypes.add(new ParameterTypeString(PARAMETER_FILTER_QUERY_KEY, PARAMETER_FILTER_QUERY_DESCR, ""));
+		parameterTypes.add(
+				new ParameterTypeBoolean(PARAMETER_FILTER_KEEP_EVENTS_KEY, PARAMETER_FILTER_KEEP_EVENTS_DESC, true));
+		parameterTypes.add(new ParameterTypeBoolean(PARAMETER_FILTER_KEEP_EMPTY_TRACES_KEY,
+				PARAMETER_FILTER_KEEP_EMPTY_TRACES_DESC, true));
 
 		return parameterTypes;
 	}
