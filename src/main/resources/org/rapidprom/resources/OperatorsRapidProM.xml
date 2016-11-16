@@ -41,11 +41,16 @@
                 <class>org.rapidprom.operators.analysis.InductiveVisualMinerOperator</class>
                 <icon>magnifying_glass.png</icon>
             </operator>
-             <operator>
+            <operator>
                 <key>case_data_extractor</key>
                 <class>org.rapidprom.operators.analysis.CaseDataExtractorOperator</class>
                 <icon>magnifying_glass.png</icon>
             </operator>
+            <operator>
+                <key>project_alignment_on_model</key>
+                <class>org.rapidprom.operators.analysis.ProjectAlignedLogOnModelOperator</class>
+                <icon>magnifying_glass.png</icon>
+            </operator>            
         </group>
         <group key="conformance">
         	 <operator>
@@ -72,7 +77,12 @@
                 <key>create_transevmapping</key>
                 <class>org.rapidprom.operators.conformance.CreateTransEvMappingOperator</class>
                 <icon>objects_transform.png</icon>
-            </operator>            
+            </operator>
+            <operator>
+                <key>data_conformance</key>
+                <class>org.rapidprom.operators.conformance.DataConformanceOperator</class>
+                <icon>checks.png</icon>
+            </operator>
         </group>
         <group key="conversion">
             <operator>
@@ -288,6 +298,14 @@
                 <key>filter_traces</key>
                 <class>org.rapidprom.operators.logmanipulation.FilterTracesOperator</class>
             </operator>
+            <operator>
+                <key>filter_low_frequency_traces</key>
+                <class>org.rapidprom.operators.logmanipulation.FilterLowFrequencyTracesOperator</class>
+            </operator>
+            <operator>
+                <key>filter_high_frequency_traces</key>
+                <class>org.rapidprom.operators.logmanipulation.FilterHighFrequencyTracesOperator</class>
+            </operator>            
         </group> 
         <group key="streams">
             <group key="analysis">

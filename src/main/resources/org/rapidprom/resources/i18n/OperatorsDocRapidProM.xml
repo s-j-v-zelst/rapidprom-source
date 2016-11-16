@@ -53,7 +53,33 @@
         <name>Utility</name>
     </group>
     
+   <operator>
+        <name>Filter Out Low-Occurrence Traces</name>
+        <Synopyis> Filters a log using an absolute threshold. Traces that do not appear often enough, will be filtered out.</Synopyis>
+        <help>
+	        Filters a log using an absolute threshold. Traces that do not appear often enough, will be filtered out.
+        </help>
+ 		<key>filter_low_frequency_traces</key>
+   </operator>    
     
+   <operator>
+        <name>Filter In High-Frequency Traces</name>
+        <Synopyis>Filters a log using a frequency threshold (a percentage) and a distance threshold (edit distance).</Synopyis>
+        <help>
+	        Filters a log using a frequency threshold (a percentage) and a distance threshold (edit distance). 
+	        Any trace that either, (1) has a high-enough frequency or, (2) is close enough to a trace with high-enough frequency will be filtered in. 
+	        A trace has high-enough frequency if its frequency is required to reach the overall frequency threshold.
+        </help>
+ 		<key>filter_high_frequency_traces</key>
+   </operator>
+           
+   <operator>
+        <name>Project Alignment on Model</name>
+        <Synopyis>Projects an aligned log on a Data Petri net.</Synopyis>
+        <help>Projects an aligned log on a Data Petri net.</help>
+ 		<key>project_alignment_on_model</key>
+   </operator>
+   
     <!-- IMPORTERS -->
    <operator>
         <name>Calculate ETC 1-align precision</name>
@@ -134,7 +160,12 @@
         <help>For using this operator, you need petri net and a log. </help>
 		<key>discovery_of_the_process_data-flow_(decision-tree_miner)</key>
 	</operator>
-	
+  <operator>
+  		<name>Data Conformance Checking</name>
+        <synopsis>This operator replays a log onto a Data Petri net.</synopsis>
+        <help>This operator replays a log onto a Data Petri net as described in &lt;a href="http://dx.doi.org/10.1007/s00607-015-0441-1"&gt;here&lt;/a&gt;.</help>
+		<key>data_conformance</key>
+	</operator>	
   <operator>
   		<name>Petri Net to BPMN</name>
         <synopsis>This operator transforms a Petri net into a BPMN diagram. The conversion used is described in &lt;a href="http://dx.doi.org/10.1007/s10270-015-0502-0"&gt;here&lt;/a&gt;.</synopsis>
@@ -369,10 +400,10 @@
     	<key>abstract_based_on_pattern</key>
   	</operator>
       	 <operator>
-        <name>Expands Model Based on Patterns</name>
-        <synopsis>Expands model based on patterns.</synopsis>
+        <name>Expand Model Based on Patterns</name>
+        <synopsis>Expands model based on abstraction patterns.</synopsis>
         <help>
-        	Expands model based on patterns
+        	Expands model based on abstraction patterns. The abstract activities are replaced by the low-level patterns.
         </help>
     	<key>expand_based_on_pattern</key>
   	</operator>

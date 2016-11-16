@@ -146,6 +146,20 @@
 		class="org.rapidprom.ioobjects.AbstractionModelIOObject"
 		reportable="true">
 		<renderer>org.rapidprom.ioobjectrenderers.AbstractionModelIOObjectRenderer</renderer>
+	</ioobject>
+	
+	<ioobject
+		name="AlignedLogProM"
+		class="org.rapidprom.ioobjects.XAlignedLogIOObject"
+		reportable="true">
+		<renderer>org.rapidprom.ioobjectrenderers.XAlignedLogIOObjectWedgesRenderer</renderer>
+	</ioobject>	
+	
+	<ioobject
+		name="DotProM"
+		class="org.rapidprom.ioobjects.DotIOObject"
+		reportable="true">
+		<renderer>org.rapidprom.ioobjectrenderers.DotIOObjectRenderer</renderer>
 	</ioobject>	
 	
 	<!-- STREAMS -->
