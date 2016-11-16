@@ -132,8 +132,8 @@ public class CreateTransEvMappingOperator extends Operator {
 			PARAMETER_DESC_EVENT_CLASSIFIER = "Specifies how to identify events within the event log, as defined in http://www.xes-standard.org/";
 
 	private static XEventClassifier[] PARAMETER_DEFAULT_CLASSIFIERS = new XEventClassifier[] {
-			new XEventNameClassifier(),
-			new XEventAndClassifier(new XEventNameClassifier(), new XEventLifeTransClassifier()) };
+			new XEventAndClassifier(new XEventNameClassifier(), new XEventLifeTransClassifier()),
+			new XEventNameClassifier() };
 
 	private TransEvClassMapping createDefaultMappingTransitionsToEventClasses(PetrinetGraph net,
 			XEventClassifier classifier, XEventClasses eventClasses, Matcher matcher) {
@@ -182,15 +182,14 @@ public class CreateTransEvMappingOperator extends Operator {
 	public void doWork() throws OperatorException {
 
 		XLog log = getXLog();		
-		XEventClasses eventClasses = XUtils.createEventClasses(getClassifier(), log);
-
-		String matchingType = getParameterAsString(AUTOMATIC_MAPPING_KEY);
-
 		PetrinetGraph model = getModel();
 		if (model == null) {
 			throw new OperatorException("Missing model!");
 		}
 
+		XEventClasses eventClasses = XUtils.createEventClasses(getClassifier(), log);
+
+		String matchingType = getParameterAsString(AUTOMATIC_MAPPING_KEY);
 		TransEvClassMapping activityMapping = automaticMatching(eventClasses, matchingType, model);
 
 		ExampleSet mapping = getMapping();

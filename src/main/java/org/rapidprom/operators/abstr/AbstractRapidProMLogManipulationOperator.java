@@ -17,6 +17,7 @@ import org.processmining.framework.plugin.PluginContext;
 import org.processmining.log.utils.XUtils;
 import org.rapidprom.ioobjects.XLogIOObject;
 import org.rapidprom.parameter.ParameterTypeXEventClassifierCategory;
+import org.rapidprom.util.ObjectUtils;
 
 import com.rapidminer.operator.Operator;
 import com.rapidminer.operator.OperatorDescription;
@@ -33,7 +34,8 @@ public abstract class AbstractRapidProMLogManipulationOperator extends Operator 
 	private static final String PARAMETER_DESC_EVENT_CLASSIFIER = "Specifies how to identify events within the event log, as defined in http://www.xes-standard.org/";
 
 	private static XEventClassifier[] PARAMETER_DEFAULT_CLASSIFIERS = new XEventClassifier[] {
-			new XEventAndClassifier(new XEventNameClassifier(), new XEventLifeTransClassifier()) };
+			new XEventAndClassifier(new XEventNameClassifier(), new XEventLifeTransClassifier()),
+			new XEventNameClassifier()};
 
 	public AbstractRapidProMLogManipulationOperator(OperatorDescription description) {
 		super(description);
@@ -42,8 +44,9 @@ public abstract class AbstractRapidProMLogManipulationOperator extends Operator 
 	@Override
 	public List<ParameterType> getParameterTypes() {
 		List<ParameterType> params = super.getParameterTypes();
-		params.add(new ParameterTypeXEventClassifierCategory(PARAMETER_KEY_EVENT_CLASSIFIER,
-				PARAMETER_DESC_EVENT_CLASSIFIER, new String[] { PARAMETER_DEFAULT_CLASSIFIERS[0].toString() },
+		params.add(new ParameterTypeXEventClassifierCategory(
+				PARAMETER_KEY_EVENT_CLASSIFIER, PARAMETER_DESC_EVENT_CLASSIFIER,
+				ObjectUtils.toString(PARAMETER_DEFAULT_CLASSIFIERS),
 				PARAMETER_DEFAULT_CLASSIFIERS, 0, false, inputXLog));
 		return params;
 	}

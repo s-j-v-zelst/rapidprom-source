@@ -6,13 +6,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+
 import org.deckfour.xes.classification.XEventClasses;
 import org.deckfour.xes.model.XLog;
 import org.processmining.datapetrinets.DataPetriNetsWithMarkings;
 import org.processmining.framework.plugin.PluginContext;
-import org.processmining.framework.plugin.PluginContextID;
-import org.processmining.framework.plugin.events.Logger;
-import org.processmining.framework.plugin.events.ProgressEventListener;
 import org.processmining.log.utils.XUtils;
 import org.processmining.logenhancement.abstraction.PatternBasedLogAbstractionPlugin;
 import org.processmining.logenhancement.abstraction.PatternStructureException;
@@ -24,21 +22,23 @@ import org.processmining.plugins.balancedconformance.config.BalancedProcessorCon
 import org.processmining.plugins.balancedconformance.controlflow.ControlFlowAlignmentException;
 import org.processmining.plugins.balancedconformance.dataflow.exception.DataAlignmentException;
 import org.processmining.plugins.connectionfactories.logpetrinet.TransEvClassMapping;
+import org.processmining.xesalignmentextension.XAlignmentExtension.XAlignedLog;
 import org.rapidprom.exceptions.ExampleSetReaderException;
 import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.AbstractionModelIOObject;
 import org.rapidprom.ioobjects.TransEvMappingIOObject;
+import org.rapidprom.ioobjects.XAlignedLogIOObject;
 import org.rapidprom.ioobjects.XLogIOObject;
 import org.rapidprom.operators.conformance.util.AlignmentCostIO;
 import org.rapidprom.operators.conformance.util.DataAlignmentCostIO;
 import org.rapidprom.operators.conformance.util.VariableMappingIO;
+import org.rapidprom.operators.util.RapidProMProgress;
 
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.operator.Operator;
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
 import com.rapidminer.operator.ProcessSetupError.Severity;
-import com.rapidminer.operator.ProcessStoppedException;
 import com.rapidminer.operator.UserError;
 import com.rapidminer.operator.ports.InputPort;
 import com.rapidminer.operator.ports.OutputPort;
@@ -68,8 +68,8 @@ public class AbstractLogBasedOnAbstractionModelOperator extends Operator {
 	private static final String CONCURRENT_THREADS_KEY = "Number of Threads",
 			CONCURRENT_THREADS_DESCR = "Specify the number of threads used to calculate alignments in parallel."
 					+ " With each extra thread, more memory is used but less cpu time is required.",
-			KEEP_UNMATCHED_EVENTS_KEY = "Keep Unmatched Events",
-			KEEP_UNMATCHED_EVENTS_DESCR = "Do you want to keep low-level events that cannot be matched to any activity pattern? "
+			KEEP_UNMAPPED_EVENTS_KEY = "Keep Unmapped Events",
+			KEEP_UNMAPPED_EVENTS_DESCR = "Do you want to keep low-level events that cannot be mapped to any activity pattern? "
 					+ "This can be useful if your event log already contains some events at the desired level of abstraction.",
 			ERROR_RATE_KEY = "Error Rate", ERROR_RATE_DESCR = "Specify the acceptable 'matching error' ([0.0,1.0]";
 
@@ -85,17 +85,27 @@ public class AbstractLogBasedOnAbstractionModelOperator extends Operator {
 	private InputPort inputCostsData = getInputPorts().createPort("costs data (Example set)");
 
 	private OutputPort outputLog = getOutputPorts().createPort("event log (ProM Event Log)");
+	private OutputPort outputAlignedLog = getOutputPorts().createPort("aligned log (ProM Aligned Event Log)");	
+	private OutputPort outputTransitionMapping = getOutputPorts().createPort("mapping (Example set)");
 	private OutputPort outputVariableMapping = getOutputPorts().createPort("variable mapping (Example set)");
 	private OutputPort outputCosts = getOutputPorts().createPort("costs control-flow (Example set)");
 	private OutputPort outputCostsData = getOutputPorts().createPort("costs data (Example set)");
 
 	public AbstractLogBasedOnAbstractionModelOperator(OperatorDescription description) {
 		super(description);
-		inputTransitionMapping.addPrecondition(new SimplePrecondition(inputTransitionMapping, new MetaData(TransEvMappingIOObject.class), true));
-		inputVariableMapping.addPrecondition(new SimplePrecondition(inputVariableMapping, new MetaData(ExampleSet.class), false));
+		inputTransitionMapping.addPrecondition(
+				new SimplePrecondition(inputTransitionMapping, new MetaData(TransEvMappingIOObject.class), true));
+		inputVariableMapping
+				.addPrecondition(new SimplePrecondition(inputVariableMapping, new MetaData(ExampleSet.class), false));
 		inputCosts.addPrecondition(new SimplePrecondition(inputCosts, new MetaData(ExampleSet.class), false));
 		inputCostsData.addPrecondition(new SimplePrecondition(inputCostsData, new MetaData(ExampleSet.class), false));
+	
 		getTransformer().addRule(new GenerateNewMDRule(outputLog, XLogIOObject.class));
+		getTransformer().addRule(new GenerateNewMDRule(outputAlignedLog, XAlignedLogIOObject.class));
+		getTransformer().addRule(new GenerateNewMDRule(outputVariableMapping, ExampleSet.class));
+		getTransformer().addRule(new GenerateNewMDRule(outputTransitionMapping, TransEvMappingIOObject.class));
+		getTransformer().addRule(new GenerateNewMDRule(outputCosts, ExampleSet.class));
+		getTransformer().addRule(new GenerateNewMDRule(outputCostsData, ExampleSet.class));
 	}
 
 	@Override
@@ -105,10 +115,9 @@ public class AbstractLogBasedOnAbstractionModelOperator extends Operator {
 		AbstractionModel abstractionModel = getAbstractionModel();
 
 		try {
-			boolean keepUnmatchedEvents = getParameterAsBoolean(KEEP_UNMATCHED_EVENTS_KEY);
+			boolean keepUnmappedEvents = getParameterAsBoolean(KEEP_UNMAPPED_EVENTS_KEY);
 			double errorRateLimit = getParameterAsDouble(ERROR_RATE_KEY);
 
-			PluginContext context = getContext();
 			TransEvClassMapping transitionMapping = getTransitionMapping();
 
 			DataPetriNetsWithMarkings model = abstractionModel.getCombinedDPN();
@@ -146,9 +155,10 @@ public class AbstractLogBasedOnAbstractionModelOperator extends Operator {
 					inputCostsData.addError(new SimpleMetaDataError(Severity.WARNING, inputCostsData, e.getMessage()));
 				}
 			}
+			
+			XAlignedLog alignedLog = PatternBasedLogAbstractionPlugin.alignLogToAbstractionModel(new RapidProMProgress(getProgress()), alignmentConfig, log, abstractionModel);
 
-			XLog abstractedLog = PatternBasedLogAbstractionPlugin.abstractPatterns(context, log, abstractionModel,
-					keepUnmatchedEvents, errorRateLimit, alignmentConfig);
+			XLog abstractedLog = PatternBasedLogAbstractionPlugin.abstractAlignedLog(abstractionModel, alignedLog, keepUnmappedEvents, errorRateLimit, transitionMapping);
 
 			outputLog.deliver(new XLogIOObject(abstractedLog, getContext()));
 			outputCosts.deliver(new AlignmentCostIO().writeCostsToExampleSet(alignmentConfig.getMapEvClass2Cost(),
@@ -157,6 +167,7 @@ public class AbstractLogBasedOnAbstractionModelOperator extends Operator {
 					.deliver(new DataAlignmentCostIO().writeCostsToExampleSet(alignmentConfig.getVariableCost()));
 			outputVariableMapping
 					.deliver(new VariableMappingIO().writeVariableMapping(alignmentConfig.getVariableMapping()));
+			outputTransitionMapping.deliver(inputTransitionMapping.getData(TransEvMappingIOObject.class));
 
 		} catch (ControlFlowAlignmentException | DataAlignmentException | PatternStructureException e) {
 			throw new OperatorException("Failed abstraction!", e);
@@ -202,7 +213,7 @@ public class AbstractLogBasedOnAbstractionModelOperator extends Operator {
 	@Override
 	public List<ParameterType> getParameterTypes() {
 		List<ParameterType> params = super.getParameterTypes();
-		params.add(new ParameterTypeBoolean(KEEP_UNMATCHED_EVENTS_KEY, KEEP_UNMATCHED_EVENTS_DESCR, true, false));
+		params.add(new ParameterTypeBoolean(KEEP_UNMAPPED_EVENTS_KEY, KEEP_UNMAPPED_EVENTS_DESCR, true, false));
 		params.add(new ParameterTypeDouble(ERROR_RATE_KEY, ERROR_RATE_DESCR, 0.0, 1.0, 1.0));
 		params.add(new ParameterTypeInt(CONCURRENT_THREADS_KEY, CONCURRENT_THREADS_DESCR, 1,
 				Runtime.getRuntime().availableProcessors(), Runtime.getRuntime().availableProcessors(), true));
@@ -263,47 +274,7 @@ public class AbstractLogBasedOnAbstractionModelOperator extends Operator {
 	}
 
 	private PluginContext getContext() throws UserError {
-		final PluginContext context = RapidProMGlobalContext.instance().getPluginContext();
-		context.getProgressEventListeners().add(new ProgressEventListener() {
-
-			@Override
-			public void changeProgress(int arg0) {
-				try {
-					getProgress().setCompleted(arg0);
-				} catch (ProcessStoppedException e) {
-					context.getProgress().cancel();
-				}
-			}
-
-			@Override
-			public void changeProgressBounds(int arg0, int arg1) {
-				getProgress().setTotal(arg1);
-			}
-
-			@Override
-			public void changeProgressCaption(String arg0) {
-				getLog().log(arg0);
-			}
-
-			@Override
-			public void changeProgressIndeterminate(boolean arg0) {
-				getProgress().setIndeterminate(arg0);
-			}
-
-		});
-		context.getLoggingListeners().add(new Logger() {
-
-			@Override
-			public void log(String arg0, PluginContextID arg1, MessageLevel arg2) {
-				getLog().log(arg0);
-			}
-
-			@Override
-			public void log(Throwable arg0, PluginContextID arg1) {
-				getLog().logError(arg0.toString());
-			}
-		});
-		return context;
+		return RapidProMGlobalContext.instance().getPluginContext();
 	}
 
 }
