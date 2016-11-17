@@ -122,7 +122,7 @@ dependencies {
 	compile "org.rapidprom:TSPetriNet:6.5.35"
 	compile "org.rapidprom:Uma:6.5.46"
 	compile "org.rapidprom:Widgets:6.7.177"
-	compile "org.rapidprom:Woflan:6.7.54"
+	compile "org.rapidprom:Woflan:6.7.59"
 	compile "org.rapidprom:XESAlignmentExtension:6.5.29"
 	compile "org.rapidprom:XESLite:6.7.217"
 	compile "org.rapidprom:Weka:6.7.3"
