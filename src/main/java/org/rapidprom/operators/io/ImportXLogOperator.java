@@ -39,7 +39,7 @@ public class ImportXLogOperator extends AbstractRapidProMImportOperator<XLogIOOb
 	private final static ImplementingPlugin[] PARAMETER_OPTIONS_IMPORTER = EnumSet.allOf(ImplementingPlugin.class)
 			.toArray(new ImplementingPlugin[EnumSet.allOf(ImplementingPlugin.class).size()]);
 
-	private final static String[] SUPPORTED_FILE_FORMATS = new String[] { "xes" };
+	private final static String[] SUPPORTED_FILE_FORMATS = new String[] { "xes" , "xes.gz" };
 
 	public ImportXLogOperator(OperatorDescription description) {
 		super(description, XLogIOObject.class, SUPPORTED_FILE_FORMATS);

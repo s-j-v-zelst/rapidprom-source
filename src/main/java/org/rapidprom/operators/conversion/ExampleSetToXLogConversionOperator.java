@@ -1,6 +1,7 @@
 package org.rapidprom.operators.conversion;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -12,13 +13,16 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.deckfour.xes.classification.XEventAndClassifier;
+import org.deckfour.xes.classification.XEventClassifier;
 import org.deckfour.xes.classification.XEventLifeTransClassifier;
 import org.deckfour.xes.classification.XEventNameClassifier;
+import org.deckfour.xes.classification.XEventResourceClassifier;
 import org.deckfour.xes.extension.std.XConceptExtension;
 import org.deckfour.xes.extension.std.XLifecycleExtension;
 import org.deckfour.xes.extension.std.XOrganizationalExtension;
 import org.deckfour.xes.extension.std.XTimeExtension;
 import org.deckfour.xes.factory.XFactory;
+import org.deckfour.xes.factory.XFactoryNaiveImpl;
 import org.deckfour.xes.model.XAttributeLiteral;
 import org.deckfour.xes.model.XAttributeMap;
 import org.deckfour.xes.model.XEvent;
@@ -28,15 +32,18 @@ import org.deckfour.xes.model.impl.XAttributeLiteralImpl;
 import org.deckfour.xes.model.impl.XAttributeMapImpl;
 import org.deckfour.xes.model.impl.XAttributeTimestampImpl;
 import org.processmining.xeslite.external.XFactoryExternalStore;
+import org.processmining.xeslite.lite.factory.XFactoryLiteImpl;
 import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.XLogIOObject;
 import org.rapidprom.operators.ports.metadata.ExampleSetNumberOfAttributesPrecondition;
+import org.rapidprom.operators.ports.metadata.XLogIOObjectMetaData;
 import org.rapidprom.parameter.ParameterTypeExampleSetAttributesDynamicCategory;
 
 import com.google.gwt.dev.util.collect.HashSet;
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
+import com.rapidminer.operator.IOObject;
 import com.rapidminer.operator.Operator;
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
@@ -44,14 +51,18 @@ import com.rapidminer.operator.ports.InputPort;
 import com.rapidminer.operator.ports.OutputPort;
 import com.rapidminer.operator.ports.metadata.ExampleSetMetaData;
 import com.rapidminer.operator.ports.metadata.GenerateNewMDRule;
+import com.rapidminer.operator.ports.metadata.MetaData;
 import com.rapidminer.parameter.ParameterType;
 import com.rapidminer.parameter.ParameterTypeBoolean;
+import com.rapidminer.parameter.ParameterTypeCategory;
 import com.rapidminer.parameter.UndefinedParameterError;
 import com.rapidminer.parameter.conditions.BooleanParameterCondition;
 import com.rapidminer.tools.LogService;
 
 public class ExampleSetToXLogConversionOperator extends Operator {
 
+	private static final String NAIVE = "Naive", LIGHT_WEIGHT_SEQ_ID = "Lightweight & Sequential IDs",
+			MAP_DB = "Buffered by MAPDB";
 	private static final String DEFAULT_VALUE_OPTIONAL = "<ignore>";
 	private static final String GLOBAL_INVALID = "__INVALID__";
 	private static final String PARAMETER_DEFAULT_EVENT_IDENTIFIER = "E:concept:name";
@@ -89,7 +100,21 @@ public class ExampleSetToXLogConversionOperator extends Operator {
 	private static final String PARAMETER_KEY_INCLUDE_ORGANIZATIONAL = "include_organizational_perspective";
 	// private static final String PARAMETER_KEY_REORDER_BY_TIMESTAMP =
 	// "reorder_by_time_stamp";
+	public static final String PARAMETER_1_KEY = "Event Classifier",
+			PARAMETER_1_DESCR = "Classifier to be added to the event log";
+
+	public static final String NONE = "None (do not add classifier)", EN = "Event name",
+			EN_LT = "Event name + Lifecycle transition", EN_LT_RE = "Event name + Lifecycle transition + Resource";
+
 	private static final String PARAMETER_KEY_TRACE_IDENTIFIER = "trace_identifier";
+
+	private static final String PARAMETER_FACTORY_KEY = "Event Log Factory:",
+			PARAMETER_FACTORY_DESCR = "Select the implementing importer, importers differ in terms of performance: "
+					+ "The \"Naive\" importer loads the Log completely in memory (faster, but more memory usage). "
+					+ "The \"Buffered by MAPDB\" importer loads only log, trace and event ids, "
+					+ "and the rest of the data (mainly attribute values) are stored in disk by MapDB "
+					+ "(slower, but less memory usage). "
+					+ "The \"Lightweight & Sequential IDs\" importer is a balance between the \"Naive\" and the \"Buffered by MapDB\" importers";;
 
 	/** defining the ports */
 	private InputPort inputExampleSet = getInputPorts().createPort("example set (Data Table)",
@@ -100,7 +125,7 @@ public class ExampleSetToXLogConversionOperator extends Operator {
 
 	public ExampleSetToXLogConversionOperator(OperatorDescription description) {
 		super(description);
-		getTransformer().addRule(new GenerateNewMDRule(outputLog, XLogIOObject.class));
+		getTransformer().addRule(new XLogMetaData(outputLog, XLogIOObject.class));
 		inputExampleSet.addPrecondition(new ExampleSetNumberOfAttributesPrecondition(inputExampleSet, 2));
 	}
 
@@ -278,7 +303,21 @@ public class ExampleSetToXLogConversionOperator extends Operator {
 
 	private XLog constructLogByExampleSet(ExampleSet data) {
 		// XFactory factory = XFactoryRegistry.instance().currentDefault();
-		XFactory factory = new XFactoryExternalStore.MapDBDiskImpl();
+
+		XFactory factory = null;
+		try {
+			if (getParameterAsString(PARAMETER_FACTORY_KEY).equals(NAIVE))
+				factory = new XFactoryNaiveImpl();
+			else if (getParameterAsString(PARAMETER_FACTORY_KEY).equals(LIGHT_WEIGHT_SEQ_ID))
+				factory = new XFactoryLiteImpl();
+			else
+				factory = new XFactoryExternalStore.MapDBDiskImpl();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		if (factory == null)
+			factory = new XFactoryNaiveImpl();
 
 		XLog log = createLog(factory, getParameterAsBoolean(PARAMETER_KEY_INCLUDE_EVENT_LIFECYCLE_TRANSITION));
 
@@ -449,6 +488,23 @@ public class ExampleSetToXLogConversionOperator extends Operator {
 		long time = System.currentTimeMillis();
 		reservedColumns = determineReservedColumns();
 		XLog log = constructLogByExampleSet(inputExampleSet.getData(ExampleSet.class));
+
+		switch (getParameterAsString(PARAMETER_1_KEY)) {
+		case NONE:
+			break;
+		case EN:
+			log.getClassifiers().add(new XEventNameClassifier());
+
+			break;
+		case EN_LT:
+			log.getClassifiers()
+					.add(new XEventAndClassifier(new XEventNameClassifier(), new XEventLifeTransClassifier()));
+			break;
+		case EN_LT_RE:
+			log.getClassifiers().add(new XEventAndClassifier(new XEventNameClassifier(),
+					new XEventLifeTransClassifier(), new XEventResourceClassifier()));
+			break;
+		}
 		// FIXME time based reordering in ProM does not properly copy all log
 		// extensions, classifiers etc.
 		// if (!getDynamicParameterTypeValue(PARAMETER_KEY_EVENT_TIMESTAMP)
@@ -475,6 +531,16 @@ public class ExampleSetToXLogConversionOperator extends Operator {
 	@Override
 	public List<ParameterType> getParameterTypes() {
 		List<ParameterType> params = super.getParameterTypes();
+
+		ParameterTypeCategory importer = new ParameterTypeCategory(PARAMETER_FACTORY_KEY, PARAMETER_FACTORY_DESCR,
+				new String[] { NAIVE, LIGHT_WEIGHT_SEQ_ID, MAP_DB }, 0, false);
+		params.add(importer);
+
+		String[] par2categories = new String[] { NONE, EN, EN_LT, EN_LT_RE };
+		ParameterTypeCategory classifierparameter = new ParameterTypeCategory(PARAMETER_1_KEY, PARAMETER_1_DESCR,
+				par2categories, 1);
+
+		params.add(classifierparameter);
 		params = addTraceIdentificationParameterType(params);
 		params = addEventIdentificationParameterType(params);
 		params = addTimeStampParameterTypes(params);
@@ -516,6 +582,55 @@ public class ExampleSetToXLogConversionOperator extends Operator {
 			int defaultValue, boolean expert, InputPort inputPort) {
 		return new ParameterTypeExampleSetAttributesDynamicCategory(key, desc, values, values, defaultValue, expert,
 				inputPort);
+	}
+
+	class XLogMetaData extends GenerateNewMDRule {
+
+		public XLogMetaData(OutputPort outputPort, Class<? extends IOObject> clazz) {
+			super(outputPort, clazz);
+		}
+
+		@Override
+		public void transformMD() {
+			try {
+				outputLog.deliverMD(getGeneratedMetaData());
+			} catch (OperatorException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+	}
+
+	public MetaData getGeneratedMetaData() throws OperatorException {
+		getLogger().fine("Generating meta data for " + this.getName());
+		List<XEventClassifier> classifiers = new ArrayList<XEventClassifier>();
+
+		try {
+
+			switch (getParameterAsString(PARAMETER_1_KEY)) {
+			case NONE:
+				break;
+			case EN:
+				classifiers.add(new XEventNameClassifier());
+
+				break;
+			case EN_LT:
+				classifiers.add(new XEventAndClassifier(new XEventNameClassifier(), new XEventLifeTransClassifier()));
+				break;
+			case EN_LT_RE:
+				classifiers.add(new XEventAndClassifier(new XEventNameClassifier(), new XEventLifeTransClassifier(),
+						new XEventResourceClassifier()));
+				break;
+			}
+
+		} catch (Exception e) {
+			return new XLogIOObjectMetaData();
+		}
+		if (!classifiers.isEmpty())
+			return new XLogIOObjectMetaData(classifiers);
+		else
+			return new XLogIOObjectMetaData();
 	}
 
 }

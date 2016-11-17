@@ -5,9 +5,9 @@ import java.util.logging.Logger;
 
 import org.processmining.framework.plugin.PluginContext;
 import org.processmining.plugins.inductiveVisualMiner.InductiveVisualMiner;
-import org.processmining.plugins.inductiveVisualMiner.InductiveVisualMiner.InteractiveMinerLauncher;
+import org.processmining.plugins.inductiveVisualMiner.InductiveVisualMiner.InductiveVisualMinerLauncher;
 import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
-import org.rapidprom.ioobjects.InteractiveMinerLauncherIOObject;
+import org.rapidprom.ioobjects.InductiveVisualMinerLauncherIOObject;
 import org.rapidprom.operators.abstr.AbstractRapidProMDiscoveryOperator;
 
 import com.rapidminer.operator.OperatorDescription;
@@ -23,8 +23,8 @@ public class InductiveVisualMinerOperator extends AbstractRapidProMDiscoveryOper
 
 	public InductiveVisualMinerOperator(OperatorDescription description) {
 		super(description);
-		getTransformer()
-				.addRule(new GenerateNewMDRule(outputInteractiveMinerLauncher, InteractiveMinerLauncherIOObject.class));
+		getTransformer().addRule(
+				new GenerateNewMDRule(outputInteractiveMinerLauncher, InductiveVisualMinerLauncherIOObject.class));
 	}
 
 	public void doWork() throws OperatorException {
@@ -34,10 +34,10 @@ public class InductiveVisualMinerOperator extends AbstractRapidProMDiscoveryOper
 
 		PluginContext pluginContext = RapidProMGlobalContext.instance().getPluginContext();
 		InductiveVisualMiner wrapper = new InductiveVisualMiner();
-		InteractiveMinerLauncher im = wrapper.mineGuiProcessTree(pluginContext, getXLog());
+		InductiveVisualMinerLauncher im = wrapper.mineGuiProcessTree(pluginContext, getXLog());
 
-		InteractiveMinerLauncherIOObject interactiveMinerLauncherIOObject = new InteractiveMinerLauncherIOObject(im,
-				pluginContext);
+		InductiveVisualMinerLauncherIOObject interactiveMinerLauncherIOObject = new InductiveVisualMinerLauncherIOObject(
+				im, pluginContext);
 
 		outputInteractiveMinerLauncher.deliver(interactiveMinerLauncherIOObject);
 
