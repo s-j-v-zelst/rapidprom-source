@@ -53,6 +53,16 @@
         <name>Utility</name>
     </group>
     
+    
+   <operator>
+        <name>Filter Unmapped Events</name>
+        <Synopyis>Removes events that are not mapped to any transition in the supplied mapping.</Synopyis>
+        <help>
+	      	Removes events that are not mapped to any transition in the supplied mapping.
+        </help>
+ 		<key>filter_unmapped_events</key>
+   </operator>    
+        
    <operator>
         <name>Filter Out Low-Occurrence Traces</name>
         <Synopyis> Filters a log using an absolute threshold. Traces that do not appear often enough, will be filtered out.</Synopyis>
@@ -208,7 +218,7 @@
 	<operator>
   		<name>Import Data Petri Net</name>
         <synopsis>This operator is used to import a Data Petri net from a PNML file</synopsis>
-        <help>This operator can be used to read a Data Petri net from a PNML file. Also usual Petri nets are accepted.</help>
+        <help>This operator can be used to read a Data Petri net from a PNML file. Also normal Petri nets are accepted.</help>
 		<key>import_data_petri_net</key>
 	</operator>	
 	

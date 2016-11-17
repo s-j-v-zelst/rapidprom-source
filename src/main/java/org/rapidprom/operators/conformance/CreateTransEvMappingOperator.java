@@ -168,12 +168,16 @@ public class CreateTransEvMappingOperator extends Operator {
 
 	private InputPort inputMapping = getInputPorts().createPort("mapping (Example set)");
 
+	private OutputPort passthroughLog = getOutputPorts().createPort("event log (ProM Event Log)");
+	private OutputPort passthroughModel = getOutputPorts().createPort("model (ProM Petri net / Data Petri net)");
 	private OutputPort outputMappingProM = getOutputPorts().createPort("mapping (ProM Transition/Event Class Mapping)");
 	private OutputPort outputMappingExampleSet = getOutputPorts().createPort("mapping (Example set)");
 
 	public CreateTransEvMappingOperator(OperatorDescription description) {
 		super(description);
 		inputMapping.addPrecondition(new SimplePrecondition(inputMapping, new MetaData(ExampleSet.class), false));
+		getTransformer().addPassThroughRule(inputLog, passthroughLog);
+		getTransformer().addPassThroughRule(inputModel, passthroughModel);
 		getTransformer().addRule(new GenerateNewMDRule(outputMappingProM, TransEvMappingIOObject.class));
 		getTransformer().addRule(new GenerateNewMDRule(outputMappingExampleSet, ExampleSet.class));
 	}
@@ -201,6 +205,8 @@ public class CreateTransEvMappingOperator extends Operator {
 		outputMappingProM.deliver(mappingIOObject);
 		ExampleSet asExampleSet = mappingIOObject.getAsExampleSet();
 		outputMappingExampleSet.deliver(asExampleSet);
+		passthroughLog.deliver(getLogIO());
+		passthroughModel.deliver(inputModel.getData(IOObject.class));
 	}
 
 	private TransEvClassMapping automaticMatching(XEventClasses eventClasses, String matchingType, PetrinetGraph model)
@@ -317,7 +323,11 @@ public class CreateTransEvMappingOperator extends Operator {
 	}
 
 	private XLog getXLog() throws UserError {
-		return inputLog.getData(XLogIOObject.class).getArtifact();
+		return getLogIO().getArtifact();
+	}
+
+	private XLogIOObject getLogIO() throws UserError {
+		return inputLog.getData(XLogIOObject.class);
 	}
 
 	private PetrinetGraph getModel() throws OperatorException {

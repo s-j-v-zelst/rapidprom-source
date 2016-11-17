@@ -19,6 +19,8 @@ import org.processmining.plugins.balancedconformance.config.BalancedProcessorCon
 import org.processmining.plugins.balancedconformance.controlflow.ControlFlowAlignmentException;
 import org.processmining.plugins.balancedconformance.dataflow.exception.DataAlignmentException;
 import org.processmining.plugins.connectionfactories.logpetrinet.TransEvClassMapping;
+import org.processmining.xesalignmentextension.XAlignmentExtension;
+import org.processmining.xesalignmentextension.XAlignmentExtension.XAlignedLog;
 import org.rapidprom.exceptions.ExampleSetReaderException;
 import org.rapidprom.ioobjects.DataPetriNetIOObject;
 import org.rapidprom.ioobjects.TransEvMappingIOObject;
@@ -29,21 +31,30 @@ import org.rapidprom.operators.conformance.util.DataAlignmentCostIO;
 import org.rapidprom.operators.conformance.util.VariableMappingIO;
 import org.rapidprom.operators.util.RapidProMProgress;
 
+import com.rapidminer.example.Attribute;
 import com.rapidminer.example.ExampleSet;
+import com.rapidminer.example.table.AttributeFactory;
+import com.rapidminer.example.table.DataRowFactory;
+import com.rapidminer.example.table.MemoryExampleTable;
 import com.rapidminer.operator.Operator;
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
 import com.rapidminer.operator.ProcessSetupError.Severity;
+import com.rapidminer.operator.io.AbstractDataReader.AttributeColumn;
 import com.rapidminer.operator.UserError;
 import com.rapidminer.operator.ports.InputPort;
 import com.rapidminer.operator.ports.OutputPort;
+import com.rapidminer.operator.ports.metadata.AttributeMetaData;
+import com.rapidminer.operator.ports.metadata.ExampleSetMetaData;
 import com.rapidminer.operator.ports.metadata.GenerateNewMDRule;
+import com.rapidminer.operator.ports.metadata.MDInteger;
 import com.rapidminer.operator.ports.metadata.MetaData;
 import com.rapidminer.operator.ports.metadata.SimpleMetaDataError;
 import com.rapidminer.operator.ports.metadata.SimplePrecondition;
 import com.rapidminer.parameter.ParameterType;
 import com.rapidminer.parameter.ParameterTypeInt;
 import com.rapidminer.parameter.UndefinedParameterError;
+import com.rapidminer.tools.Ontology;
 
 import javassist.tools.rmi.ObjectNotFoundException;
 
@@ -77,8 +88,10 @@ public class DataConformanceOperator extends Operator {
 	private InputPort inputCostsData = getInputPorts().createPort("costs data (Example set)");
 
 	private OutputPort outputAlignedLog = getOutputPorts().createPort("aligned log (ProM Aligned Event Log)");
-	
-	private OutputPort outputTransitionMapping = getOutputPorts().createPort("mapping (ProM Transition/Event Class Mapping)");
+	private OutputPort outputMetrics = getOutputPorts().createPort("fitness/precision (Example set)");
+
+	private OutputPort outputTransitionMapping = getOutputPorts()
+			.createPort("mapping (ProM Transition/Event Class Mapping)");
 	private OutputPort outputVariableMapping = getOutputPorts().createPort("variable mapping (Example set)");
 	private OutputPort outputCosts = getOutputPorts().createPort("costs control-flow (Example set)");
 	private OutputPort outputCostsData = getOutputPorts().createPort("costs data (Example set)");
@@ -93,6 +106,21 @@ public class DataConformanceOperator extends Operator {
 		inputCostsData.addPrecondition(new SimplePrecondition(inputCostsData, new MetaData(ExampleSet.class), false));
 
 		getTransformer().addRule(new GenerateNewMDRule(outputAlignedLog, XAlignedLogIOObject.class));
+		
+		getTransformer().addRule(new GenerateNewMDRule(outputMetrics, ExampleSet.class));
+		ExampleSetMetaData metaData = new ExampleSetMetaData();
+		AttributeMetaData amd1 = new AttributeMetaData("Name", Ontology.STRING);
+		amd1.setRole(AttributeColumn.REGULAR);
+		amd1.setNumberOfMissingValues(new MDInteger(0));
+		metaData.addAttribute(amd1);
+		AttributeMetaData amd2 = new AttributeMetaData("Value", Ontology.NUMERICAL);
+		amd2.setRole(AttributeColumn.REGULAR);
+		amd2.setNumberOfMissingValues(new MDInteger(0));
+		metaData.addAttribute(amd2);
+		metaData.setNumberOfExamples(1);
+		getTransformer().addRule(new GenerateNewMDRule(outputMetrics, metaData));
+		
+		
 		getTransformer().addRule(new GenerateNewMDRule(outputTransitionMapping, TransEvMappingIOObject.class));
 		getTransformer().addRule(new GenerateNewMDRule(outputVariableMapping, ExampleSet.class));
 		getTransformer().addRule(new GenerateNewMDRule(outputCosts, ExampleSet.class));
@@ -141,9 +169,18 @@ public class DataConformanceOperator extends Operator {
 			}
 
 			BalancedDataXAlignmentPlugin alignmentPlugin = new BalancedDataXAlignmentPlugin();
-			XLog alignedLog = alignmentPlugin.alignLog(new RapidProMProgress(getProgress()), dpn, log, config);
+			XAlignedLog alignedLog = XAlignmentExtension.instance()
+					.extendLog(alignmentPlugin.alignLog(new RapidProMProgress(getProgress()), dpn, log, config));
 
-			outputAlignedLog.deliver(new XAlignedLogIOObject(alignedLog, dpnIO.getPluginContext()));
+//			PrecisionConfig precisionConfig = new PrecisionConfig(dpnIO.getInitialMarking(),
+//					DataAwarePrecisionPlugin.convertMapping(config.getActivityMapping()),
+//					config.getActivityMapping().getEventClassifier(), config.getVariableMapping());
+//			precisionConfig.setAssumeUnassignedVariablesFree(true);
+//			PrecisionResult precisionResult = new DataAwarePrecisionPlugin().doMeasurePrecisionWithAlignment(dpn, log,
+//					alignedLog, precisionConfig);
+
+			outputAlignedLog.deliver(new XAlignedLogIOObject(alignedLog.getLog(), dpnIO.getPluginContext()));
+			outputMetrics.deliver(createMeasureTable(alignedLog));
 			outputCosts.deliver(new AlignmentCostIO().writeCostsToExampleSet(config.getMapEvClass2Cost(),
 					config.getMapTrans2Cost()));
 			outputCostsData.deliver(new DataAlignmentCostIO().writeCostsToExampleSet(config.getVariableCost()));
@@ -155,7 +192,24 @@ public class DataConformanceOperator extends Operator {
 		} catch (ObjectNotFoundException e) {
 			throw new OperatorException("Missing markings " + e.getMessage(), e);
 		}
+//		} catch (PrecisionMeasureException | ProcessProjectionException e) {
+//			throw new OperatorException("Failed precision measurement " + e.getMessage(), e);
+//		}
 
+	}
+
+	public ExampleSet createMeasureTable(XAlignedLog alignedLog) {
+		Attribute nameAttr = AttributeFactory.createAttribute("Name", Ontology.STRING);
+		Attribute valueAttr = AttributeFactory.createAttribute("Value", Ontology.NUMERICAL);
+		MemoryExampleTable table = new MemoryExampleTable(nameAttr, valueAttr);
+		DataRowFactory factory = new DataRowFactory(DataRowFactory.TYPE_DOUBLE_ARRAY, '.');
+
+		table.addDataRow(factory.create(new Object[] { "averageFitness", alignedLog.getAverageFitness() },
+				new Attribute[] { nameAttr, valueAttr }));
+//		table.addDataRow(factory.create(new Object[] { "averagePrecision", precisionResult.getPrecision() },
+//				new Attribute[] { nameAttr, valueAttr }));
+
+		return table.createExampleSet();
 	}
 
 	private void applyUserDefinedTransitionMapping(TransEvClassMapping mapping,

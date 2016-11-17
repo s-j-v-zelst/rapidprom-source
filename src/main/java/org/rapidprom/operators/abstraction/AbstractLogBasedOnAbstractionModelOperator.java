@@ -19,6 +19,7 @@ import org.processmining.models.graphbased.directed.petrinet.PetrinetGraph;
 import org.processmining.models.graphbased.directed.petrinet.elements.Transition;
 import org.processmining.models.graphbased.directed.petrinetwithdata.newImpl.DataElement;
 import org.processmining.plugins.balancedconformance.config.BalancedProcessorConfiguration;
+import org.processmining.plugins.balancedconformance.config.BalancedProcessorConfiguration.UnassignedMode;
 import org.processmining.plugins.balancedconformance.controlflow.ControlFlowAlignmentException;
 import org.processmining.plugins.balancedconformance.dataflow.exception.DataAlignmentException;
 import org.processmining.plugins.connectionfactories.logpetrinet.TransEvClassMapping;
@@ -126,7 +127,7 @@ public class AbstractLogBasedOnAbstractionModelOperator extends Operator {
 					getDefaultCostLogMove(), getDefaultCostModelMove(), getDefaultCostMissingWrite(),
 					getDefaultCostWrongWrite());
 			applyUserDefinedTransitionMapping(transitionMapping, alignmentConfig);
-
+			
 			alignmentConfig.setActivateDataViewCache(false);
 			alignmentConfig.setKeepDataFlowSearchSpace(false);
 			alignmentConfig.setKeepControlFlowSearchSpace(true);
@@ -156,11 +157,6 @@ public class AbstractLogBasedOnAbstractionModelOperator extends Operator {
 				}
 			}
 			
-			XAlignedLog alignedLog = PatternBasedLogAbstractionPlugin.alignLogToAbstractionModel(new RapidProMProgress(getProgress()), alignmentConfig, log, abstractionModel);
-
-			XLog abstractedLog = PatternBasedLogAbstractionPlugin.abstractAlignedLog(abstractionModel, alignedLog, keepUnmappedEvents, errorRateLimit, transitionMapping);
-
-			outputLog.deliver(new XLogIOObject(abstractedLog, getContext()));
 			outputCosts.deliver(new AlignmentCostIO().writeCostsToExampleSet(alignmentConfig.getMapEvClass2Cost(),
 					alignmentConfig.getMapTrans2Cost()));
 			outputCostsData
@@ -168,6 +164,12 @@ public class AbstractLogBasedOnAbstractionModelOperator extends Operator {
 			outputVariableMapping
 					.deliver(new VariableMappingIO().writeVariableMapping(alignmentConfig.getVariableMapping()));
 			outputTransitionMapping.deliver(inputTransitionMapping.getData(TransEvMappingIOObject.class));
+			
+			XAlignedLog alignedLog = PatternBasedLogAbstractionPlugin.alignLogToAbstractionModel(new RapidProMProgress(getProgress()), alignmentConfig, log, abstractionModel);
+
+			XLog abstractedLog = PatternBasedLogAbstractionPlugin.abstractAlignedLog(abstractionModel, alignedLog, keepUnmappedEvents, errorRateLimit, transitionMapping);
+
+			outputLog.deliver(new XLogIOObject(abstractedLog, getContext()));
 
 		} catch (ControlFlowAlignmentException | DataAlignmentException | PatternStructureException e) {
 			throw new OperatorException("Failed abstraction!", e);

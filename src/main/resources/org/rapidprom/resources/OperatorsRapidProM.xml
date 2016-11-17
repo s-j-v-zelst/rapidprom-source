@@ -305,6 +305,10 @@
             <operator>
                 <key>filter_high_frequency_traces</key>
                 <class>org.rapidprom.operators.logmanipulation.FilterHighFrequencyTracesOperator</class>
+            </operator>
+			<operator>
+                <key>filter_unmapped_events</key>
+                <class>org.rapidprom.operators.logmanipulation.FilterUnamppedEventsOperator</class>
             </operator>            
         </group> 
         <group key="streams">
