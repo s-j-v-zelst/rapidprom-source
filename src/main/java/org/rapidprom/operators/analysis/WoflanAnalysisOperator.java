@@ -3,6 +3,7 @@ package org.rapidprom.operators.analysis;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,12 +36,12 @@ public class WoflanAnalysisOperator extends Operator {
 					+ "Helpful when analyzing large Petri nets.";
 
 	private InputPort input = getInputPorts().createPort("model (ProM Petri Net)", PetriNetIOObject.class);
-	private OutputPort outputWoflan = getOutputPorts().createPort("woflan diagnosis (ProM WoflanDiagnosis)");
+	//private OutputPort outputWoflan = getOutputPorts().createPort("woflan diagnosis (ProM WoflanDiagnosis)");
 	private OutputPort outputWoflanString = getOutputPorts().createPort("woflan diagnosis (String)");
 
 	public WoflanAnalysisOperator(OperatorDescription description) {
 		super(description);
-		getTransformer().addRule(new GenerateNewMDRule(outputWoflan, WoflanDiagnosisIOObject.class));
+		//getTransformer().addRule(new GenerateNewMDRule(outputWoflan, WoflanDiagnosisIOObject.class));
 		getTransformer().addRule(new GenerateNewMDRule(outputWoflanString, ExampleSet.class));
 	}
 
@@ -68,13 +69,18 @@ public class WoflanAnalysisOperator extends Operator {
 			outputString[0][1] = woflanDiagnosisIOObject.getArtifact().isSound() ? "Sound"
 					: "Unsound";
 			outputString[1][1] = woflanDiagnosisIOObject.getArtifact().toString();
-			outputWoflan.deliver(woflanDiagnosisIOObject);
+			//outputWoflan.deliver(woflanDiagnosisIOObject);
 
-		} catch (Exception e1) {
+		} catch (TimeoutException e1) {
 
 			outputString[0][1] = "Timeout";
 			outputString[1][1] = " Woflan could not evaluate soundness in the given time.";
 			logger.log(Level.INFO, "Woflan timed out.");
+		} catch (Exception e) {
+			outputString[0][1] = "Error";
+			outputString[1][1] = " Woflan could not evaluate the Petri net";
+			logger.log(Level.INFO, "Woflan error.");
+			e.printStackTrace();
 		}
 
 		ExampleSet es = ExampleSetFactory.createExampleSet(outputString);
