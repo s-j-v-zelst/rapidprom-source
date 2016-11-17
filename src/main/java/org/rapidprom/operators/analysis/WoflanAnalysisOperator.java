@@ -99,7 +99,7 @@ public class WoflanAnalysisOperator extends Operator {
 						TimeUnit.SECONDS, true);
 
 			highLevelResult = woflanDiagnosisIOObject.getArtifact().isSound() ? "Sound" : "Unsound";
-			lowLevelResult = woflanDiagnosisIOObject.getArtifact().toString().replace("\n","");
+			lowLevelResult = woflanDiagnosisIOObject.getArtifact().toString().replace("\n"," ");
 
 		} catch (TimeoutException e1) {
 
