@@ -55,6 +55,16 @@
     
     
    <operator>
+        <name>Petri net Complexity Metrics</name>
+        <Synopyis>Calculates complexity metrics for a Petri net.</Synopyis>
+        <help>
+	      Calculates complexity metrics for a Petri net. Implements metrics describe in the article: &lt;a href="https://doi.org/10.1016/j.infsof.2008.08.005"&gt;Complexity metrics for Workflow nets&lt;/a&gt; and some more.
+	      Implemented metrics are: 'Extended Cardoso metric', 'Extended Cyclomatic metric', 'Structuredness metric', 'Density metric', 'Number of arcs', 'Number of transitions' and 'Number of places'.
+        </help>
+ 		<key>petrinet_complexity_metrics</key>
+   </operator>      
+    
+   <operator>
         <name>Filter Unmapped Events</name>
         <Synopyis>Removes events that are not mapped to any transition in the supplied mapping.</Synopyis>
         <help>

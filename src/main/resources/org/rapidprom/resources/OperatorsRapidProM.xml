@@ -50,7 +50,12 @@
                 <key>project_alignment_on_model</key>
                 <class>org.rapidprom.operators.analysis.ProjectAlignedLogOnModelOperator</class>
                 <icon>magnifying_glass.png</icon>
-            </operator>            
+            </operator>
+            <operator>
+                <key>petrinet_complexity_metrics</key>
+                <class>org.rapidprom.operators.analysis.PetriNetComplexityMetricsOperator</class>
+                <icon>magnifying_glass.png</icon>
+            </operator>
         </group>
         <group key="conformance">
         	 <operator>

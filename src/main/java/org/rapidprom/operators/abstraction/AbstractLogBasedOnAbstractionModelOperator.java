@@ -19,7 +19,6 @@ import org.processmining.models.graphbased.directed.petrinet.PetrinetGraph;
 import org.processmining.models.graphbased.directed.petrinet.elements.Transition;
 import org.processmining.models.graphbased.directed.petrinetwithdata.newImpl.DataElement;
 import org.processmining.plugins.balancedconformance.config.BalancedProcessorConfiguration;
-import org.processmining.plugins.balancedconformance.config.BalancedProcessorConfiguration.UnassignedMode;
 import org.processmining.plugins.balancedconformance.controlflow.ControlFlowAlignmentException;
 import org.processmining.plugins.balancedconformance.dataflow.exception.DataAlignmentException;
 import org.processmining.plugins.connectionfactories.logpetrinet.TransEvClassMapping;
