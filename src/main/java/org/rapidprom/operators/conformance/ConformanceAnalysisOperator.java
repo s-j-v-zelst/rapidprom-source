@@ -41,6 +41,7 @@ import org.rapidprom.ioobjects.TransEvMappingIOObject;
 import org.rapidprom.ioobjects.XLogIOObject;
 import org.rapidprom.operators.abstr.AbstractRapidProMDiscoveryOperator;
 import org.rapidprom.operators.util.ExecutorServiceRapidProM;
+import org.rapidprom.operators.util.RapidProMProgress;
 
 import com.google.common.util.concurrent.SimpleTimeLimiter;
 import com.rapidminer.example.Attribute;
@@ -202,7 +203,7 @@ public class ConformanceAnalysisOperator extends AbstractRapidProMDiscoveryOpera
 		long time = System.currentTimeMillis();
 
 		PluginContext pluginContext = RapidProMGlobalContext.instance()
-				.getFutureResultAwarePluginContext(PNLogReplayer.class);
+				.getFutureResultAwarePluginContext(PNLogReplayer.class, new RapidProMProgress(getProgress()));		
 		SimpleTimeLimiter limiter = new SimpleTimeLimiter(new ExecutorServiceRapidProM(pluginContext));
 
 		PNRepResult repResult = null;

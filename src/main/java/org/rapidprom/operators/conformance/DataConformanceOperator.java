@@ -8,6 +8,11 @@ import java.util.Map.Entry;
 import java.util.Set;
 import org.deckfour.xes.classification.XEventClasses;
 import org.deckfour.xes.model.XLog;
+import org.processmining.dataawarereplayer.precision.DataAwarePrecisionPlugin;
+import org.processmining.dataawarereplayer.precision.PrecisionConfig;
+import org.processmining.dataawarereplayer.precision.PrecisionMeasureException;
+import org.processmining.dataawarereplayer.precision.PrecisionResult;
+import org.processmining.dataawarereplayer.precision.projection.ProcessProjectionException;
 import org.processmining.datapetrinets.DataPetriNet;
 import org.processmining.log.utils.XUtils;
 import org.processmining.models.graphbased.directed.petrinet.PetrinetGraph;
@@ -59,8 +64,13 @@ import com.rapidminer.tools.Ontology;
 import javassist.tools.rmi.ObjectNotFoundException;
 
 /**
- * Implements the balanced conformance checking approach presented in the
- * Computing paper: doi:10.1007/s00607-015-0441-1
+ * Implements the balanced conformance checking approach presented in the paper
+ * 'Balanced multi-perspective checking of process conformance':
+ * doi:10.1007/s00607-015-0441-1
+ * <p/>
+ * Also implements the multi-perspective precision measure presented in the
+ * paper 'Measuring the Precision of Multi-perspective Process Models':
+ * doi:10.1007/978-3-319-42887-1_10
  * 
  * @author F. Mannhardt
  *
@@ -106,7 +116,7 @@ public class DataConformanceOperator extends Operator {
 		inputCostsData.addPrecondition(new SimplePrecondition(inputCostsData, new MetaData(ExampleSet.class), false));
 
 		getTransformer().addRule(new GenerateNewMDRule(outputAlignedLog, XAlignedLogIOObject.class));
-		
+
 		getTransformer().addRule(new GenerateNewMDRule(outputMetrics, ExampleSet.class));
 		ExampleSetMetaData metaData = new ExampleSetMetaData();
 		AttributeMetaData amd1 = new AttributeMetaData("Name", Ontology.STRING);
@@ -119,8 +129,7 @@ public class DataConformanceOperator extends Operator {
 		metaData.addAttribute(amd2);
 		metaData.setNumberOfExamples(1);
 		getTransformer().addRule(new GenerateNewMDRule(outputMetrics, metaData));
-		
-		
+
 		getTransformer().addRule(new GenerateNewMDRule(outputTransitionMapping, TransEvMappingIOObject.class));
 		getTransformer().addRule(new GenerateNewMDRule(outputVariableMapping, ExampleSet.class));
 		getTransformer().addRule(new GenerateNewMDRule(outputCosts, ExampleSet.class));
@@ -172,15 +181,15 @@ public class DataConformanceOperator extends Operator {
 			XAlignedLog alignedLog = XAlignmentExtension.instance()
 					.extendLog(alignmentPlugin.alignLog(new RapidProMProgress(getProgress()), dpn, log, config));
 
-//			PrecisionConfig precisionConfig = new PrecisionConfig(dpnIO.getInitialMarking(),
-//					DataAwarePrecisionPlugin.convertMapping(config.getActivityMapping()),
-//					config.getActivityMapping().getEventClassifier(), config.getVariableMapping());
-//			precisionConfig.setAssumeUnassignedVariablesFree(true);
-//			PrecisionResult precisionResult = new DataAwarePrecisionPlugin().doMeasurePrecisionWithAlignment(dpn, log,
-//					alignedLog, precisionConfig);
+			PrecisionConfig precisionConfig = new PrecisionConfig(dpnIO.getInitialMarking(),
+					DataAwarePrecisionPlugin.convertMapping(config.getActivityMapping()),
+					config.getActivityMapping().getEventClassifier(), config.getVariableMapping());
+			precisionConfig.setAssumeUnassignedVariablesFree(true);
+			PrecisionResult precisionResult = new DataAwarePrecisionPlugin().doMeasurePrecisionWithAlignment(dpn, log,
+					alignedLog, precisionConfig);
 
 			outputAlignedLog.deliver(new XAlignedLogIOObject(alignedLog.getLog(), dpnIO.getPluginContext()));
-			outputMetrics.deliver(createMeasureTable(alignedLog));
+			outputMetrics.deliver(createMeasureTable(alignedLog, precisionResult));
 			outputCosts.deliver(new AlignmentCostIO().writeCostsToExampleSet(config.getMapEvClass2Cost(),
 					config.getMapTrans2Cost()));
 			outputCostsData.deliver(new DataAlignmentCostIO().writeCostsToExampleSet(config.getVariableCost()));
@@ -191,14 +200,13 @@ public class DataConformanceOperator extends Operator {
 			throw new OperatorException("Failed alignment! Reason: " + e.getMessage(), e);
 		} catch (ObjectNotFoundException e) {
 			throw new OperatorException("Missing markings " + e.getMessage(), e);
+		} catch (PrecisionMeasureException | ProcessProjectionException e) {
+			throw new OperatorException("Failed precision measurement " + e.getMessage(), e);
 		}
-//		} catch (PrecisionMeasureException | ProcessProjectionException e) {
-//			throw new OperatorException("Failed precision measurement " + e.getMessage(), e);
-//		}
 
 	}
 
-	public ExampleSet createMeasureTable(XAlignedLog alignedLog) {
+	public ExampleSet createMeasureTable(XAlignedLog alignedLog, PrecisionResult precisionResult) {
 		Attribute nameAttr = AttributeFactory.createAttribute("Name", Ontology.STRING);
 		Attribute valueAttr = AttributeFactory.createAttribute("Value", Ontology.NUMERICAL);
 		MemoryExampleTable table = new MemoryExampleTable(nameAttr, valueAttr);
@@ -206,8 +214,8 @@ public class DataConformanceOperator extends Operator {
 
 		table.addDataRow(factory.create(new Object[] { "averageFitness", alignedLog.getAverageFitness() },
 				new Attribute[] { nameAttr, valueAttr }));
-//		table.addDataRow(factory.create(new Object[] { "averagePrecision", precisionResult.getPrecision() },
-//				new Attribute[] { nameAttr, valueAttr }));
+		table.addDataRow(factory.create(new Object[] { "averagePrecision", precisionResult.getPrecision() },
+				new Attribute[] { nameAttr, valueAttr }));
 
 		return table.createExampleSet();
 	}

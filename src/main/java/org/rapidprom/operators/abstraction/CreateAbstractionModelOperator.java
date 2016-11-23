@@ -155,7 +155,7 @@ public class CreateAbstractionModelOperator extends Operator {
 	//TODO update in LogEnhancement
 	private static String buildInitialModelInInterleaving(Map<String, AbstractionPattern> abstractionPatterns) {
 		StringBuilder sb = new StringBuilder();
-		sb.append("%[");
+		sb.append("(%[");
 		for (Iterator<String> iter = abstractionPatterns.keySet().iterator(); iter.hasNext();) {
 			String id = iter.next();
 			if (!SourceVersion.isIdentifier(id)) {
@@ -167,7 +167,7 @@ public class CreateAbstractionModelOperator extends Operator {
 				sb.append(",");
 			}
 		}
-		sb.append("]");
+		sb.append("])*");
 		return sb.toString();
 	}
 

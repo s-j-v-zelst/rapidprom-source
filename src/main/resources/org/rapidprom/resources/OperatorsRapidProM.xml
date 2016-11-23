@@ -130,6 +130,11 @@
                 <class>org.rapidprom.operators.conversion.ProcessTreeToPetriNetConversionOperator</class>
                 <icon>objects_transform.png</icon>
             </operator>
+            <operator>
+                <key>convert_datapetrinet_to_petrinet</key>
+                <class>org.rapidprom.operators.conversion.DataPetriNetToPetriNetConversionOperator</class>
+                <icon>objects_transform.png</icon>
+            </operator>
         </group>
         <group key="discovery">
             <operator>

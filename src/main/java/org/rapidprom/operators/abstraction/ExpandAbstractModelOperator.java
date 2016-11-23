@@ -38,6 +38,8 @@ import com.rapidminer.operator.ports.InputPort;
 import com.rapidminer.operator.ports.OutputPort;
 import com.rapidminer.operator.ports.metadata.GenerateNewMDRule;
 
+import javassist.tools.rmi.ObjectNotFoundException;
+
 /**
  * Expands a model using the pattern from the abstraction model.
  * 
@@ -78,11 +80,12 @@ public class ExpandAbstractModelOperator extends Operator {
 	@Override
 	public void doWork() throws OperatorException {
 
-		Petrinet model = inputModel.getData(PetriNetIOObject.class).getArtifact();
+		PetriNetIOObject modelIO = inputModel.getData(PetriNetIOObject.class);
+		Petrinet model = modelIO.getArtifact();
 		AbstractionModel abstractionModel = inputAbstractionModel.getData(AbstractionModelIOObject.class).getArtifact();
 
 		Map<Transition, PetrinetGraph> defaultValues = new HashMap<>();
-		for (Transition t: model.getTransitions()) {
+		for (Transition t : model.getTransitions()) {
 			for (AbstractionPattern pattern : abstractionModel.getPatterns()) {
 				DataPetriNet dpnPattern = pattern.getDPN();
 				if (dpnPattern.getLabel().equals(t.getLabel())) {
@@ -91,45 +94,43 @@ public class ExpandAbstractModelOperator extends Operator {
 			}
 		}
 
-		DataPetriNetsWithMarkings expandedModel = (DataPetriNetsWithMarkings) doTransformModelBasedOnAbstractionPatterns(model, defaultValues);
-
-		PetrinetWithMarkings pnWithMarkings = DataPetriNet.Factory.toPetrinetWithMarkings(expandedModel);
-
-		PluginContext pluginContext = RapidProMGlobalContext.instance().getFutureResultAwarePluginContext(Murata.class);
-		Murata reducer = new Murata();
 		try {
-			Object[] murateResult = reducer.runPreserveBehavior(pluginContext, pnWithMarkings.getNet(),
-					pnWithMarkings.getInitialMarking());
-			Petrinet net = (Petrinet) murateResult[0];
+			DataPetriNetsWithMarkings expandedModel = (DataPetriNetsWithMarkings) doTransformModelBasedOnAbstractionPatterns(
+					model, modelIO.getInitialMarking(), modelIO.getFinalMarking(), defaultValues);
 
-			Marking initialMarking = PetrinetUtils.guessInitialMarking(net);
-			Marking finalMarking = PetrinetUtils.guessFinalMarking(net);
+			PetrinetWithMarkings pnWithMarkings = DataPetriNet.Factory.toPetrinetWithMarkings(expandedModel);
 
-			output.deliver(new PetriNetIOObject(net, initialMarking, finalMarking, getContext()));
-		} catch (ConnectionCannotBeObtained e) {
-			// could not reduce
-			output.deliver(new PetriNetIOObject(pnWithMarkings.getNet(), pnWithMarkings.getInitialMarking(),
-					pnWithMarkings.getFinalMarkings() != null ? pnWithMarkings.getFinalMarkings()[0] : null,
-					getContext()));
-		}
+			PluginContext pluginContext = RapidProMGlobalContext.instance()
+					.getFutureResultAwarePluginContext(Murata.class);
+			Murata reducer = new Murata();
+			try {
+				Object[] murateResult = reducer.runPreserveBehavior(pluginContext, pnWithMarkings.getNet(),
+						pnWithMarkings.getInitialMarking());
+				Petrinet net = (Petrinet) murateResult[0];
+				Marking initialMarking = (Marking) murateResult[1];
 
-	}
+				//TODO convert original final marking
+				Marking finalMarking = PetrinetUtils.guessFinalMarking(net);
 
-	private Transition getTransition(String label, PetrinetGraph graph) {
-		for (Transition t : graph.getTransitions()) {
-			if (label.equals(t.getLabel())) {
-				return t;
+				output.deliver(new PetriNetIOObject(net, initialMarking, finalMarking, getContext()));
+			} catch (ConnectionCannotBeObtained e) {
+				// could not reduce
+				output.deliver(new PetriNetIOObject(pnWithMarkings.getNet(), pnWithMarkings.getInitialMarking(),
+						pnWithMarkings.getFinalMarkings() != null ? pnWithMarkings.getFinalMarkings()[0] : null,
+						getContext()));
 			}
+		} catch (ObjectNotFoundException e) {
+			throw new OperatorException("Missing initial or final marking", e);
 		}
-		return null;
+
 	}
 
 	private PluginContext getContext() throws UserError {
 		return RapidProMGlobalContext.instance().getPluginContext();
 	}
 
-	public DataPetriNet doTransformModelBasedOnAbstractionPatterns(final PetrinetGraph model,
-			Map<Transition, PetrinetGraph> transitionToPattern) {
+	public DataPetriNet doTransformModelBasedOnAbstractionPatterns(final PetrinetGraph model, Marking initialMarking,
+			Marking finalMarking, Map<Transition, PetrinetGraph> transitionToPattern) {
 
 		LabelGenerator labelGenerator = new LabelGenerator();
 
@@ -184,15 +185,38 @@ public class ExpandAbstractModelOperator extends Operator {
 			transformedNet.removeTransition((Transition) transitionToReplace);
 		}
 
-		Place oldSource = findSource(model);
-		if (oldSource != null) {
-			transformedNet.setInitialMarking(new Marking());
-			transformedNet.getInitialMarking().add((Place) old2NewNodes.get(oldSource));
+		if (initialMarking != null) {
+			for (Place place : initialMarking.baseSet()) {
+				transformedNet.setInitialMarking(new Marking());
+				transformedNet.getInitialMarking().add((Place) old2NewNodes.get(place),
+						initialMarking.occurrences(place));
+			}
+		} else {
+			// try with structure
+			Place oldSource = findSource(model);
+			if (oldSource != null) {
+				transformedNet.setInitialMarking(new Marking());
+				transformedNet.getInitialMarking().add((Place) old2NewNodes.get(oldSource));
+			} else {
+				throw new UnsupportedOperationException("Cannot handle models without initial marking");
+			}
 		}
-		Place oldSink = findSink(model);
-		if (oldSink != null) {
-			transformedNet.setFinalMarkings(new Marking[] { new Marking() });
-			transformedNet.getFinalMarkings()[0].add((Place) old2NewNodes.get(oldSink));
+
+		if (finalMarking != null) {
+			for (Place place : finalMarking.baseSet()) {
+				transformedNet.setFinalMarkings(new Marking[] { new Marking() });
+				transformedNet.getFinalMarkings()[0].add((Place) old2NewNodes.get(place),
+						finalMarking.occurrences(place));
+			}
+		} else {
+			// try with structure
+			Place oldSink = findSink(model);
+			if (oldSink != null) {
+				transformedNet.setFinalMarkings(new Marking[] { new Marking() });
+				transformedNet.getFinalMarkings()[0].add((Place) old2NewNodes.get(oldSink));
+			} else {
+				throw new UnsupportedOperationException("Cannot handle models without final marking");
+			}
 		}
 
 		return transformedNet;
