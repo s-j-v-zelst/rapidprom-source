@@ -7,6 +7,7 @@ import org.processmining.framework.connections.impl.ConnectionManagerImpl;
 import org.processmining.framework.plugin.PluginContext;
 import org.processmining.framework.plugin.PluginManager;
 import org.processmining.framework.plugin.ProMFuture;
+import org.processmining.framework.plugin.Progress;
 import org.processmining.framework.plugin.annotations.Plugin;
 import org.processmining.framework.plugin.impl.AbstractGlobalContext;
 
@@ -28,7 +29,7 @@ public final class RapidProMGlobalContext extends AbstractGlobalContext {
 
 	private final ConnectionManager connMgr;
 
-	private final PluginContext context = new RapidProMPluginContext(this, "RapidProM root plugin context");
+	private final RapidProMPluginContext context = new RapidProMPluginContext(this, "RapidProM root plugin context");
 
 	private final PluginManager pluginManager;
 
@@ -82,9 +83,19 @@ public final class RapidProMGlobalContext extends AbstractGlobalContext {
 	 * @return
 	 */
 	public PluginContext getFutureResultAwarePluginContext(Class<?> classContainingProMPlugin) {
+		return getFutureResultAwarePluginContext(classContainingProMPlugin, null);
+	}
+
+	public PluginContext getFutureResultAwarePluginContext(Class<?> classContainingProMPlugin, Progress progress) {
 		assert (initialized);
-		final PluginContext result = instance.getMainPluginContext()
-				.createChildContext("rprom_child_context_" + System.currentTimeMillis());
+		final PluginContext result;
+		if (progress != null) {
+			result = getRapidProMMainPluginContext()
+					.createChildContext("rprom_child_context_" + System.currentTimeMillis(), progress);
+		} else {
+			result = instance.getMainPluginContext()
+					.createChildContext("rprom_child_context_" + System.currentTimeMillis());
+		}
 		Plugin pluginAnn = findAnnotation(classContainingProMPlugin.getAnnotations(), Plugin.class);
 		RapidProMPluginExecutionResultImpl per = new RapidProMPluginExecutionResultImpl(pluginAnn.returnTypes(),
 				pluginAnn.returnLabels(), RapidProMGlobalContext.instance().getPluginManager()
@@ -95,9 +106,17 @@ public final class RapidProMGlobalContext extends AbstractGlobalContext {
 		return result;
 	}
 
+	private RapidProMPluginContext getRapidProMMainPluginContext() {
+		return (RapidProMPluginContext) instance.getMainPluginContext();
+	}
+
 	@Override
 	protected PluginContext getMainPluginContext() {
 		return context;
+	}
+
+	public PluginContext getProgressAwarePluginContext(Progress progress) {
+		return getRapidProMMainPluginContext().createChildContext("rprom_child_context_" + System.currentTimeMillis(), progress);
 	}
 
 	public PluginContext getPluginContext() {
