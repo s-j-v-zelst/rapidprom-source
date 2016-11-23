@@ -15,6 +15,7 @@ import org.processmining.log.utils.XUtils;
 import org.processmining.logenhancement.abstraction.PatternBasedLogAbstractionPlugin;
 import org.processmining.logenhancement.abstraction.PatternStructureException;
 import org.processmining.logenhancement.abstraction.model.AbstractionModel;
+import org.processmining.logenhancement.abstraction.model.AbstractionPattern;
 import org.processmining.models.graphbased.directed.petrinet.PetrinetGraph;
 import org.processmining.models.graphbased.directed.petrinet.elements.Transition;
 import org.processmining.models.graphbased.directed.petrinetwithdata.newImpl.DataElement;
@@ -22,7 +23,10 @@ import org.processmining.plugins.balancedconformance.config.BalancedProcessorCon
 import org.processmining.plugins.balancedconformance.controlflow.ControlFlowAlignmentException;
 import org.processmining.plugins.balancedconformance.dataflow.exception.DataAlignmentException;
 import org.processmining.plugins.connectionfactories.logpetrinet.TransEvClassMapping;
+import org.processmining.xesalignmentextension.XAlignmentExtension.MoveType;
 import org.processmining.xesalignmentextension.XAlignmentExtension.XAlignedLog;
+import org.processmining.xesalignmentextension.XAlignmentExtension.XAlignment;
+import org.processmining.xesalignmentextension.XAlignmentExtension.XAlignmentMove;
 import org.rapidprom.exceptions.ExampleSetReaderException;
 import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.AbstractionModelIOObject;
@@ -34,7 +38,11 @@ import org.rapidprom.operators.conformance.util.DataAlignmentCostIO;
 import org.rapidprom.operators.conformance.util.VariableMappingIO;
 import org.rapidprom.operators.util.RapidProMProgress;
 
+import com.rapidminer.example.Attribute;
 import com.rapidminer.example.ExampleSet;
+import com.rapidminer.example.table.AttributeFactory;
+import com.rapidminer.example.table.DataRowFactory;
+import com.rapidminer.example.table.MemoryExampleTable;
 import com.rapidminer.operator.Operator;
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
@@ -51,6 +59,7 @@ import com.rapidminer.parameter.ParameterTypeBoolean;
 import com.rapidminer.parameter.ParameterTypeDouble;
 import com.rapidminer.parameter.ParameterTypeInt;
 import com.rapidminer.parameter.UndefinedParameterError;
+import com.rapidminer.tools.Ontology;
 
 /**
  * Implements the Pattern-based abstraction technique presented in the BPM'16
@@ -85,7 +94,8 @@ public class AbstractLogBasedOnAbstractionModelOperator extends Operator {
 	private InputPort inputCostsData = getInputPorts().createPort("costs data (Example set)");
 
 	private OutputPort outputLog = getOutputPorts().createPort("event log (ProM Event Log)");
-	private OutputPort outputAlignedLog = getOutputPorts().createPort("aligned log (ProM Aligned Event Log)");	
+	private OutputPort outputQualityMeasure = getOutputPorts().createPort("quality measures (Example set)");
+	private OutputPort outputAlignedLog = getOutputPorts().createPort("aligned log (ProM Aligned Event Log)");
 	private OutputPort outputTransitionMapping = getOutputPorts().createPort("mapping (Example set)");
 	private OutputPort outputVariableMapping = getOutputPorts().createPort("variable mapping (Example set)");
 	private OutputPort outputCosts = getOutputPorts().createPort("costs control-flow (Example set)");
@@ -99,8 +109,9 @@ public class AbstractLogBasedOnAbstractionModelOperator extends Operator {
 				.addPrecondition(new SimplePrecondition(inputVariableMapping, new MetaData(ExampleSet.class), false));
 		inputCosts.addPrecondition(new SimplePrecondition(inputCosts, new MetaData(ExampleSet.class), false));
 		inputCostsData.addPrecondition(new SimplePrecondition(inputCostsData, new MetaData(ExampleSet.class), false));
-	
+
 		getTransformer().addRule(new GenerateNewMDRule(outputLog, XLogIOObject.class));
+		getTransformer().addRule(new GenerateNewMDRule(outputQualityMeasure, ExampleSet.class));
 		getTransformer().addRule(new GenerateNewMDRule(outputAlignedLog, XAlignedLogIOObject.class));
 		getTransformer().addRule(new GenerateNewMDRule(outputVariableMapping, ExampleSet.class));
 		getTransformer().addRule(new GenerateNewMDRule(outputTransitionMapping, TransEvMappingIOObject.class));
@@ -126,11 +137,11 @@ public class AbstractLogBasedOnAbstractionModelOperator extends Operator {
 					getDefaultCostLogMove(), getDefaultCostModelMove(), getDefaultCostMissingWrite(),
 					getDefaultCostWrongWrite());
 			applyUserDefinedTransitionMapping(transitionMapping, alignmentConfig);
-			
+
 			alignmentConfig.setActivateDataViewCache(false);
 			alignmentConfig.setKeepDataFlowSearchSpace(false);
 			alignmentConfig.setKeepControlFlowSearchSpace(true);
-			
+
 			if (inputVariableMapping.isConnected()) {
 				try {
 					applyUserDefinedVariableMapping(getVariableMapping(), alignmentConfig);
@@ -155,7 +166,7 @@ public class AbstractLogBasedOnAbstractionModelOperator extends Operator {
 					inputCostsData.addError(new SimpleMetaDataError(Severity.WARNING, inputCostsData, e.getMessage()));
 				}
 			}
-			
+
 			outputCosts.deliver(new AlignmentCostIO().writeCostsToExampleSet(alignmentConfig.getMapEvClass2Cost(),
 					alignmentConfig.getMapTrans2Cost()));
 			outputCostsData
@@ -163,10 +174,17 @@ public class AbstractLogBasedOnAbstractionModelOperator extends Operator {
 			outputVariableMapping
 					.deliver(new VariableMappingIO().writeVariableMapping(alignmentConfig.getVariableMapping()));
 			outputTransitionMapping.deliver(inputTransitionMapping.getData(TransEvMappingIOObject.class));
-			
-			XAlignedLog alignedLog = PatternBasedLogAbstractionPlugin.alignLogToAbstractionModel(new RapidProMProgress(getProgress()), alignmentConfig, log, abstractionModel);
 
-			XLog abstractedLog = PatternBasedLogAbstractionPlugin.abstractAlignedLog(abstractionModel, alignedLog, keepUnmappedEvents, errorRateLimit, transitionMapping);
+			XAlignedLog alignedLog = PatternBasedLogAbstractionPlugin.alignLogToAbstractionModel(
+					new RapidProMProgress(getProgress()), alignmentConfig, log, abstractionModel);
+
+			XLog abstractedLog = PatternBasedLogAbstractionPlugin.abstractAlignedLog(abstractionModel, alignedLog,
+					keepUnmappedEvents, errorRateLimit, transitionMapping);
+
+			// TODO currently this need to be done after the abstraction -
+			// REFACTOR
+			ExampleSet qualityMeasureTable = createQualityMeasureTable(alignedLog, abstractionModel);
+			outputQualityMeasure.deliver(qualityMeasureTable);
 
 			outputLog.deliver(new XLogIOObject(abstractedLog, getContext()));
 
@@ -174,6 +192,60 @@ public class AbstractLogBasedOnAbstractionModelOperator extends Operator {
 			throw new OperatorException("Failed abstraction!", e);
 		}
 
+	}
+
+	// TODO refactor in LogEnhancement
+	private ExampleSet createQualityMeasureTable(XAlignedLog alignedLog, AbstractionModel abstractionModel) {
+
+		Attribute nameAttr = AttributeFactory.createAttribute("Name", Ontology.STRING);
+		Attribute patternAttr = AttributeFactory.createAttribute("Pattern", Ontology.STRING);
+		Attribute valueAttr = AttributeFactory.createAttribute("Value", Ontology.NUMERICAL);
+		MemoryExampleTable table = new MemoryExampleTable(nameAttr, patternAttr, valueAttr);
+
+		Attribute[] attributes = new Attribute[] { nameAttr, patternAttr, valueAttr };
+		DataRowFactory factory = new DataRowFactory(DataRowFactory.TYPE_DOUBLE_ARRAY, '.');
+
+		Map<String, AbstractionPattern> transitionIdToPattern = new HashMap<>();
+
+		for (AbstractionPattern pattern : abstractionModel.getPatterns()) {
+			long matchCount = 0;
+			long moveCount = 0;
+			long modelMoveCount = 0;
+			for (String id : pattern.getTransitionsAsLocalIds()) {
+				transitionIdToPattern.put(id, pattern);
+			}
+			Transition startTransition = pattern.getStartTransition();
+			Set<String> transitions = pattern.getTransitionsAsLocalIds();
+			String startTransitionId = startTransition.getLocalID().toString();
+			for (XAlignment alignment : alignedLog) {
+				for (XAlignmentMove move : alignment) {
+					String activityId = move.getActivityId();
+					if (startTransitionId.equals(activityId)) {
+						matchCount++;
+					}
+					if (move.isObservable() && transitions.contains(move.getActivityId())) {
+						moveCount++;
+						if (move.getType() != MoveType.SYNCHRONOUS) {
+							modelMoveCount++;
+						}
+					}
+				}
+			}
+
+			table.addDataRow(
+					factory.create(new Object[] { "numMatches", pattern.getPatternName(), matchCount }, attributes));
+
+			if (moveCount != 0) {
+				double error = modelMoveCount / (double) moveCount;
+				table.addDataRow(
+						factory.create(new Object[] { "matchingError", pattern.getPatternName(), error }, attributes));
+			} else {
+				table.addDataRow(
+						factory.create(new Object[] { "matchingError", pattern.getPatternName(), 0 }, attributes));
+			}
+		}
+
+		return table.createExampleSet();
 	}
 
 	private void applyUserDefinedTransitionMapping(TransEvClassMapping mapping,
