@@ -187,6 +187,7 @@ public class AbstractLogBasedOnAbstractionModelOperator extends Operator {
 			outputQualityMeasure.deliver(qualityMeasureTable);
 
 			outputLog.deliver(new XLogIOObject(abstractedLog, getContext()));
+			outputAlignedLog.deliver(new XAlignedLogIOObject(alignedLog.getLog(), getContext()));
 
 		} catch (ControlFlowAlignmentException | DataAlignmentException | PatternStructureException e) {
 			throw new OperatorException("Failed abstraction!", e);
