@@ -57,13 +57,13 @@
    <operator>
         <name>Calculate ETC 1-align precision</name>
         <Synopyis>Calculate precision using 1-align ETC conformance</Synopyis>
-        <help></help>
+        <help>This technique uses the Align-ETC precision measurement plugin from ProM. The underlying technique is explained &lt;a href="http://dx.doi.org/10.1007/s10257-014-0234-7"&gt;here&lt;/a&gt;</help>
  		<key>etc_1_align_precision</key>
    </operator>
    <operator>
         <name>Measure Model Precision based on alignments</name>
-        <synopsis>Measures model precision and generalization based on pre-calculated alignments, as defined in: http://dx.doi.org/10.6100/IR770080</synopsis>
-        <help>For this operator, you need alignments (PNRepResult) as input.</help>
+        <synopsis>Measures model precision and generalization based on pre-calculated alignments</synopsis>
+        <help>This technique is defined in &lt;a href="http://dx.doi.org/10.6100/IR770080"&gt;here&lt;/a&gt;. For this operator, you need alignments (PNRepResult) as input.</help>
         <key>measure_precision</key>
    </operator>
    <operator>
@@ -99,25 +99,25 @@
 	</operator>
   <operator>
   		<name>Soundness analysis (WOFLAN)</name>
-        <synopsis>This operator analyzes the soundness of a Petri net using the Woflan workflow diagnosis tool, as defined in: http://dx.doi.org/10.1007/3-540-44988-4_28 </synopsis>
+        <synopsis>This operator analyzes the soundness of a Petri net using the Woflan workflow diagnosis tool, as defined in &lt;a href="http://dx.doi.org/10.1007/3-540-44988-4_28"&gt;here&lt;/a&gt;.</synopsis>
         <help>For using this operator, you need a Petri net. </help>
 		<key>analyze_with_woflan</key>
 	</operator>
   <operator>
   		<name>Feature Prediction (Decision Trees)</name>
-        <synopsis>This operator performs Predictions of Business Process Features, as defined in http://dx.doi.org/10.1007/978-3-319-10172-9_16 </synopsis>
+        <synopsis>This operator performs Predictions of Business Process Features, as defined in &lt;a href="http://dx.doi.org/10.1007/978-3-319-10172-9_16"&gt;here&lt;/a&gt;. </synopsis>
         <help>For using this operator, you need an event log. The actual tool will be launched when visualized.</help>
 		<key>perform_predictions_of_business_process_features</key>
 	</operator>
   <operator>
   		<name>Conformance Checking</name>
-        <synopsis>This operator replays a log into a Petri net and show visual results, as described in http://dx.doi.org/10.6100/IR770080</synopsis>
+        <synopsis>This operator replays a log into a Petri net and show visual results, as described in &lt;a href="http://dx.doi.org/10.6100/IR770080"&gt;here&lt;/a&gt;.</synopsis>
         <help>For using this operator, you need a Petri net and a log. </help>
 		<key>replay_a_log_on_petri_net_for_conformance_analysis</key>
 	</operator>
   <operator>
   		<name>Inductive Visual Miner</name>
-        <synopsis>This operator creates a process model using the Inductive Visual Miner as described in: http://repository.tue.nl/25a7fd81-8bf4-4606-a903-d9b78b95cdd3</synopsis>
+        <synopsis>This operator creates a process model using the Inductive Visual Miner as described in: &lt;a href="http://repository.tue.nl/25a7fd81-8bf4-4606-a903-d9b78b95cdd3"&gt;here&lt;/a&gt;.</synopsis>
         <help>For using this operator, you need an event log. </help>
 		<key>mine_with_inductive_visual_miner</key>
 	</operator>
@@ -135,19 +135,19 @@
 	</operator>
   <operator>
   		<name>Petri Net to BPMN</name>
-        <synopsis>This operator transforms a Petri net into a BPMN diagram. The conversion used is described in http://dx.doi.org/10.1007/s10270-015-0502-0</synopsis>
+        <synopsis>This operator transforms a Petri net into a BPMN diagram. The conversion used is described in &lt;a href="http://dx.doi.org/10.1007/s10270-015-0502-0"&gt;here&lt;/a&gt;.</synopsis>
         <help>For using this operator, you need a petri net as input.  </help>
 		<key>convert_petrinet_to_bpmn</key>
 	</operator>
   <operator>
   		<name>Transition System to Petri Net </name>
-        <synopsis>This operator transforms a Transition System (Reachability Graph) into a petri net, using Petrify: http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.17.8484</synopsis>
+        <synopsis>This operator transforms a Transition System (Reachability Graph) into a petri net, using &lt;a href="http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.17.8484"&gt;Petrify&lt;/a&gt;.</synopsis>
         <help>For using this operator, you need a transition system (reachability graph). </help>
 		<key>transition_system_to_petrinet</key>
 	</operator>
   <operator>
   		<name>Petri Net to Reachability Graph</name>
-        <synopsis>This operator transforms a petri net into a Transition System (Reachability Graph), using Petrify: http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.17.8484</synopsis>
+        <synopsis>This operator transforms a petri net into a Transition System (Reachability Graph), using &lt;a href="http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.17.8484"&gt;Petrify&lt;/a&gt;.</synopsis>
         <help>For using this operator, you need a petri net. </help>
 		<key>construct_reachability_graph_of_a_petri_net</key>
 	</operator>
@@ -168,7 +168,7 @@
 	
   <operator>
   		<name>Animate Log in Fuzzy Graph</name>
-        <synopsis>This operator is used to animate (replay) an event log into a fuzzy graph as described in: http://dx.doi.org/10.6100/IR644335</synopsis>
+        <synopsis>This operator is used to animate (replay) an event log into a fuzzy graph as described in &lt;a href="http://dx.doi.org/10.6100/IR644335"&gt;here&lt;/a&gt;.</synopsis>
         <help>For using this operator, an event log, and a Fuzzy Graph are necessary as inputs. </help>
 		<key>animate_event_log_in_fuzzy_instance</key>
 	</operator>
@@ -217,14 +217,14 @@
  
 	<operator>
         <name>Repair Model (Petri Net)</name>
-        <synopsis>This operator can be used to execute the repair model algorithm as defined in: http://dx.doi.org/10.1016/j.is.2013.12.007 </synopsis>
+        <synopsis>This operator can be used to execute the repair model algorithm as defined in &lt;a href="http://dx.doi.org/10.1016/j.is.2013.12.007"&gt;here&lt;/a&gt;.  </synopsis>
         <help>This operator can be used to execute the repair model algorithm which provides a repaired Petri net as result. As input an event log and a Petri Net are needed.</help>
     <key>repair_model</key>
   </operator>
   
 	<operator>
         <name>Reduce Silent Transitions (Petri Net)</name>
-        <synopsis>This operator can be used to reduce silent transitions using the Murata rules, as defined in: http://dx.doi.org/10.1109/5.24143.</synopsis>
+        <synopsis>This operator can be used to reduce silent transitions using the Murata rules, as defined in &lt;a href="http://dx.doi.org/10.1109/5.24143"&gt;here&lt;/a&gt;. </synopsis>
         <help>This operator can be used to execute the reduce silent transitions algorithm which returns a Petri net. As input a Petri Net is needed.</help>
     <key>reduce_silent_transitions</key>
   </operator>
@@ -270,7 +270,7 @@
   
        <operator>
         <name>Evolutionary Tree Miner (Process Tree)</name>
-        <synopsis>Discovers a Process Tree from an event log using the Evolutionary Tree Miner described in: http://dx.doi.org/10.6100/IR780920. The Evolutionary Tree Miner (or ETM) is an evolutionary algorithm to discover a process model (in our case a process tree) from an event log. It does so by creating several process models, checking how good they are (w.r.t the event log) using several quality dimensions, and then slightly modifying the best ones in the hope that they will become even better. By repeating this, and always keeping a list of the best ones found so far, the ETM will discover better and better process models. The main advantage is that many quality dimensions can be used to define what a �better� process model is.</synopsis>
+        <synopsis>Discovers a Process Tree from an event log using the &lt;a href="http://dx.doi.org/10.6100/IR780920"&gt;Evolutionary Tree Miner&lt;/a&gt;. The Evolutionary Tree Miner (or ETM) is an evolutionary algorithm to discover a process model (in our case a process tree) from an event log. It does so by creating several process models, checking how good they are (w.r.t the event log) using several quality dimensions, and then slightly modifying the best ones in the hope that they will become even better. By repeating this, and always keeping a list of the best ones found so far, the ETM will discover better and better process models. The main advantage is that many quality dimensions can be used to define what a �better� process model is.</synopsis>
         <help>Mine a Process Using the ETM Algorithm from an event log.</help>
     	<key>etm_miner</key>
   	  </operator>
@@ -292,20 +292,20 @@
   	   <operator>
         <name>Heuristics Miner (Heuristics Net)</name>
         <synopsis>This operator can be used to execute the Heuristics Miner algorithm.</synopsis>
-        <help>This operator can be used to execute the Heuristics Miner algorithm (defined in http://dx.doi.org/10.1109/CIDM.2011.5949453) which provides a Heuristics Net. As input a log file is needed.</help>
+        <help>This operator can be used to execute the &lt;a href="http://dx.doi.org/10.1109/CIDM.2011.5949453"&gt;Heuristics Miner&lt;/a&gt;. algorithm which provides a Heuristics Net. As input a log file is needed.</help>
     	<key>heuristics_miner</key>
   	   </operator>
   	   
   	   <operator>
         <name>Inductive Miner (Petri Net)</name>
-        <synopsis>This operator can be used to execute the Inductive Miner in order to discover a Petri Net as defined in: http://dx.doi.org/10.1007/978-3-642-38697-8_17.</synopsis>
+        <synopsis>This operator can be used to execute the Inductive Miner in order to discover a Petri Net as defined &lt;a href="http://dx.doi.org/10.1007/978-3-642-38697-8_17"&gt;here&lt;/a&gt;.</synopsis>
         <help>This operator can be used to execute the Inductive Miner algorithm which provides a Petri Net. As input an event log is needed.</help>
     	<key>mine_petri_net_with_inductive_miner</key>
   		</operator>
   		
   		<operator>
         <name>Inductive Miner (Process Tree)</name>
-        <synopsis>This operator can be used to execute the Inductive Miner in order to discover a Process Tree as defined in: http://dx.doi.org/10.1007/978-3-642-38697-8_17.</synopsis>
+        <synopsis>This operator can be used to execute the Inductive Miner in order to discover a Process Tree as defined &lt;a href="http://dx.doi.org/10.1007/978-3-642-38697-8_17"&gt;here&lt;/a&gt;.</synopsis>
         <help>This operator can be used to execute the Inductive Miner algorithm which provides a Process Tree. As input an event log is needed.</help>
     	<key>mine_process_tree_with_inductive_miner</key>
   		</operator>
@@ -375,14 +375,14 @@
   	
   	<operator>
         <name>Transition System Miner (Transition System)</name>
-        <synopsis>This operator mines a transition system based on the selected parameters, as defined in (http://dx.doi.org/10.1016/j.is.2010.09.001)</synopsis>
+        <synopsis>This operator mines a transition system based on the selected parameters, as defined &lt;a href="http://dx.doi.org/10.1016/j.is.2010.09.001"&gt;here&lt;/a&gt;.</synopsis>
         <help>A log is required as input</help>
     	<key>mine_transition_system</key>
   	</operator>
 	
 	<operator>
         <name>Fuzzy Miner (Fuzzy Model)</name>
-        <synopsis>This operator mines a fuzzy model as described in (http://dx.doi.org/10.6100/IR644335). This miner is best suited for flexible or unstructured processes, where other miners give very complex models as result.</synopsis>
+        <synopsis>This operator mines a Fuzzy Model as described &lt;a href="http://dx.doi.org/10.6100/IR644335"&gt;here&lt;/a&gt;. This miner is best suited for flexible or unstructured processes, where other miners give very complex models as result.</synopsis>
         <help>A log is required for input</help>
     	<key>mine_fuzzy_model</key>
   	</operator>
@@ -461,6 +461,12 @@
 		<help> An Event log is required as input </help>		
         <key>case_data_extractor</key>                
     </operator>
+    <operator>
+        <name>Reduce Petri Net</name>
+        <synopsis>This operator can be used to reduce a petri using the Murata rules, as defined in &lt;a href="http://dx.doi.org/10.1109/5.24143"&gt;here&lt;/a&gt;. Note that this is an agressive reduction that most probably will remove non-silent transitions from the net. This type of reduction, however, facilitates soundness checking since the structural properties of the net are preserved. Hence, a soundness analysis obtained for a reduced Petri net is valid also for the original net. </synopsis>
+        <help>This operator can be used to execute Murata reduction algorithm which returns a Petri net. As input a Petri Net is needed.</help>
+    <key>reduce_petrinet</key>
+  </operator>
     
     <!-- UTILITY -->
     <operator>

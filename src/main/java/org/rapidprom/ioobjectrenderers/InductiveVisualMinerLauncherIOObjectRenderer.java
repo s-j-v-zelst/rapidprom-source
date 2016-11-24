@@ -5,10 +5,10 @@ import javax.swing.JComponent;
 import org.processmining.framework.plugin.ProMCanceller;
 import org.processmining.plugins.inductiveVisualMiner.InductiveVisualMiner;
 import org.rapidprom.ioobjectrenderers.abstr.AbstractRapidProMIOObjectRenderer;
-import org.rapidprom.ioobjects.InteractiveMinerLauncherIOObject;
+import org.rapidprom.ioobjects.InductiveVisualMinerLauncherIOObject;
 
-public class InteractiveMinerLauncherIOObjectRenderer extends
-		AbstractRapidProMIOObjectRenderer<InteractiveMinerLauncherIOObject> {
+public class InductiveVisualMinerLauncherIOObjectRenderer extends
+		AbstractRapidProMIOObjectRenderer<InductiveVisualMinerLauncherIOObject> {
 
 	@Override
 	public String getName() {
@@ -17,7 +17,7 @@ public class InteractiveMinerLauncherIOObjectRenderer extends
 
 	@Override
 	protected JComponent runVisualization(
-			InteractiveMinerLauncherIOObject artifact) {
+			InductiveVisualMinerLauncherIOObject artifact) {
 		InductiveVisualMiner visualizer = new InductiveVisualMiner();
 		return visualizer.visualise(artifact.getPluginContext(),
 				artifact.getArtifact(), new ProMCancellerImpl());

@@ -14,6 +14,7 @@ public final class RapidProMGlobalContext extends AbstractGlobalContext {
 
 	private static boolean initialized = false;
 	private static RapidProMGlobalContext instance = null;
+
 	public static RapidProMGlobalContext initialize(PluginManager pluginManager) {
 		instance = new RapidProMGlobalContext(pluginManager);
 		initialized = true;
@@ -35,7 +36,7 @@ public final class RapidProMGlobalContext extends AbstractGlobalContext {
 		this.pluginManager = pluginManager;
 		this.connMgr = new ConnectionManagerImpl(pluginManager);
 	}
-	
+
 	@Override
 	public ConnectionManager getConnectionManager() {
 		return connMgr;
@@ -80,7 +81,7 @@ public final class RapidProMGlobalContext extends AbstractGlobalContext {
 	public PluginContext getFutureResultAwarePluginContext(Class<?> classContainingProMPlugin) {
 		assert (initialized);
 		final PluginContext result = instance.getMainPluginContext()
-				.createChildContext("RapidProMPluginContext_" + System.currentTimeMillis());
+				.createChildContext("rprom_child_context_" + System.currentTimeMillis());
 		Plugin pluginAnn = findAnnotation(classContainingProMPlugin.getAnnotations(), Plugin.class);
 		RapidProMPluginExecutionResultImpl per = new RapidProMPluginExecutionResultImpl(pluginAnn.returnTypes(),
 				pluginAnn.returnLabels(), RapidProMGlobalContext.instance().getPluginManager()
@@ -97,7 +98,7 @@ public final class RapidProMGlobalContext extends AbstractGlobalContext {
 	}
 
 	public PluginContext getPluginContext() {
-		return getMainPluginContext();
+		return getMainPluginContext().createChildContext("rprom_child_context_" + System.currentTimeMillis());
 	}
 
 	@Override
