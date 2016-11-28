@@ -614,8 +614,15 @@ public class GenerateSLEXMMOperator extends Operator {
 						String targetObjId = relsPerClassMap.get(clId)
 								.get(objId).get(vId).get(rsId);
 						Integer tclId = targetClassPerRelationship.get(rsId);
-						ArrayList<Integer> tvlist = versionsPerClassMap
-								.get(tclId).get(targetObjId);
+						
+						ArrayList<Integer> tvlist = null;
+						
+						if (tclId != null) {
+							if (versionsPerClassMap.get(tclId) != null) {
+								tvlist = versionsPerClassMap.get(tclId).get(targetObjId);
+							}
+						}
+						
 						if (tvlist != null) {
 							for (Integer tvid : tvlist) {
 								long tStartTimestamp = startTimePerVersion
