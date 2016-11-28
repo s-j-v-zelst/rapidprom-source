@@ -208,11 +208,16 @@ public class DataModelMM {
 				} else if (sourceClassId == null) {
 					throw new Exception(
 							"Source class name: '" + str_cls + "' not found");
+				} else {
+					
 				}
 			}
 			
 			DataModelMMKey k = rsmap.get(str_nm);
-			k.getAttributesMap().put(str_ats,str_att);
+			
+			if (str_ats != null) {
+				k.getAttributesMap().put(str_ats,str_att);
+			}
 			
 //			if (!kyPerSourceMap.containsKey(str_dm)) {
 //				kyPerSourceMap.put(str_dm, new HashMap<String,HashSet<DataModelMMKey>>());
