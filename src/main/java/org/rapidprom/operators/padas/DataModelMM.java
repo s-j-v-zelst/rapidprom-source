@@ -139,6 +139,22 @@ public class DataModelMM {
 			String str_ats = e.getValueAsString(kyats);
 			String str_att = e.getValueAsString(kyatt);
 			
+			if (str_clt.equals("?")) {
+				str_clt = null;
+			}
+			
+			if (str_cls.equals("?")) {
+				str_cls = null;
+			}
+			
+			if (str_ats.equals("?")) {
+				str_ats = null;
+			}
+			
+			if (str_att.equals("?")) {
+				str_att = null;
+			}
+			
 			if (!kymap.containsKey(str_dm)) {
 				kymap.put(str_dm, new HashMap<String,DataModelMMKey>());
 			}
@@ -166,7 +182,7 @@ public class DataModelMM {
 					targetClassId = -1;
 				}
 				
-				if (sourceClassId != null) {
+				if (sourceClassId != null && str_ats != null) {
 					SLEXMMRelationship slxrs = mm.createRelationship(str_nm,
 							sourceClassId, targetClassId);
 
@@ -189,7 +205,7 @@ public class DataModelMM {
 						}
 						fksPerClass.get(sourceClassId).add(k);
 					}
-				} else {
+				} else if (sourceClassId == null) {
 					throw new Exception(
 							"Source class name: '" + str_cls + "' not found");
 				}

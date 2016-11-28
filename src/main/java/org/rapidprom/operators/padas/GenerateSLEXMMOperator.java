@@ -325,16 +325,26 @@ public class GenerateSLEXMMOperator extends Operator {
 				
 				long startTimestampL = -2L;
 				if (startTimestampAtt != null) {
-					startTimestampL = dateFormatter
-							.parse(example.getValueAsString(startTimestampAtt))
-							.getTime();
+					String ststr = example.getValueAsString(startTimestampAtt);
+					if (ststr.equals("-1")) {
+						startTimestampL = -1;
+					} else if (ststr.equals("-2")) {
+						startTimestampL = -2;
+					} else {
+						startTimestampL = dateFormatter.parse(ststr).getTime();
+					}
 				}
 				
 				long endTimestampL = -1L;
 				if (endTimestampAtt != null) {
-					endTimestampL = dateFormatter
-							.parse(example.getValueAsString(endTimestampAtt))
-							.getTime();
+					String etstr = example.getValueAsString(endTimestampAtt);
+					if (etstr.equals("-1")) {
+						endTimestampL = -1;
+					} else if (etstr.equals("-2")) {
+						endTimestampL = -2;
+					} else {
+						endTimestampL = dateFormatter.parse(etstr).getTime();
+					}
 				}
 				
 				startTimePerVersion.put(example.getId(), startTimestampL);
