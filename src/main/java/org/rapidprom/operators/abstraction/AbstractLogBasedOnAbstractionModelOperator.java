@@ -93,13 +93,15 @@ public class AbstractLogBasedOnAbstractionModelOperator extends Operator {
 	private InputPort inputCosts = getInputPorts().createPort("costs control-flow (Example set)");
 	private InputPort inputCostsData = getInputPorts().createPort("costs data (Example set)");
 
-	private OutputPort outputLog = getOutputPorts().createPort("event log (ProM Event Log)");
+	private OutputPort outputLog = getOutputPorts().createPort("abstracted event log (ProM Event Log)");	
 	private OutputPort outputQualityMeasure = getOutputPorts().createPort("quality measures (Example set)");
 	private OutputPort outputAlignedLog = getOutputPorts().createPort("aligned log (ProM Aligned Event Log)");
-	private OutputPort outputTransitionMapping = getOutputPorts().createPort("mapping (Example set)");
-	private OutputPort outputVariableMapping = getOutputPorts().createPort("variable mapping (Example set)");
-	private OutputPort outputCosts = getOutputPorts().createPort("costs control-flow (Example set)");
-	private OutputPort outputCostsData = getOutputPorts().createPort("costs data (Example set)");
+	private OutputPort passthroughAbstractionModel = getOutputPorts().createPort("abstraction model (ProM Abstraction Model)");
+	private OutputPort passthroughLog = getOutputPorts().createPort("event log (ProM Event Log)");
+	private OutputPort passthroughTransitionMapping = getOutputPorts().createPort("mapping (Example set)");
+	private OutputPort passthroughVariableMapping = getOutputPorts().createPort("variable mapping (Example set)");
+	private OutputPort passthroughCosts = getOutputPorts().createPort("costs control-flow (Example set)");
+	private OutputPort passthroughCostsData = getOutputPorts().createPort("costs data (Example set)");
 
 	public AbstractLogBasedOnAbstractionModelOperator(OperatorDescription description) {
 		super(description);
@@ -113,10 +115,12 @@ public class AbstractLogBasedOnAbstractionModelOperator extends Operator {
 		getTransformer().addRule(new GenerateNewMDRule(outputLog, XLogIOObject.class));
 		getTransformer().addRule(new GenerateNewMDRule(outputQualityMeasure, ExampleSet.class));
 		getTransformer().addRule(new GenerateNewMDRule(outputAlignedLog, XAlignedLogIOObject.class));
-		getTransformer().addRule(new GenerateNewMDRule(outputVariableMapping, ExampleSet.class));
-		getTransformer().addRule(new GenerateNewMDRule(outputTransitionMapping, TransEvMappingIOObject.class));
-		getTransformer().addRule(new GenerateNewMDRule(outputCosts, ExampleSet.class));
-		getTransformer().addRule(new GenerateNewMDRule(outputCostsData, ExampleSet.class));
+		getTransformer().addRule(new GenerateNewMDRule(passthroughAbstractionModel, AbstractionModelIOObject.class));
+		getTransformer().addRule(new GenerateNewMDRule(passthroughLog, XLogIOObject.class));
+		getTransformer().addRule(new GenerateNewMDRule(passthroughVariableMapping, ExampleSet.class));
+		getTransformer().addRule(new GenerateNewMDRule(passthroughTransitionMapping, TransEvMappingIOObject.class));
+		getTransformer().addRule(new GenerateNewMDRule(passthroughCosts, ExampleSet.class));
+		getTransformer().addRule(new GenerateNewMDRule(passthroughCostsData, ExampleSet.class));
 	}
 
 	@Override
@@ -167,13 +171,15 @@ public class AbstractLogBasedOnAbstractionModelOperator extends Operator {
 				}
 			}
 
-			outputCosts.deliver(new AlignmentCostIO().writeCostsToExampleSet(alignmentConfig.getMapEvClass2Cost(),
+			passthroughAbstractionModel.deliver(inputAbstractionModel.getData(AbstractionModelIOObject.class));
+			passthroughLog.deliver(inputXLog.getData(XLogIOObject.class));
+			passthroughCosts.deliver(new AlignmentCostIO().writeCostsToExampleSet(alignmentConfig.getMapEvClass2Cost(),
 					alignmentConfig.getMapTrans2Cost()));
-			outputCostsData
+			passthroughCostsData
 					.deliver(new DataAlignmentCostIO().writeCostsToExampleSet(alignmentConfig.getVariableCost()));
-			outputVariableMapping
+			passthroughVariableMapping
 					.deliver(new VariableMappingIO().writeVariableMapping(alignmentConfig.getVariableMapping()));
-			outputTransitionMapping.deliver(inputTransitionMapping.getData(TransEvMappingIOObject.class));
+			passthroughTransitionMapping.deliver(inputTransitionMapping.getData(TransEvMappingIOObject.class));
 
 			XAlignedLog alignedLog = PatternBasedLogAbstractionPlugin.alignLogToAbstractionModel(
 					new RapidProMProgress(getProgress()), alignmentConfig, log, abstractionModel);
