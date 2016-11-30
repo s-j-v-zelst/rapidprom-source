@@ -47,8 +47,8 @@
                 <icon>magnifying_glass.png</icon>
             </operator>
             <operator>
-                <key>project_alignment_on_model</key>
-                <class>org.rapidprom.operators.analysis.ProjectAlignedLogOnModelOperator</class>
+                <key>project_alignment_on_dpn</key>
+                <class>org.rapidprom.operators.analysis.ProjectAlignedLogOnDPNOperator</class>
                 <icon>magnifying_glass.png</icon>
             </operator>
             <operator>

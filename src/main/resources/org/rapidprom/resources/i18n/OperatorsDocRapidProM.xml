@@ -94,10 +94,10 @@
    </operator>
            
    <operator>
-        <name>Project Alignment on Model</name>
+        <name>Project Alignment on DPN</name>
         <Synopyis>Projects an aligned log on a Data Petri net.</Synopyis>
         <help>Projects an aligned log on a Data Petri net.</help>
- 		<key>project_alignment_on_model</key>
+ 		<key>project_alignment_on_dpn</key>
    </operator>
    
     <!-- IMPORTERS -->
