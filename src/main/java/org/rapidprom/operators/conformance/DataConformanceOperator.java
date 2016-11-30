@@ -100,11 +100,11 @@ public class DataConformanceOperator extends Operator {
 	private OutputPort outputAlignedLog = getOutputPorts().createPort("aligned log (ProM Aligned Event Log)");
 	private OutputPort outputMetrics = getOutputPorts().createPort("fitness/precision (Example set)");
 
-	private OutputPort outputTransitionMapping = getOutputPorts()
+	private OutputPort passthroughTransitionMapping = getOutputPorts()
 			.createPort("mapping (ProM Transition/Event Class Mapping)");
-	private OutputPort outputVariableMapping = getOutputPorts().createPort("variable mapping (Example set)");
-	private OutputPort outputCosts = getOutputPorts().createPort("costs control-flow (Example set)");
-	private OutputPort outputCostsData = getOutputPorts().createPort("costs data (Example set)");
+	private OutputPort passthroughVariableMapping = getOutputPorts().createPort("variable mapping (Example set)");
+	private OutputPort passthroughCosts = getOutputPorts().createPort("costs control-flow (Example set)");
+	private OutputPort passthroughCostsData = getOutputPorts().createPort("costs data (Example set)");
 
 	public DataConformanceOperator(OperatorDescription description) {
 		super(description);
@@ -130,10 +130,10 @@ public class DataConformanceOperator extends Operator {
 		metaData.setNumberOfExamples(1);
 		getTransformer().addRule(new GenerateNewMDRule(outputMetrics, metaData));
 
-		getTransformer().addRule(new GenerateNewMDRule(outputTransitionMapping, TransEvMappingIOObject.class));
-		getTransformer().addRule(new GenerateNewMDRule(outputVariableMapping, ExampleSet.class));
-		getTransformer().addRule(new GenerateNewMDRule(outputCosts, ExampleSet.class));
-		getTransformer().addRule(new GenerateNewMDRule(outputCostsData, ExampleSet.class));
+		getTransformer().addRule(new GenerateNewMDRule(passthroughTransitionMapping, TransEvMappingIOObject.class));
+		getTransformer().addRule(new GenerateNewMDRule(passthroughVariableMapping, ExampleSet.class));
+		getTransformer().addRule(new GenerateNewMDRule(passthroughCosts, ExampleSet.class));
+		getTransformer().addRule(new GenerateNewMDRule(passthroughCostsData, ExampleSet.class));
 	}
 
 	@Override
@@ -146,8 +146,12 @@ public class DataConformanceOperator extends Operator {
 			TransEvClassMapping transitionMapping = getTransitionMapping();
 
 			DataPetriNet dpn = dpnIO.getArtifact();
+			
+			Marking initialMarking = dpnIO.getInitialMarking();
+			Marking[] finalMarkings = dpnIO.getFinalMarkingAsArray();
+			
 			BalancedProcessorConfiguration config = BalancedProcessorConfiguration.newDefaultInstance(dpn,
-					dpnIO.getInitialMarking(), new Marking[] { dpnIO.getFinalMarking() }, log,
+					initialMarking, finalMarkings, log,
 					transitionMapping.getEventClassifier(), getDefaultCostLogMove(), getDefaultCostModelMove(),
 					getDefaultCostMissingWrite(), getDefaultCostWrongWrite());
 			applyUserDefinedTransitionMapping(transitionMapping, config);
@@ -181,7 +185,7 @@ public class DataConformanceOperator extends Operator {
 			XAlignedLog alignedLog = XAlignmentExtension.instance()
 					.extendLog(alignmentPlugin.alignLog(new RapidProMProgress(getProgress()), dpn, log, config));
 
-			PrecisionConfig precisionConfig = new PrecisionConfig(dpnIO.getInitialMarking(),
+			PrecisionConfig precisionConfig = new PrecisionConfig(initialMarking,
 					DataAwarePrecisionPlugin.convertMapping(config.getActivityMapping()),
 					config.getActivityMapping().getEventClassifier(), config.getVariableMapping());
 			precisionConfig.setAssumeUnassignedVariablesFree(true);
@@ -190,18 +194,18 @@ public class DataConformanceOperator extends Operator {
 
 			outputAlignedLog.deliver(new XAlignedLogIOObject(alignedLog.getLog(), dpnIO.getPluginContext()));
 			outputMetrics.deliver(createMeasureTable(alignedLog, precisionResult));
-			outputCosts.deliver(new AlignmentCostIO().writeCostsToExampleSet(config.getMapEvClass2Cost(),
+			passthroughCosts.deliver(new AlignmentCostIO().writeCostsToExampleSet(config.getMapEvClass2Cost(),
 					config.getMapTrans2Cost()));
-			outputCostsData.deliver(new DataAlignmentCostIO().writeCostsToExampleSet(config.getVariableCost()));
-			outputVariableMapping.deliver(new VariableMappingIO().writeVariableMapping(config.getVariableMapping()));
-			outputTransitionMapping.deliver(inputTransitionMapping.getData(TransEvMappingIOObject.class));
+			passthroughCostsData.deliver(new DataAlignmentCostIO().writeCostsToExampleSet(config.getVariableCost()));
+			passthroughVariableMapping.deliver(new VariableMappingIO().writeVariableMapping(config.getVariableMapping()));
+			passthroughTransitionMapping.deliver(inputTransitionMapping.getData(TransEvMappingIOObject.class));
 
 		} catch (ControlFlowAlignmentException | DataAlignmentException e) {
 			throw new OperatorException("Failed alignment! Reason: " + e.getMessage(), e);
-		} catch (ObjectNotFoundException e) {
-			throw new OperatorException("Missing markings " + e.getMessage(), e);
 		} catch (PrecisionMeasureException | ProcessProjectionException e) {
 			throw new OperatorException("Failed precision measurement " + e.getMessage(), e);
+		} catch (ObjectNotFoundException e) {
+			throw new OperatorException("Missing markings! Reason: " + e.getMessage(), e);
 		}
 
 	}

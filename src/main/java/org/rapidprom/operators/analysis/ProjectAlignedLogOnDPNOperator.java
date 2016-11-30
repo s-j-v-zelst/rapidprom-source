@@ -200,13 +200,17 @@ public class ProjectAlignedLogOnDPNOperator extends Operator {
 
 			XLog log = logIO.getArtifact();
 			XAlignedLog alignedLog = alignedLogIO.getAsAlignedLog();
-			// TODO make sure that it is really one with markings
+			
+			if (!(dpnIO.getArtifact() instanceof DataPetriNetsWithMarkings)) {
+				throw new OperatorException("Missing markings of the Data Petri net");
+			}
+			
 			DataPetriNetsWithMarkings dpn = (DataPetriNetsWithMarkings) dpnIO.getArtifact();
 			try {
 				dpn.setInitialMarking(dpnIO.getInitialMarking());
 				dpn.setFinalMarkings(dpnIO.getFinalMarkingAsArray());
 			} catch (ObjectNotFoundException e) {
-				throw new OperatorException("Missing markings", e);
+				throw new OperatorException("Missing marking", e);
 			}
 
 			PluginContext pluginContext = dpnIO.getPluginContext();
