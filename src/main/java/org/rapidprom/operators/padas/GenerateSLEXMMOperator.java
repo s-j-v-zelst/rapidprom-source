@@ -382,7 +382,9 @@ public class GenerateSLEXMMOperator extends Operator {
 			HashMap<Double,Long> endTimePerExample, HashMap<Integer,Long> endTimePerVersion,
 			HashMap<Attribute,SLEXMMAttribute> attsToVerAttsMap,
 			HashMap<Integer,HashMap<String,HashMap<Integer,HashMap<Integer,String>>>> relsPerClassMap,
-			List<DataModelMMKey> fks,Attributes atts, HashMap<Double,Integer> verIdMap) {
+			List<DataModelMMKey> fks,Attributes atts, HashMap<Double,Integer> verIdMap,
+			List<DataModelMMKey> originFks, HashMap<Integer,HashMap<Integer,HashMap<String,ArrayList<Integer>>>> versionsPerSourceRS
+			) {
 		
 		for (Example example : verExSet) {
 			try {
@@ -466,6 +468,43 @@ public class GenerateSLEXMMOperator extends Operator {
 					}
 				}
 				
+				if (originFks != null) {
+					
+					HashMap<Integer,HashMap<String,ArrayList<Integer>>> vpsrsAux1 = versionsPerSourceRS.get(clmm.getId());
+					if (vpsrsAux1 == null) {
+						vpsrsAux1 = new HashMap<>();
+						versionsPerSourceRS.put(clmm.getId(),vpsrsAux1);
+					}
+										
+					for (DataModelMMKey ofk: originFks) {
+						
+						HashMap<String,ArrayList<Integer>> vpsrsAux2 = vpsrsAux1.get(ofk.getRelationshipId());
+						
+						if (vpsrsAux2 == null) {
+							vpsrsAux2 = new HashMap<>();
+							vpsrsAux1.put(ofk.getRelationshipId(), vpsrsAux2);
+						}
+												
+						StringBuilder targetObjId = new StringBuilder();
+						for (String atStr : ofk.getAttributesMap().keySet()) {
+							String atTargetStr = ofk.getAttributesMap().get(atStr);
+							Attribute at = atts.get(atTargetStr);
+							targetObjId.append(example.getValueAsString(at));
+							targetObjId.append('#');
+						}
+						
+						ArrayList<Integer> vpsrsAux3 = vpsrsAux2.get(targetObjId.toString());
+						
+						if (vpsrsAux3 == null) {
+							vpsrsAux3 = new ArrayList<>();
+							vpsrsAux2.put(targetObjId.toString(), vpsrsAux3);
+						}
+						
+						vpsrsAux3.add(ver.getId());
+						
+					}
+				}
+				
 				if (i >= 100) {
 					mm.commit();
 					i = 0L;
@@ -504,6 +543,14 @@ public class GenerateSLEXMMOperator extends Operator {
 				ArrayList<Integer>  // version ID
 			>
 		> versionsPerClassMap = new HashMap<>();
+		
+		HashMap<Integer, // Class ID
+			HashMap<Integer, // Relationship ID
+				HashMap<String, // objIDStr
+					ArrayList<Integer>  // version ID
+				>
+			>
+		> versionsPerSourceRS = new HashMap<>();
 		
 		HashMap<Double,Long> startTimePerExample = new HashMap<>(); // start timestamp per Example ID
 		HashMap<Double,Long> endTimePerExample = new HashMap<>(); // end timestamp per Example ID
@@ -587,13 +634,16 @@ public class GenerateSLEXMMOperator extends Operator {
 				}
 			}
 			
+			List<DataModelMMKey> originFks = dm.getFKsForTargetClass(clmm);
+						
 			computeEndTimestampsVersions(verExSet, pkListAtts, clmm, dateFormatter,
 					 startTimestampAtt, endTimestampAtt, startTimePerExample, endTimePerExample);
 			
 			parseRows(verExSet, pkListAtts, objMap, i, clmm, mm, versionsPerClassMap,
 					 startTimePerExample, startTimePerVersion, endTimePerExample, 
 					 endTimePerVersion, attsToVerAttsMap,
-					 relsPerClassMap, fks, atts, verIdMap);
+					 relsPerClassMap, fks, atts, verIdMap,
+					 originFks, versionsPerSourceRS);
 		}
 		
 		mm.commit();
@@ -611,6 +661,7 @@ public class GenerateSLEXMMOperator extends Operator {
 
 					for (Integer rsId : relsPerClassMap.get(clId).get(objId)
 							.get(vId).keySet()) {
+						
 						String targetObjId = relsPerClassMap.get(clId)
 								.get(objId).get(vId).get(rsId);
 						Integer tclId = targetClassPerRelationship.get(rsId);
@@ -618,8 +669,12 @@ public class GenerateSLEXMMOperator extends Operator {
 						ArrayList<Integer> tvlist = null;
 						
 						if (tclId != null) {
-							if (versionsPerClassMap.get(tclId) != null) {
-								tvlist = versionsPerClassMap.get(tclId).get(targetObjId);
+							//if (versionsPerClassMap.get(tclId) != null) {
+							if (versionsPerSourceRS.get(tclId) != null) {
+								if (versionsPerSourceRS.get(tclId).get(rsId) != null) {
+									//tvlist = versionsPerClassMap.get(tclId).get(targetObjId);
+									tvlist = versionsPerSourceRS.get(tclId).get(rsId).get(targetObjId);
+								}
 							}
 						}
 						

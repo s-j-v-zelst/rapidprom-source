@@ -51,6 +51,10 @@ public class DataModelMM {
 		ArrayList<DataModelMMKey> // List of FK Keys
 	> fksPerClass = new HashMap<>();
 	
+	private HashMap<Integer, // slx Class Id
+		ArrayList<DataModelMMKey> // List of FK Keys
+	> fksPerTargetClass = new HashMap<>();
+	
 	private SLEXMMStorageMetaModel mm = null;
 	
 	public DataModelMM(SLEXMMStorageMetaModel mm, ExampleSet esclasses, ExampleSet eskeys) throws Exception {
@@ -96,6 +100,13 @@ public class DataModelMM {
 	public List<DataModelMMKey> getFKsForClass(SLEXMMClass c) {
 		if (fksPerClass.containsKey(c.getId())) {
 			return fksPerClass.get(c.getId());
+		}
+		return null;
+	}
+	
+	public List<DataModelMMKey> getFKsForTargetClass(SLEXMMClass c) {
+		if (fksPerTargetClass.containsKey(c.getId())) {
+			return fksPerTargetClass.get(c.getId());
 		}
 		return null;
 	}
@@ -204,12 +215,16 @@ public class DataModelMM {
 									new ArrayList<DataModelMMKey>());
 						}
 						fksPerClass.get(sourceClassId).add(k);
+						
+						if (!fksPerTargetClass.containsKey(targetClassId)) {
+							fksPerTargetClass.put(targetClassId,
+									new ArrayList<DataModelMMKey>());
+						}
+						fksPerTargetClass.get(targetClassId).add(k);
 					}
 				} else if (sourceClassId == null) {
 					throw new Exception(
 							"Source class name: '" + str_cls + "' not found");
-				} else {
-					
 				}
 			}
 			
