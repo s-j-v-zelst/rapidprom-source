@@ -95,9 +95,13 @@ public class ExpandAbstractModelOperator extends Operator {
 		}
 
 		try {
-			DataPetriNetsWithMarkings expandedModel = (DataPetriNetsWithMarkings) doTransformModelBasedOnAbstractionPatterns(
+			DataPetriNet dpn = doTransformModelBasedOnAbstractionPatterns(
 					model, modelIO.getInitialMarking(), modelIO.getFinalMarking(), defaultValues);
+			if (!(dpn instanceof DataPetriNetsWithMarkings)) {
+				throw new OperatorException("DPN is not a DataPetriNetsWithMarkings");
+			}
 
+			DataPetriNetsWithMarkings expandedModel = (DataPetriNetsWithMarkings) dpn;
 			PetrinetWithMarkings pnWithMarkings = DataPetriNet.Factory.toPetrinetWithMarkings(expandedModel);
 
 			PluginContext pluginContext = RapidProMGlobalContext.instance()
