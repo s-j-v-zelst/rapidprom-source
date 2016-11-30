@@ -25,6 +25,11 @@
                 <key>reduce_silent_transitions</key>
                 <class>org.rapidprom.operators.analysis.ReduceSilentTransitionsOperator</class>
                 <icon>magnifying_glass.png</icon>
+            </operator> 
+             <operator>
+                <key>reduce_petrinet</key>
+                <class>org.rapidprom.operators.analysis.MurataReductionOperator</class>
+                <icon>magnifying_glass.png</icon>
             </operator>    
             <operator>
                 <key>perform_predictions_of_business_process_features</key>

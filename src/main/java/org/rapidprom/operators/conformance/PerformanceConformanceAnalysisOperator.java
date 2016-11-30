@@ -93,8 +93,10 @@ public class PerformanceConformanceAnalysisOperator extends AbstractRapidProMDis
 			pluginContext.getProgress().cancel();
 			logger.log(Level.INFO, "Performance Ckecker timed out.");
 		} catch (Exception e) {
+			
 			e.printStackTrace();
-			return;
+			throw new OperatorException("The transitions of the Petri net and the events of the Event Log could not be mapped. "
+					+ "Please make sure that you are using the same Classifier.");
 		}
 
 		logger.log(Level.INFO, "End: replay log on petri net for performance/conformance checking ("
