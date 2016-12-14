@@ -12,7 +12,6 @@ import java.awt.event.ActionEvent;
 import javax.swing.JButton;
 
 import org.processmining.database.metamodel.dapoql.ui.components.DAPOQLGroovyQueryField;
-import org.processmining.database.metamodel.dapoql.ui.components.DAPOQLQueryField;
 
 import com.rapidminer.gui.tools.ResourceAction;
 import com.rapidminer.parameter.Parameters;
