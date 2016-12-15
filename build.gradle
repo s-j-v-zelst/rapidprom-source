@@ -128,3 +128,4 @@ dependencies {
 	compile "org.rapidprom:XESAlignmentExtension:6.7.57"
 	compile "org.rapidprom:XESLite:6.7.276"
 	compile "org.rapidprom:Weka:6.7.25"
+}
