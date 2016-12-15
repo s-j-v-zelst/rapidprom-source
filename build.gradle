@@ -76,7 +76,7 @@ extensionConfig {
 
 // Define third party library dependencies
 dependencies {	
-	compile group:"org.rapidprom", name:"ProM-Framework", version:"31245"
+	compile group:"org.rapidprom", name:"ProM-Framework", version:"33250"
 	compile "org.rapidprom:AcceptingPetriNet:6.7.93"
 	compile "org.rapidprom:AlphaMiner:6.5.47"
 	compile "org.rapidprom:Animation:6.5.50"
