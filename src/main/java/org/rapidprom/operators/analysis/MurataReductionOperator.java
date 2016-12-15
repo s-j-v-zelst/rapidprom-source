@@ -21,17 +21,17 @@ import com.rapidminer.parameter.ParameterType;
 import com.rapidminer.parameter.ParameterTypeCategory;
 import com.rapidminer.tools.LogService;
 
-public class ReduceSilentTransitionsOperator extends Operator {
+public class MurataReductionOperator extends Operator {
 
 	private InputPort inputPetrinet = getInputPorts().createPort("model (ProM Petri Net)", PetriNetIOObject.class);
 	private OutputPort outputPetrinet = getOutputPorts().createPort("model (ProM Petri Net)");
 
-	private static final String VARIATION = "Preserve:",
-			VARIATION_DESCR = "The reduction rules can be applied for reducing the silent "
-					+ "transitions of a petri net while preserving soundness or behavior";
-	private static final String SOUNDNESS = "Soundness", BEHAVIOR = "Behavior";
+	private static final String VARIATION = "Reduction Method:",
+			VARIATION_DESCR = "This parameter defines which method of reduction is used to reduce the petri net.";
+	private static final String SIMPLIFY = "Simplify For Replay", REDUCE_ALL = "Reduce All Transitions",
+			REDUCE_ALL_RETAIN = "Reduce All Transitions, Retain Sink/Source Places";
 
-	public ReduceSilentTransitionsOperator(OperatorDescription description) {
+	public MurataReductionOperator(OperatorDescription description) {
 		super(description);
 		getTransformer().addRule(new GenerateNewMDRule(outputPetrinet, PetriNetIOObject.class));
 	}
@@ -39,20 +39,24 @@ public class ReduceSilentTransitionsOperator extends Operator {
 	// TO-DO : add parameters
 	public void doWork() throws OperatorException {
 		Logger logger = LogService.getRoot();
-		logger.log(Level.INFO, "Start: reduce silent transitions");
+		logger.log(Level.INFO, "Start: reduce petri net");
 		long time = System.currentTimeMillis();
 		PluginContext pluginContext = RapidProMGlobalContext.instance().getFutureResultAwarePluginContext(Murata.class);
 		Murata reducer = new Murata();
 		Object[] result = new Object[2];
 		try {
-			if (getParameterAsString(VARIATION).equals(BEHAVIOR))
-				result = reducer.runPreserveBehavior(pluginContext,
+			if (getParameterAsString(VARIATION).equals(SIMPLIFY))
+				result = reducer.simplify(pluginContext,
 						inputPetrinet.getData(PetriNetIOObject.class).getArtifact(),
 						inputPetrinet.getData(PetriNetIOObject.class).getInitialMarking());
-			else if (getParameterAsString(VARIATION).equals(SOUNDNESS))
-				result = reducer.runPreserveSoundness(pluginContext,
+			else if (getParameterAsString(VARIATION).equals(REDUCE_ALL))
+				result = reducer.run(pluginContext,
 						inputPetrinet.getData(PetriNetIOObject.class).getArtifact(),
 						inputPetrinet.getData(PetriNetIOObject.class).getInitialMarking());
+			else {
+				result[0] = reducer.runWF(pluginContext, inputPetrinet.getData(PetriNetIOObject.class).getArtifact());
+				result[1] = inputPetrinet.getData(PetriNetIOObject.class).getInitialMarking();
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -60,14 +64,14 @@ public class ReduceSilentTransitionsOperator extends Operator {
 		outputPetrinet.deliver(pn);
 
 		logger.log(Level.INFO,
-				"End: reduce silent transitions (" + (System.currentTimeMillis() - time) / 1000 + " sec)");
+				"End: reduce petri net (" + (System.currentTimeMillis() - time) / 1000 + " sec)");
 
 	}
 
 	public List<ParameterType> getParameterTypes() {
 		List<ParameterType> parameterTypes = super.getParameterTypes();
 
-		String[] options = new String[] { SOUNDNESS, BEHAVIOR };
+		String[] options = new String[] { SIMPLIFY, REDUCE_ALL, REDUCE_ALL_RETAIN };
 
 		ParameterTypeCategory variation = new ParameterTypeCategory(VARIATION, VARIATION_DESCR, options, 0);
 		parameterTypes.add(variation);
