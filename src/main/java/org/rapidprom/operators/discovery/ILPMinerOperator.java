@@ -17,6 +17,7 @@ import org.processmining.hybridilpminer.parameters.LPFilter;
 import org.processmining.hybridilpminer.parameters.LPFilterType;
 import org.processmining.hybridilpminer.parameters.XLogHybridILPMinerParametersImpl;
 import org.processmining.hybridilpminer.plugins.HybridILPMinerPlugin;
+import org.processmining.models.graphbased.AttributeMap;
 import org.processmining.models.graphbased.directed.petrinet.Petrinet;
 import org.processmining.models.semantics.petrinet.Marking;
 import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
@@ -74,6 +75,10 @@ public class ILPMinerOperator extends AbstractRapidProMDiscoveryOperator {
 		if (getConstraintTypes().contains(LPConstraintType.EMPTY_AFTER_COMPLETION))
 			finalMarking = new Marking();
 
+		if (getLabel() != null && !getLabel().isEmpty()) {
+			pn.getAttributeMap().put(AttributeMap.LABEL, getLabel());
+		}
+		
 		PetriNetIOObject petrinetIOObject = new PetriNetIOObject(pn, (Marking) pnAndMarking[1], finalMarking, context);
 		outputPetrinet.deliver(petrinetIOObject);
 	}
