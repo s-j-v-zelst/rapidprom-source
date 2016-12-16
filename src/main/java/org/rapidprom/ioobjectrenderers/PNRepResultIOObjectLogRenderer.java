@@ -19,7 +19,7 @@ public class PNRepResultIOObjectLogRenderer extends AbstractRapidProMIOObjectRen
 		if (ioObject.getArtifact() == null) {
 			return new JLabel("No alignment could be computed");
 		}		
-		return new PNLogReplayResultVisPanel(ioObject.getPn().getArtifact(), ioObject.getXLog(), ioObject.getArtifact(),
+		return new PNLogReplayResultVisPanel(ioObject.getXLog(), ioObject.getArtifact(),
 				ioObject.getPluginContext().getProgress());
 	}
 

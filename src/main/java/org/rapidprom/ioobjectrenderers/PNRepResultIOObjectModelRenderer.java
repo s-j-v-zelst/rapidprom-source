@@ -5,6 +5,7 @@ import java.util.logging.Level;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 
+import org.processmining.framework.connections.ConnectionCannotBeObtained;
 import org.processmining.plugins.pnalignanalysis.visualization.projection.PNLogReplayProjectedVisPanel;
 import org.rapidprom.ioobjectrenderers.abstr.AbstractRapidProMIOObjectRenderer;
 import org.rapidprom.ioobjects.PNRepResultIOObject;
@@ -31,6 +32,8 @@ public class PNRepResultIOObjectModelRenderer extends AbstractRapidProMIOObjectR
 					ioObject.getArtifact());
 		} catch (ObjectNotFoundException e) {
 			LogService.getRoot().log(Level.SEVERE, "Failed to retrieve marking", e);
+		} catch (ConnectionCannotBeObtained e) {
+			LogService.getRoot().log(Level.SEVERE, "Failed to find connection", e);
 		}
 		return new JLabel("No alignment could be computed");
 	}
