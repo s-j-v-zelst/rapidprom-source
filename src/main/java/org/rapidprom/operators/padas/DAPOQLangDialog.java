@@ -30,6 +30,7 @@ public class DAPOQLangDialog extends PropertyDialog {
 
 	public DAPOQLangDialog(ParameterType type, ConfigurationListener listener) {
 		super(type, "dapoql-query-editor");
+		super.setModalityType(ModalityType.MODELESS);
 		this.listener = listener;
 
 		layoutDefault(createMainPanel(), createButtonPanel(), LARGE);
@@ -62,6 +63,17 @@ public class DAPOQLangDialog extends PropertyDialog {
 			}
 		});
 		buttonPanel.add(okButton);
+		
+		JButton applyButton = new JButton(new ResourceAction("apply") {
+			
+			private static final long serialVersionUID = 5836090824300913876L;
+
+			public void actionPerformed(ActionEvent e) {
+				apply();
+			}
+		});
+		buttonPanel.add(applyButton);
+		
 		JButton cancelButton = makeCancelButton("cancel");
 		buttonPanel.add(cancelButton);
 		getRootPane().setDefaultButton(okButton);
@@ -73,10 +85,14 @@ public class DAPOQLangDialog extends PropertyDialog {
 
 	protected void ok() {
 		ok = true;
+		apply();
+		dispose();
+	}
+	
+	protected void apply() {
 		Parameters parameters = listener.getParameters();
 		parameters.setParameter(DAPOQLangQueryOperator.PARAMETER_1, qF.getQuery());
-		listener.setParameters(parameters);
-		dispose();
+		listener.setParameters(parameters); 
 	}
 
 	protected void cancel() {
