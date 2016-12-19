@@ -8,7 +8,10 @@ import org.deckfour.xes.model.XLog;
 import org.processmining.framework.plugin.PluginContext;
 import org.processmining.lpm.dialogs.LocalProcessModelParameters;
 import org.processmining.lpm.discovery.LocalProcessModelDiscovery;
+import org.processmining.lpm.util.LocalProcessModel;
 import org.processmining.lpm.util.LocalProcessModelRanking;
+import org.processmining.models.graphbased.AttributeMap;
+import org.processmining.models.graphbased.directed.petrinet.Petrinet;
 import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.LocalProcessModelRankingIOObject;
 import org.rapidprom.operators.abstr.AbstractRapidProMDiscoveryOperator;
@@ -87,11 +90,25 @@ public class LocalProcessModelDiscoveryOperator extends AbstractRapidProMDiscove
 		
 		LocalProcessModelRanking result = lpmd.runHeadless(pluginContext, lpmp);
 		
+		renameModels(result);
+		
 		LocalProcessModelRankingIOObject resultObject = new LocalProcessModelRankingIOObject(result, pluginContext);
 
 		output.deliver(resultObject);
 
 		logger.log(Level.INFO, "End: lpm discovery (" + (System.currentTimeMillis() - time) / 1000 + " sec)");
+	}
+
+	private void renameModels(LocalProcessModelRanking result) throws UndefinedParameterError {
+		for (int i = 0; i < result.getSize(); i++) {
+			LocalProcessModel model = result.getNet(i);
+			Petrinet net = model.getAcceptingPetriNet().getNet();
+			if (getLabel() != null && !getLabel().isEmpty()) {
+				net.getAttributeMap().put(AttributeMap.LABEL, getLabel() +  "-" +  i);
+			} else {
+				net.getAttributeMap().put(AttributeMap.LABEL, "LPM" +  "-" +  i);
+			}
+		}
 	}
 
 	@Override
