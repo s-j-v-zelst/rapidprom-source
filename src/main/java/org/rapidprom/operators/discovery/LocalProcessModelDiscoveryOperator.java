@@ -125,7 +125,7 @@ public class LocalProcessModelDiscoveryOperator extends AbstractRapidProMDiscove
 		parameter8.setExpert(false);
 		parameterTypes.add(parameter8);
 
-		ParameterTypeInt parameter9 = new ParameterTypeInt(PARAMETER_9_KEY, PARAMETER_9_DESCR, 0, lpmp.getMaxActivityFrequencyInLog(), lpmp.getFrequencyMinimum());
+		ParameterTypeInt parameter9 = new ParameterTypeInt(PARAMETER_9_KEY, PARAMETER_9_DESCR, 0, Integer.MAX_VALUE, lpmp.getFrequencyMinimum());
 		parameter9.setExpert(false);
 		parameterTypes.add(parameter9);
 		ParameterTypeDouble parameter10 = new ParameterTypeDouble(PARAMETER_10_KEY, PARAMETER_10_DESCR, 0, 1, lpmp.getDeterminismMinimum());
