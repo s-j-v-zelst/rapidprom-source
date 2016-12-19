@@ -55,10 +55,10 @@
 		<renderer>org.rapidprom.ioobjectrenderers.PNRepResultIOObjectLogRenderer</renderer>
 	</ioobject>
 	<ioobject
-		name="InteractiveMinerLauncherProM"
-		class="org.rapidprom.ioobjects.InteractiveMinerLauncherIOObject"
+		name="InductiveVisualMinerLauncherProM"
+		class="org.rapidprom.ioobjects.InductiveVisualMinerLauncherIOObject"
 		reportable="true">
-		<renderer>org.rapidprom.ioobjectrenderers.InteractiveMinerLauncherIOObjectRenderer</renderer>
+		<renderer>org.rapidprom.ioobjectrenderers.InductiveVisualMinerLauncherIOObjectRenderer</renderer>
 	</ioobject>
 	<ioobject
 		name="ReachabilityGraphProM"
