@@ -13,7 +13,7 @@ repositories {
     jcenter()
 	maven { url 'https://maven.rapidminer.com/content/groups/public/' }
 	ivy {
-		url "https://github.com/rapidprom/rapidprom-libraries/raw/${project.properties["version"]}/prom/"
+		url "https://github.com/rapidprom/rapidprom-libraries/raw/lib_fmannhardt/prom/"
 		layout "pattern", {
 			artifact "[module]-[revision]/[module]-[revision].[ext]"
 			artifact "[module]-[revision]/[artifact].[ext]"
@@ -21,14 +21,14 @@ repositories {
 		}
 	}
 	ivy {
-		url "https://github.com/rapidprom/rapidprom-libraries/raw/${project.properties["version"]}/thirdparty/lib/"
+		url "https://github.com/rapidprom/rapidprom-libraries/raw/lib_fmannhardt/thirdparty/lib/"
 		layout "pattern", {
 			artifact "[module]-[revision]/[module]-[revision].[ext]"
 			ivy "[module]-[revision]/ivy-[module]-[revision].xml"
 		}
 	}
 	ivy {
-		url "https://github.com/rapidprom/rapidprom-libraries/raw/${project.properties["version"]}/thirdparty/resource/"
+		url "https://github.com/rapidprom/rapidprom-libraries/raw/lib_fmannhardt/thirdparty/resource/"
 		layout "pattern", {
 			artifact "[module]-[revision]/[module]-[revision].[ext]"
 			ivy "[module]-[revision]/ivy-[module]-[revision].xml"
@@ -75,9 +75,8 @@ extensionConfig {
 }
 
 // Define third party library dependencies
-dependencies {
-	
-	compile group:"org.rapidprom", name:"ProM-Framework", version:"31245"
+dependencies {	
+	compile group:"org.rapidprom", name:"ProM-Framework", version:"33250"
 	compile "org.rapidprom:AcceptingPetriNet:6.7.93"
 	compile "org.rapidprom:AlphaMiner:6.5.47"
 	compile "org.rapidprom:Animation:6.5.50"
@@ -85,9 +84,14 @@ dependencies {
 	compile "org.rapidprom:BasicUtils:6.7.104"
 	compile "org.rapidprom:BPMN:6.5.56"
 	compile "org.rapidprom:BPMNConversions:6.5.48"
+	compile "org.rapidprom:CNet:6.7.134"	
 	compile "org.rapidprom:CPNet:6.5.84"
-	compile "org.rapidprom:DataAwareReplayer:6.7.563"
-	compile "org.rapidprom:DataPetriNets:6.7.386"
+	compile "org.rapidprom:DataAwareCNetMiner:6.7.98"
+	compile "org.rapidprom:DataAwareExplorer:6.7.365"
+	compile "org.rapidprom:DataAwareReplayer:6.7.616"
+	compile "org.rapidprom:DataDiscovery:6.7.89"
+	compile "org.rapidprom:DataExpression:6.7.46"	
+	compile "org.rapidprom:DataPetriNets:6.7.421"
 	compile "org.rapidprom:DottedChart:6.5.17"
 	compile "org.rapidprom:EvolutionaryTreeMiner:6.7.154"
 	compile "org.rapidprom:EventStream:6.5.72"
@@ -98,17 +102,18 @@ dependencies {
 	compile "org.rapidprom:HeuristicsMiner:6.5.49"
 	compile "org.rapidprom:HybridILPMiner:6.7.116"
 	compile "org.rapidprom:InductiveMiner:6.7.297"
-	compile "org.rapidprom:LocalProcessModelDiscovery:6.7.28"
 	compile "org.rapidprom:InductiveVisualMiner:6.7.413"
-	compile "org.rapidprom:Log:6.7.293"
+	compile "org.rapidprom:LocalProcessModelDiscovery:6.7.28"	
+	compile "org.rapidprom:Log:6.7.315"
 	compile "org.rapidprom:LogDialog:6.5.42"
+	compile "org.rapidprom:LogEnhancement:6.7.329"
 	compile "org.rapidprom:LogProjection:6.5.38"
 	compile "org.rapidprom:ModelRepair:6.5.12"
 	compile "org.rapidprom:Murata:6.5.54"
-	compile "org.rapidprom:PetriNets:6.7.95"
-	compile "org.rapidprom:PNetAlignmentAnalysis:6.5.35"
+	compile "org.rapidprom:PetriNets:6.7.136"
+	compile "org.rapidprom:PNetAlignmentAnalysis:6.7.91"
 	compile "org.rapidprom:PNAnalysis:6.7.122"
-	compile "org.rapidprom:PNetReplayer:6.7.99"
+	compile "org.rapidprom:PNetReplayer:6.7.138"
 	compile "org.rapidprom:PTConversions:6.5.3"
 	compile "org.rapidprom:PomPomView:6.5.36"
 	compile "org.rapidprom:SocialNetwork:6.5.35"
@@ -118,7 +123,9 @@ dependencies {
 	compile "org.rapidprom:TransitionSystems:6.7.71"
 	compile "org.rapidprom:TSPetriNet:6.5.35"
 	compile "org.rapidprom:Uma:6.5.46"
+	compile "org.rapidprom:Widgets:6.7.205"
 	compile "org.rapidprom:Woflan:6.7.59"
-	compile "org.rapidprom:XESLite:6.7.217"
-	compile "org.rapidprom:Weka:6.7.3"
+	compile "org.rapidprom:XESAlignmentExtension:6.7.57"
+	compile "org.rapidprom:XESLite:6.7.276"
+	compile "org.rapidprom:Weka:6.7.25"
 }

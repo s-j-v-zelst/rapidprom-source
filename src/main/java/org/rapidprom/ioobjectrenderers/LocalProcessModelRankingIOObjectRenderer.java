@@ -2,7 +2,6 @@ package org.rapidprom.ioobjectrenderers;
 
 import javax.swing.JComponent;
 
-import org.processmining.contexts.uitopia.UIPluginContext;
 import org.processmining.lpm.util.VisualizeLocalProcessModelRankingDotPlugin;
 import org.rapidprom.ioobjectrenderers.abstr.AbstractRapidProMIOObjectRenderer;
 import org.rapidprom.ioobjects.LocalProcessModelRankingIOObject;

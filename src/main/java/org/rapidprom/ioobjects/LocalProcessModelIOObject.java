@@ -6,6 +6,8 @@ import org.rapidprom.ioobjects.abstr.AbstractRapidProMIOObject;
 
 public class LocalProcessModelIOObject extends AbstractRapidProMIOObject<LocalProcessModel> {
 
+	private static final long serialVersionUID = -7648118214904111868L;
+
 	public LocalProcessModelIOObject(LocalProcessModel t, PluginContext context) {
 		super(t, context);
 	}

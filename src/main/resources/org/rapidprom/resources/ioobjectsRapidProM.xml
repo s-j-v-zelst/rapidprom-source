@@ -80,6 +80,7 @@
         <renderer>org.rapidprom.ioobjectrenderers.XLogIOObjectNewDottedChartRenderer</renderer>
         <renderer>org.rapidprom.ioobjectrenderers.XLogIOObjectOldDottedChartRenderer</renderer>
         <renderer>org.rapidprom.ioobjectrenderers.XLogIOObjectExampleSetRenderer</renderer>
+		<renderer>org.rapidprom.ioobjectrenderers.XLogIOObjectWedgesRenderer</renderer>        
     </ioobject>
     
     <ioobject
@@ -87,6 +88,14 @@
         class="org.rapidprom.ioobjects.PetriNetIOObject"
         reportable="true">
         <renderer>org.rapidprom.ioobjectrenderers.PetriNetIOObjectRenderer</renderer>
+        <renderer>org.rapidprom.ioobjectrenderers.PetriNetIOGraphvizObjectRenderer</renderer>
+    </ioobject>
+    
+    <ioobject
+        name="DataPetriNetProM"
+        class="org.rapidprom.ioobjects.DataPetriNetIOObject"
+        reportable="true">
+        <renderer>org.rapidprom.ioobjectrenderers.DataPetriNetIOObjectRenderer</renderer>
     </ioobject>
     
     <ioobject
@@ -136,6 +145,34 @@
 		reportable="true">
 		<renderer>org.rapidprom.ioobjectrenderers.MetricsRepositoryIOObjectRenderer</renderer>
 	</ioobject>
+	
+	<ioobject
+		name="TransEvMappingProM"
+		class="org.rapidprom.ioobjects.TransEvMappingIOObject"
+		reportable="true">
+		<renderer>org.rapidprom.ioobjectrenderers.TransEvMappingIOObjectRenderer</renderer>
+	</ioobject>
+	
+	<ioobject
+		name="AbstractionModelProM"
+		class="org.rapidprom.ioobjects.AbstractionModelIOObject"
+		reportable="true">
+		<renderer>org.rapidprom.ioobjectrenderers.AbstractionModelIOObjectRenderer</renderer>
+	</ioobject>
+	
+	<ioobject
+		name="AlignedLogProM"
+		class="org.rapidprom.ioobjects.XAlignedLogIOObject"
+		reportable="true">
+		<renderer>org.rapidprom.ioobjectrenderers.XAlignedLogIOObjectWedgesRenderer</renderer>
+	</ioobject>	
+	
+	<ioobject
+		name="DotProM"
+		class="org.rapidprom.ioobjects.DotIOObject"
+		reportable="true">
+		<renderer>org.rapidprom.ioobjectrenderers.DotIOObjectRenderer</renderer>
+	</ioobject>	
 	
 	<!-- STREAMS -->
 	<ioobject

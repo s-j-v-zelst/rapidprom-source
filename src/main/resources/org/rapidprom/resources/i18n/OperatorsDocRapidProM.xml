@@ -39,6 +39,11 @@
     </group>
     
     <group>
+      <key>log_abstraction</key>
+      <name>Log Abstraction</name>
+    </group>
+    
+    <group>
       <key>streams</key>
       <name>Streams</name>
     </group>
@@ -49,6 +54,52 @@
     </group>
     
     
+   <operator>
+        <name>Petri net Complexity Metrics</name>
+        <Synopyis>Calculates complexity metrics for a Petri net.</Synopyis>
+        <help>
+	      Calculates complexity metrics for a Petri net. Implements metrics describe in the article: &lt;a href="https://doi.org/10.1016/j.infsof.2008.08.005"&gt;Complexity metrics for Workflow nets&lt;/a&gt; and some more.
+	      Implemented metrics are: 'Extended Cardoso metric', 'Extended Cyclomatic metric', 'Structuredness metric', 'Density metric', 'Number of arcs', 'Number of transitions' and 'Number of places'.
+        </help>
+ 		<key>petrinet_complexity_metrics</key>
+   </operator>      
+    
+   <operator>
+        <name>Filter Unmapped Events</name>
+        <Synopyis>Removes events that are not mapped to any transition in the supplied mapping.</Synopyis>
+        <help>
+	      	Removes events that are not mapped to any transition in the supplied mapping.
+        </help>
+ 		<key>filter_unmapped_events</key>
+   </operator>    
+        
+   <operator>
+        <name>Filter Out Low-Occurrence Traces</name>
+        <Synopyis> Filters a log using an absolute threshold. Traces that do not appear often enough, will be filtered out.</Synopyis>
+        <help>
+	        Filters a log using an absolute threshold. Traces that do not appear often enough, will be filtered out.
+        </help>
+ 		<key>filter_low_frequency_traces</key>
+   </operator>    
+    
+   <operator>
+        <name>Filter In High-Frequency Traces</name>
+        <Synopyis>Filters a log using a frequency threshold (a percentage) and a distance threshold (edit distance).</Synopyis>
+        <help>
+	        Filters a log using a frequency threshold (a percentage) and a distance threshold (edit distance). 
+	        Any trace that either, (1) has a high-enough frequency or, (2) is close enough to a trace with high-enough frequency will be filtered in. 
+	        A trace has high-enough frequency if its frequency is required to reach the overall frequency threshold.
+        </help>
+ 		<key>filter_high_frequency_traces</key>
+   </operator>
+           
+   <operator>
+        <name>Project Alignment on DPN</name>
+        <Synopyis>Projects an aligned log on a Data Petri net.</Synopyis>
+        <help>Projects an aligned log on a Data Petri net.</help>
+ 		<key>project_alignment_on_dpn</key>
+   </operator>
+   
     <!-- IMPORTERS -->
    <operator>
         <name>Calculate ETC 1-align precision</name>
@@ -135,12 +186,24 @@
   		<help>To use this operator you need a Local Process Model ranking as input</help>
   		<key>extract_petrinets_from_lpm</key>
   </operator>
+  <operator>  
+  		<name>Data Conformance Checking</name>
+        <synopsis>This operator replays a log onto a Data Petri net.</synopsis>
+        <help>This operator replays a log onto a Data Petri net as described in &lt;a href="http://dx.doi.org/10.1007/s00607-015-0441-1"&gt;here&lt;/a&gt;.</help>
+		<key>data_conformance</key>
+  </operator>
   <operator>
   		<name>Petri Net to BPMN</name>
         <synopsis>This operator transforms a Petri net into a BPMN diagram. The conversion used is described in &lt;a href="http://dx.doi.org/10.1007/s10270-015-0502-0"&gt;here&lt;/a&gt;.</synopsis>
         <help>For using this operator, you need a petri net as input.  </help>
 		<key>convert_petrinet_to_bpmn</key>
-	</operator>
+  </operator>
+  <operator>
+  		<name>Petri Net to Data Petri net</name>
+        <synopsis>This operator transforms a Petri net into a Data Petri net.</synopsis>
+        <help>This operator transforms a Petri net into a Data Petri net. The Data Petri net has the same structure as the Petri net, and, initially no variables and guards.</help>
+		<key>convert_petrinet_to_datapetrinet</key>
+  </operator>  	
   <operator>
   		<name>Transition System to Petri Net </name>
         <synopsis>This operator transforms a Transition System (Reachability Graph) into a petri net, using &lt;a href="http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.17.8484"&gt;Petrify&lt;/a&gt;.</synopsis>
@@ -167,6 +230,13 @@
         <help>This operator can be used to read a PNML file. PNML files that are accepted are the ones that are produced by ProM itself or the ones that are produced by Yasper. As input a pnml file is needed.</help>
 		<key>import_petri_net</key>
 	</operator>
+
+	<operator>
+  		<name>Import Data Petri Net</name>
+        <synopsis>This operator is used to import a Data Petri net from a PNML file</synopsis>
+        <help>This operator can be used to read a Data Petri net from a PNML file. Also normal Petri nets are accepted.</help>
+		<key>import_data_petri_net</key>
+	</operator>	
 	
   <operator>
   		<name>Animate Log in Fuzzy Graph</name>
@@ -254,8 +324,14 @@
         <name>Export Petri net</name>
         <synopsis>This operator can be used to export a Petri Net to a (E)PNML file.</synopsis>
         <help>This operator can be used to export a Petri Net to a (E)PNML file. As Petri Net is needed as an input.</help>
-    <key>export_petri_net</key>
-  </operator>  
+    	<key>export_petri_net</key>
+  	</operator> 
+	<operator>
+        <name>Export Data Petri net</name>
+        <synopsis>This operator can be used to export a Data Petri Net to a PNML file.</synopsis>
+        <help>This operator can be used to export a Data Petri Net to a PNML file.</help>
+    	<key>export_data_petri_net</key>
+  	</operator> 
 	<operator>
 		<name>Export Event Log</name>
 		<synopsis>This operator can be used to export an event log.</synopsis>
@@ -337,6 +413,46 @@
         <help>An event log is requires as input</help>
     <key>social_network_miner</key>
   </operator>
+  
+    <!-- LOG MANIPULATION -->
+    
+    <!-- LOG ABSTRACTION-->
+  	 <operator>
+        <name>Create Abstraction Model</name>
+        <synopsis>Creates an abstraction model for abstracting events using a supervised pattern-based approach.</synopsis>
+        <help>
+        	Creates a combined abstraction model from process/abstraction patterns. Abstraction patterns describe the behavior expected for an (abstract) activity and should be modeled as Data Petri Net (DPN) with a single source and a single sink place (SESE stucture). 
+        	This plug-in implements part of the the methodology presented in the BPM'16 paper 'From Low-Level Events to Activities - A Pattern-based Approach' (DOI: 10.1007/978-3-319-45348-4_8).        	
+        </help>
+    	<key>create_abstraction_model</key>
+	 </operator>    
+  	 <operator>
+        <name>Compile Abstraction Model to DPN</name>
+        <synopsis>Compiles the abstraction model to its plain Data Petri net representation.</synopsis>
+        <help>
+        	Compiles the abstraction model to its plain Data Petri net representation. 
+        </help>
+    	<key>convert_abstraction_model_to_dpn</key>
+	 </operator>
+  	 <operator>
+        <name>Log Abstraction Based on Patterns</name>
+        <synopsis>Abstracts events from the supplied event log using a supervised pattern-based approach.</synopsis>
+        <help>
+        	Abstracts events from the supplied event log using a supervised pattern-based approach.
+        	This plug-in implements the methodology presented in the BPM'16 paper 'From Low-Level Events to Activities - A Pattern-based Approach' (DOI: 10.1007/978-3-319-45348-4_8).
+        	Activity patterns describe the behavior expected for an (abstract) activity and should be modeled as Data Petri Net (DPN) with a single source and a single sink place (SESE stucture).
+        </help>
+    	<key>abstract_based_on_pattern</key>
+  	</operator>
+      	 <operator>
+        <name>Expand Model Based on Patterns</name>
+        <synopsis>Expands model based on abstraction patterns.</synopsis>
+        <help>
+        	Expands model based on abstraction patterns. The abstract activities are replaced by the low-level patterns.
+        </help>
+    	<key>expand_based_on_pattern</key>
+  	</operator>
+    
   	<operator>
         <name>Add Noise</name>
         <synopsis>This filter randomly adds noise to the log.</synopsis>
@@ -378,6 +494,50 @@
         <synopsis>This operator merges two event logs.</synopsis>
         <help>This operator merges two event logs by collecting all the traces into a consolidated event log. As input two logs are needed.</help>
     	<key>merge_two_event_logs</key>
+  	</operator>
+  	
+  	<operator>
+        <name>Merge Subsequent Events</name>
+        <synopsis>This operator merges subsequent events in an event log.</synopsis>
+        <help>This operator merges subsequent events in an event log into one single event based on different criteria. 
+        	For example, a trace [A,A,A,B,B,C,A,A] is transformed to [A,B,C,A].</help>
+    	<key>merge_subsequent_events</key>
+  	</operator>
+  	
+  	<operator>
+        <name>Move Trace Attributes to Trace</name>
+        <synopsis>Moves all attributes that appear in every event with the same value to the trace level.</synopsis>
+        <help>Moves all attributes that appear in every event with the same value to the trace level, i.e., creates an attribute with that value for the trace.</help>
+    	<key>move_common_attributes_to_trace</key>
+  	</operator>
+  	
+  	<operator>
+        <name>Remove Duplicate Attribute Values</name>
+        <synopsis>Removes duplicate attribute values from events, i.e., attribute that have not change since the last event occurred. </synopsis>
+        <help>Removes duplicate attribute values from events, i.e., attribute that have not change since the last event occurred.
+        This creates a smaller sparse event log, which is useful to reduce the memory consumption.</help>
+    	<key>remove_duplicate_attributes</key>
+  	</operator>
+  	
+  	<operator>
+        <name>Random Sample of Traces</name>
+        <synopsis>Extracts a random sample of traces from the event log.</synopsis>
+        <help>Extracts a random sample of traces from the event log. The size of the sample can be given.</help>
+    	<key>random_sample</key>
+  	</operator>
+  	
+  	<operator>
+        <name>Filter Events</name>
+        <synopsis>Filters the events of an event log.</synopsis>
+        <help>Filters the events of an event log using a filter query.</help>
+    	<key>filter_events</key>
+  	</operator>
+  	
+    <operator>
+        <name>Filter Traces</name>
+        <synopsis>Filters the traces of an event log.</synopsis>
+        <help>Filters the traces of an event log using a filter query.</help>
+    	<key>filter_traces</key>
   	</operator>
   	
   	<operator>
@@ -496,5 +656,13 @@
         <help> This operator tries to free the memory used by RapidProM (and also Rapid Miner itself). It does so by clearing the Plugin Context object (which is originating from the ProM framework, i.e., the base of RapidProM)</help>
         <key>rprom_free_memory</key>
     </operator>
+    
+    <operator>
+        <name>Creates a Transitions and Event Classes Mapping</name>
+        <synopsis>Converts an example set with columns 'transition', 'eventclass' to a ProM mapping.</synopsis>
+        <help>Converts an example set with columns 'transition', 'eventclass' to a ProM mapping.</help>
+        <key>create_transevmapping</key>
+    </operator>
+    
 	
 </operatorHelp>
