@@ -119,7 +119,7 @@ public class CreateAbstractionModelOperator extends Operator {
 			outputCode.deliver(new AbstractionCodeResult(abstractionModelCode));
 
 		} catch (final ParseException | CompositionVisitorException e) {
-			addError(new RapidProMProcessSetupError(Severity.ERROR, getPortOwner(), e));
+			throw new OperatorException("Failed to build abstaction model!", e);			
 		}
 	}
 
@@ -141,19 +141,27 @@ public class CreateAbstractionModelOperator extends Operator {
 		if (modelAsString != null && !modelAsString.isEmpty()) {
 			return modelAsString;
 		} else {
-			String defaultComposition = getParameter(DEFAULT_COMPOSITION_KEY);
-			if (PARALLEL.equals(defaultComposition)) {
-				return PatternBasedLogAbstractionPlugin.buildInitialModel(abstractionPatterns);				
-			} else if (INTERLEAVING.equals(defaultComposition)) {
-				return buildInitialModelInInterleaving(abstractionPatterns);
+			if (abstractionPatterns.size() == 1) {
+				String id = abstractionPatterns.keySet().iterator().next();
+				if (!SourceVersion.isIdentifier(id)) {
+					id = "\"" + id + "\"";
+				}
+				return id + "*";
 			} else {
-				throw new IllegalArgumentException("Unknown default composition "+ defaultComposition);
+				String defaultComposition = getParameter(DEFAULT_COMPOSITION_KEY);
+				if (PARALLEL.equals(defaultComposition)) {
+					return PatternBasedLogAbstractionPlugin.buildInitialModel(abstractionPatterns);				
+				} else if (INTERLEAVING.equals(defaultComposition)) {
+					return buildInitialModelInInterleaving(abstractionPatterns);
+				} else {
+					throw new IllegalArgumentException("Unknown default composition "+ defaultComposition);
+				}
 			}
 		}
 	}
 	
 	//TODO update in LogEnhancement
-	private static String buildInitialModelInInterleaving(Map<String, AbstractionPattern> abstractionPatterns) {
+	private static String buildInitialModelInInterleaving(Map<String, AbstractionPattern> abstractionPatterns) {		
 		StringBuilder sb = new StringBuilder();
 		sb.append("(%[");
 		for (Iterator<String> iter = abstractionPatterns.keySet().iterator(); iter.hasNext();) {
