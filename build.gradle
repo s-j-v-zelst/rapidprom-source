@@ -106,7 +106,7 @@ dependencies {
 	compile "org.rapidprom:LocalProcessModelDiscovery:6.7.28"	
 	compile "org.rapidprom:Log:6.7.315"
 	compile "org.rapidprom:LogDialog:6.5.42"
-	compile "org.rapidprom:LogEnhancement:6.7.329"
+	compile "org.rapidprom:LogEnhancement:6.7.335"
 	compile "org.rapidprom:LogProjection:6.5.38"
 	compile "org.rapidprom:ModelRepair:6.5.12"
 	compile "org.rapidprom:Murata:6.5.54"
