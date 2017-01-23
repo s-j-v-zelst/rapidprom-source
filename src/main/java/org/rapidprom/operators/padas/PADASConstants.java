@@ -35,4 +35,7 @@ public class PADASConstants {
 	public final static String LOGS_TRACE_ID_FIELD = "traceId";
 	public final static String LOGS_EVENT_ID_FIELD = "eventId";
 	
+	public final static String AT_ROOT = "root";
+	public final static String AT_LIMIT = "limit";
+	
 }
