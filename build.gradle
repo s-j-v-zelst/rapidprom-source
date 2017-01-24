@@ -134,7 +134,7 @@ dependencies {
 	compile "org.rapidprom:Woflan:6.7.59"
 	compile "org.rapidprom:XESLite:6.7.217"
 	compile "org.rapidprom:Weka:6.7.3"
-	compile "org.processmining:OpenSLEX:0.8"
+	compile "org.processmining:OpenSLEX:0.9"
 	compile "org.processmining:DAPOQ-Lang:0.9"
 }
 

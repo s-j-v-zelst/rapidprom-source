@@ -101,7 +101,6 @@ public class PADASLogSplitterOperator extends Operator {
 
 			HashSet<String> classes = new HashSet<>();
 			HashSet<String> rootClasses = new HashSet<>();
-			String rootClassName = null;
 			HashSet<String> limitClasses = new HashSet<>();
 			
 			for (Example ex: exsDMClasses) {
@@ -166,6 +165,8 @@ public class PADASLogSplitterOperator extends Operator {
 					}
 				}
 			}
+			
+			sqlrset.close();
 			
 			slexmm.getArtifact().setAutoCommit(false);
 			
@@ -433,6 +434,10 @@ public class PADASLogSplitterOperator extends Operator {
 	public void buildTreeGraph(SLEXMMClass node, CaseNotionSubGraph cnsg) {
 		Set<SLEXMMRelationship> aeset = cnsg.graph.edgesOf(node);
 		
+		if (!cnsg.treeGraph.containsVertex(node)) {
+			cnsg.treeGraph.addVertex(node);
+		}
+				
 		for (SLEXMMRelationship rs: aeset) {
 			if (!cnsg.treeGraph.edgeSet().contains(rs)) {
 				SLEXMMClass tc = null;
@@ -441,10 +446,6 @@ public class PADASLogSplitterOperator extends Operator {
 					tc = cnsg.mapAllClasses.get(rs.getTargetClassId());
 				} else {
 					tc = cnsg.mapAllClasses.get(rs.getSourceClassId()); 
-				}
-				
-				if (!cnsg.treeGraph.containsVertex(node)) {
-					cnsg.treeGraph.addVertex(node);
 				}
 				
 				if (!cnsg.treeGraph.containsVertex(tc)) {
