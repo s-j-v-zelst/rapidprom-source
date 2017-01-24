@@ -17,6 +17,8 @@ import org.jgrapht.DirectedGraph;
 import org.jgrapht.alg.ConnectivityInspector;
 import org.jgrapht.experimental.dag.DirectedAcyclicGraph;
 import org.jgrapht.graph.DefaultDirectedGraph;
+import org.processmining.openslex.metamodel.SLEXMMActivity;
+import org.processmining.openslex.metamodel.SLEXMMActivityResultSet;
 import org.processmining.openslex.metamodel.SLEXMMCase;
 import org.processmining.openslex.metamodel.SLEXMMClass;
 import org.processmining.openslex.metamodel.SLEXMMClassResultSet;
@@ -156,7 +158,12 @@ public class PADASLogSplitterOperator extends Operator {
 					caseMap.put(caseName,new HashSet<Integer>());
 				}
 				for (int i: aiindx) {
-					caseMap.get(caseName).add(Integer.valueOf(vals[i])); // FIXME
+					try {
+						Integer aiid = Integer.valueOf(vals[i]);
+						caseMap.get(caseName).add(aiid);
+					} catch (NumberFormatException e) {
+						// Number cannot be parsed. Probably it is a NULL
+					}
 				}
 			}
 			
@@ -164,6 +171,8 @@ public class PADASLogSplitterOperator extends Operator {
 			
 			SLEXMMProcess slxproc = slexmm.getArtifact().createProcess(procName);
 			SLEXMMLog slxlog = slexmm.getArtifact().createLog(slxproc.getId(), logName);
+			int[] casesIds = new int[caseMap.size()];
+			int pos = 0;
 			
 			for (String cn: caseMap.keySet()) {
 				SLEXMMCase slxcase = slexmm.getArtifact().createCase(cn);
@@ -171,10 +180,26 @@ public class PADASLogSplitterOperator extends Operator {
 				for (Integer aiid: caseMap.get(cn)) {
 					slxcase.add(aiid);
 				}
+				casesIds[pos] = slxcase.getId();
+				pos++;
 			}
 			
-			slexmm.getArtifact().setAutoCommit(true);
+			SLEXMMActivityResultSet arset = slexmm.getArtifact().getActivitiesForCases(casesIds);
+			SLEXMMActivity act = null;
+			HashSet<Integer> aiIds = new HashSet<>();
+						
+			while((act = arset.getNext()) != null) {
+				aiIds.add(act.getId());
+			}
+			
+			for (int aiid: aiIds) {
+				slxproc.add(aiid);
+			}
+			
 			slexmm.getArtifact().commit();
+			slexmm.getArtifact().setAutoCommit(true);
+			
+			failed = false;
 			
 		} catch (Exception e) {
 			e.printStackTrace();
