@@ -198,6 +198,13 @@
   </operator>
   
   <operator>
+    <name>Causal Graph (Flexible Heuristics Miner)</name>
+    <synopsis>This operator discovers a causal graph, based on the Flexible Heuristics Miner.</synopsis>
+    <help>This operator discovers a causal graph, based on the Flexible Heuristics Miner as described in:  Weijters, A. J. M. M., and J. T. S. Ribeiro. "Flexible heuristics miner (FHM)." Computational Intelligence and Data Mining (CIDM), 2011 IEEE Symposium on. IEEE, 2011. </help>
+    <key>discover_causal_graph_fhm</key>
+  </operator> 	
+  
+  <operator>
         <name>ILP Miner (Petri Net)</name>
         <synopsis>This operator can be used to execute the ILP Miner discovery algorithm.</synopsis>
         <help>This operator can be used to execute the ILP Miner algorithm which provides a Petri Net and a marking. As input a log file is needed.</help>

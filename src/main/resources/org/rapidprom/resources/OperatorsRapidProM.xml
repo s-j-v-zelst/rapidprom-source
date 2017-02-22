@@ -113,6 +113,11 @@
                 <icon>hardhat.png</icon>
             </operator>
             <operator>
+                <key>discover_causal_graph_fhm</key>
+                <class>org.rapidprom.operators.discovery.CausalGraphHeuristicsMinerOperator</class>
+                <icon>hardhat.png</icon>
+            </operator>
+            <operator>
                 <key>ilp_miner</key>
                 <class>org.rapidprom.operators.discovery.ILPMinerOperator</class>
                 <icon>hardhat.png</icon>
