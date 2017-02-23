@@ -5,7 +5,6 @@ import java.util.List;
 import org.deckfour.xes.classification.XEventClassifier;
 import org.deckfour.xes.model.XLog;
 import org.processmining.framework.plugin.PluginContext;
-import org.processmining.hybridilpminer.parameters.DiscoveryStrategyType;
 import org.processmining.hybridilpminer.parameters.LPFilter;
 import org.processmining.hybridilpminer.parameters.LPFilterType;
 import org.processmining.hybridilpminer.parameters.XLogHybridILPMinerParametersImpl;
