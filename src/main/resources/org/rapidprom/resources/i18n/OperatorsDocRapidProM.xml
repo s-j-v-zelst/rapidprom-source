@@ -390,6 +390,13 @@
     	<key>mine_fuzzy_model</key>
   	</operator>
   	
+  	<operator>
+  		<name>Complexity Metrics (Petri net)</name>
+  		<synopsis>This operator computes Petri net (Workflow net) complexity metrics mainly based on: K.B. Lassen and W.M.P. van der Aalst; Complexity Metrics for Workflow Nets; Information and Software Technology, 51(3):610-626, 2009.</synopsis>
+  		<help>This operator computes Petri net (Workflow net) complexity metrics mainly based on: K.B. Lassen and W.M.P. van der Aalst; Complexity Metrics for Workflow Nets; Information and Software Technology, 51(3):610-626, 2009. It contains the following metrics: Cardoso Metric, Cyclomatic Metric, Density Metric, Number of Arcs, Number of Places, Number of Transitions and Structuredness.</help>
+  		<key>complexity_metrics_petri_net</key>
+  	</operator>
+  	
   	<!-- STREAMS -->
     <operator>
         <name>Generate Event Stream from CPN</name>
