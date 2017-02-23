@@ -126,6 +126,6 @@ dependencies {
 	compile "org.rapidprom:Widgets:6.7.205"
 	compile "org.rapidprom:Woflan:6.7.59"
 	compile "org.rapidprom:XESAlignmentExtension:6.7.57"
-	compile "org.rapidprom:XESLite:6.7.276"
+	compile "org.rapidprom:XESLite:6.7.319"
 	compile "org.rapidprom:Weka:6.7.25"
 }
