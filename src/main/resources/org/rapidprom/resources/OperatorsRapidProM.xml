@@ -338,7 +338,11 @@
 			<operator>
                 <key>filter_unmapped_events</key>
                 <class>org.rapidprom.operators.logmanipulation.FilterUnamppedEventsOperator</class>
-            </operator>            
+            </operator>       
+            <operator>
+                <key>add_elapsed_time</key>
+                <class>org.rapidprom.operators.logmanipulation.AddElapsedTimeInTraceOperator</class>
+            </operator>                 
         </group> 
         <group key="streams">
             <group key="analysis">

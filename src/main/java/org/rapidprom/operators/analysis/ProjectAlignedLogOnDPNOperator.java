@@ -2,6 +2,8 @@ package org.rapidprom.operators.analysis;
 
 import java.awt.Dialog.ModalityType;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -29,23 +31,27 @@ import org.processmining.plugins.connectionfactories.logpetrinet.TransEvClassMap
 import org.processmining.plugins.graphviz.dot.Dot;
 import org.processmining.xesalignmentextension.XAlignmentExtension.XAlignedLog;
 import org.processmining.xeslite.external.XFactoryExternalStore;
-import org.processmining.xeslite.lite.factory.XFactoryLiteImpl;
+import org.rapidprom.exceptions.ExampleSetReaderException;
 import org.rapidprom.ioobjects.DataPetriNetIOObject;
 import org.rapidprom.ioobjects.DotIOObject;
 import org.rapidprom.ioobjects.TransEvMappingIOObject;
 import org.rapidprom.ioobjects.XAlignedLogIOObject;
 import org.rapidprom.ioobjects.XLogIOObject;
-import org.xeslite.external.ExternalStore;
+import org.rapidprom.operators.conformance.util.VariableMappingIO;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.eventbus.EventBus;
+import com.rapidminer.example.ExampleSet;
 import com.rapidminer.operator.Operator;
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
+import com.rapidminer.operator.UserError;
+import com.rapidminer.operator.ProcessSetupError.Severity;
 import com.rapidminer.operator.ports.InputPort;
 import com.rapidminer.operator.ports.OutputPort;
 import com.rapidminer.operator.ports.metadata.GenerateNewMDRule;
 import com.rapidminer.operator.ports.metadata.MetaData;
+import com.rapidminer.operator.ports.metadata.SimpleMetaDataError;
 import com.rapidminer.operator.ports.metadata.SimplePrecondition;
 import com.rapidminer.parameter.ParameterType;
 import com.rapidminer.parameter.ParameterTypeCategory;
@@ -128,10 +134,10 @@ public class ProjectAlignedLogOnDPNOperator extends Operator {
 		public QueryResult queryCustom(String queryTitle, JComponent queryComponent, String[] options) {
 			return new CustomQueryResult(0); // first option is confirm
 		}
-		
+
 		@Override
 		public void showCustom(JComponent component, String dialogTitle, ModalityType modalityType) {
-			//noop
+			// noop
 		}
 
 		@Override
@@ -182,12 +188,16 @@ public class ProjectAlignedLogOnDPNOperator extends Operator {
 	private InputPort inputTransitionMapping = getInputPorts()
 			.createPort("mapping (ProM Transition/Event Class Mapping)");
 
+	private InputPort inputVariableMapping = getInputPorts().createPort("variable mapping (Example set)");
+
 	private OutputPort outputProjection = getOutputPorts().createPort("projection (ProM Dot Graph)");
 
 	public ProjectAlignedLogOnDPNOperator(OperatorDescription description) {
 		super(description);
 		inputTransitionMapping.addPrecondition(
 				new SimplePrecondition(inputTransitionMapping, new MetaData(TransEvMappingIOObject.class), false));
+		inputVariableMapping
+				.addPrecondition(new SimplePrecondition(inputVariableMapping, new MetaData(ExampleSet.class), false));
 		getTransformer().addRule(new GenerateNewMDRule(outputProjection, DotIOObject.class));
 	}
 
@@ -202,11 +212,11 @@ public class ProjectAlignedLogOnDPNOperator extends Operator {
 
 			XLog log = logIO.getArtifact();
 			XAlignedLog alignedLog = alignedLogIO.getAsAlignedLog();
-			
+
 			if (!(dpnIO.getArtifact() instanceof DataPetriNetsWithMarkings)) {
 				throw new OperatorException("Missing markings of the Data Petri net");
 			}
-			
+
 			DataPetriNetsWithMarkings dpn = (DataPetriNetsWithMarkings) dpnIO.getArtifact();
 			try {
 				dpn.setInitialMarking(dpnIO.getInitialMarking());
@@ -224,17 +234,17 @@ public class ProjectAlignedLogOnDPNOperator extends Operator {
 			ViewMode mode = ViewMode.PERFORMANCE;
 			String type = getParameter(PROJECTION_TYPE);
 			switch (type) {
-				case PERFORMANCE:
-					mode = ViewMode.PERFORMANCE;
-					break;
-				case FITNESS:
-					mode = ViewMode.FITNESS;
-					break;
-				case PRECISION:
-					mode = ViewMode.PRECISION;
-					break;
-				default:
-					break;
+			case PERFORMANCE:
+				mode = ViewMode.PERFORMANCE;
+				break;
+			case FITNESS:
+				mode = ViewMode.FITNESS;
+				break;
+			case PRECISION:
+				mode = ViewMode.PRECISION;
+				break;
+			default:
+				break;
 			}
 
 			final ExplorerModel explorerModel = new ExplorerModel(log, dpn);
@@ -250,8 +260,17 @@ public class ProjectAlignedLogOnDPNOperator extends Operator {
 			}
 			fakeConfig.setInitialMarking(dpn.getInitialMarking());
 			fakeConfig.setFinalMarkings(dpn.getFinalMarkings());
-			//TODO read from aligned log
-			fakeConfig.setVariableMapping(ImmutableMap.<String, String> of());
+
+			if (inputVariableMapping.isConnected()) {
+				try {
+					applyUserDefinedVariableMapping(getVariableMapping(), fakeConfig);
+				} catch (ExampleSetReaderException e) {
+					inputVariableMapping
+							.addError(new SimpleMetaDataError(Severity.WARNING, inputVariableMapping, e.getMessage()));
+				}
+			}
+			
+			fakeConfig.setVariableMapping(ImmutableMap.<String, String>of());
 			explorerModel.setAlignmentConfiguration(fakeConfig);
 			explorerModel.setAlignment(alignedLog);
 			explorerModel.setFilterConfiguration(new FilterConfiguration());
@@ -261,7 +280,8 @@ public class ProjectAlignedLogOnDPNOperator extends Operator {
 			netView.updateData();
 			// no need to call netView.updateUI();
 
-			NetVisualizationPanel visualization = new NetVisualizationPanel(updatableExplorer, explorerContext, explorerModel);
+			NetVisualizationPanel visualization = new NetVisualizationPanel(updatableExplorer, explorerContext,
+					explorerModel);
 			visualization.updateData(netView.getModelDecorationData());
 			Dot dot = visualization.getDpnAsDot().getDot();
 
@@ -271,6 +291,17 @@ public class ProjectAlignedLogOnDPNOperator extends Operator {
 			throw new OperatorException("Failed to create visualization " + e.getMessage(), e);
 		}
 
+	}
+	
+	private Map<String, String> getVariableMapping() throws UserError, ExampleSetReaderException {
+		return new VariableMappingIO().readVariableMapping(inputVariableMapping.getData(ExampleSet.class));
+	}
+	
+	private void applyUserDefinedVariableMapping(Map<String, String> variableMapping,
+			BalancedProcessorConfiguration alignmentConfig) {
+		for (Entry<String, String> entry : variableMapping.entrySet()) {
+			alignmentConfig.getVariableMapping().put(entry.getKey(), entry.getValue());
+		}
 	}
 
 	@Override

@@ -554,6 +554,13 @@
     	<key>add_artificial_start_end_event_filter</key>
   	</operator>
   	
+	<operator>
+        <name>Add Elapsed Time</name>
+        <synopsis>This operator adds the time elapsed since trace start to each event.</synopsis>
+        <help>This operator adds the time elapsed since trace start to each event. The time resolution can be chosen.</help>
+    	<key>add_elapsed_time</key>
+  	</operator>
+  	
   	<operator>
         <name>Transition System Miner (Transition System)</name>
         <synopsis>This operator mines a transition system based on the selected parameters, as defined &lt;a href="http://dx.doi.org/10.1016/j.is.2010.09.001"&gt;here&lt;/a&gt;.</synopsis>

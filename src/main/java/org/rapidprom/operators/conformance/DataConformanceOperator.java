@@ -198,7 +198,7 @@ public class DataConformanceOperator extends Operator {
 			config.setIlpSolver(getMILPSolver());
 			config.setActivateDataViewCache(isMILPCache());
 			config.setUseOptimizations(isMILPOptimize());
-			config.setUsePartialDataAlignments(isStagedMethod());
+			config.setUsePartialDataAlignments(!isStagedMethod());
 			
 			applyUserDefinedTransitionMapping(transitionMapping, config);
 
@@ -392,7 +392,7 @@ public class DataConformanceOperator extends Operator {
 		params.add(new ParameterTypeBoolean(MILP_OPTIMIZE, "Use optimizations to avoid solving MILP problems when uneccesary.", true, true));
 		params.add(new ParameterTypeBoolean(MILP_CACHE, "Use LRU cache for MILP results.", true, true));
 		
-		params.add(new ParameterTypeBoolean(STAGED_METHOD, "Use old staged method (BPM'13).", true, true));
+		params.add(new ParameterTypeBoolean(STAGED_METHOD, "Use old staged method (BPM'13).", false, true));
 		
 		return params;
 	}
@@ -414,11 +414,21 @@ public class DataConformanceOperator extends Operator {
 	}
 	
 	private SearchMethod getSearchMethod() throws UndefinedParameterError {
-		return SearchMethod.valueOf(getParameterAsString(SEARCH_METHOD));
+		for (SearchMethod method: SearchMethod.values()) {
+			if (method.toString().equals(getParameterAsString(SEARCH_METHOD))) {
+				return method;
+			}
+		}
+		return SearchMethod.ASTAR_GRAPH;
 	}
 	
 	private ILPSolver getMILPSolver() throws UndefinedParameterError {
-		return ILPSolver.valueOf(getParameterAsString(MILP_SOLVER));
+		for (ILPSolver solver: ILPSolver.values()) {
+			if (solver.toString().equals(getParameterAsString(MILP_SOLVER))) {
+				return solver;
+			}
+		}
+		return ILPSolver.ILP_LPSOLVE;
 	}
 	
 	private boolean isMILPOptimize() throws UndefinedParameterError {
