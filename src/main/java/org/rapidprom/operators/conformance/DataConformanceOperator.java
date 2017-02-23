@@ -2,12 +2,16 @@ package org.rapidprom.operators.conformance;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
+
 import org.deckfour.xes.classification.XEventClasses;
 import org.deckfour.xes.model.XLog;
+import org.deckfour.xes.model.XTrace;
 import org.processmining.dataawarereplayer.precision.DataAwarePrecisionPlugin;
 import org.processmining.dataawarereplayer.precision.PrecisionConfig;
 import org.processmining.dataawarereplayer.precision.PrecisionMeasureException;
@@ -23,6 +27,8 @@ import org.processmining.plugins.balancedconformance.BalancedDataXAlignmentPlugi
 import org.processmining.plugins.balancedconformance.config.BalancedProcessorConfiguration;
 import org.processmining.plugins.balancedconformance.controlflow.ControlFlowAlignmentException;
 import org.processmining.plugins.balancedconformance.dataflow.exception.DataAlignmentException;
+import org.processmining.plugins.balancedconformance.observer.DataConformancePlusObserverImpl;
+import org.processmining.plugins.balancedconformance.result.StatisticResult;
 import org.processmining.plugins.connectionfactories.logpetrinet.TransEvClassMapping;
 import org.processmining.xesalignmentextension.XAlignmentExtension;
 import org.processmining.xesalignmentextension.XAlignmentExtension.XAlignedLog;
@@ -36,11 +42,16 @@ import org.rapidprom.operators.conformance.util.DataAlignmentCostIO;
 import org.rapidprom.operators.conformance.util.VariableMappingIO;
 import org.rapidprom.operators.util.RapidProMProgress;
 
+import com.google.common.base.Stopwatch;
+import com.google.common.math.BigIntegerMath;
+import com.google.common.math.DoubleMath;
+import com.google.common.primitives.Primitives;
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.example.table.AttributeFactory;
 import com.rapidminer.example.table.DataRowFactory;
 import com.rapidminer.example.table.MemoryExampleTable;
+import com.rapidminer.operator.IOObject;
 import com.rapidminer.operator.Operator;
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
@@ -84,7 +95,7 @@ public class DataConformanceOperator extends Operator {
 
 	private static final String CONCURRENT_THREADS_KEY = "Number of Threads";
 	private static final String CONCURRENT_THREADS_DESCR = "Specify the number of threads used to calculate alignments in parallel."
-			+ " With each extra thread, more memory is used but less cpu time is required.";
+			+ " With each extra thread, more memory is used but less time is required.";
 
 	private InputPort inputXLog = getInputPorts().createPort("event log (ProM Event Log)", XLogIOObject.class);
 	private InputPort inputModel = getInputPorts().createPort("model (ProM Data petri net)",
@@ -99,6 +110,7 @@ public class DataConformanceOperator extends Operator {
 
 	private OutputPort outputAlignedLog = getOutputPorts().createPort("aligned log (ProM Aligned Event Log)");
 	private OutputPort outputMetrics = getOutputPorts().createPort("fitness/precision (Example set)");
+	private OutputPort outputMetricsDetailed = getOutputPorts().createPort("detailed metrics (Example set)");
 
 	private OutputPort passthroughTransitionMapping = getOutputPorts()
 			.createPort("mapping (ProM Transition/Event Class Mapping)");
@@ -117,6 +129,46 @@ public class DataConformanceOperator extends Operator {
 
 		getTransformer().addRule(new GenerateNewMDRule(outputAlignedLog, XAlignedLogIOObject.class));
 
+		addMetricsPort();
+		addMetricsDetailedPort();
+
+		getTransformer().addRule(new GenerateNewMDRule(passthroughTransitionMapping, TransEvMappingIOObject.class));
+		getTransformer().addRule(new GenerateNewMDRule(passthroughVariableMapping, ExampleSet.class));
+		getTransformer().addRule(new GenerateNewMDRule(passthroughCosts, ExampleSet.class));
+		getTransformer().addRule(new GenerateNewMDRule(passthroughCostsData, ExampleSet.class));
+	}
+
+	private void addMetricsDetailedPort() {
+		getTransformer().addRule(new GenerateNewMDRule(outputMetricsDetailed, ExampleSet.class));
+		ExampleSetMetaData metaData = new ExampleSetMetaData();
+		AttributeMetaData amd1 = new AttributeMetaData("Trace", Ontology.STRING);
+		amd1.setRole(AttributeColumn.REGULAR);
+		amd1.setNumberOfMissingValues(new MDInteger(0));
+		metaData.addAttribute(amd1);
+		AttributeMetaData amd2 = new AttributeMetaData("Length", Ontology.NUMERICAL);
+		amd2.setRole(AttributeColumn.REGULAR);
+		amd2.setNumberOfMissingValues(new MDInteger(0));
+		metaData.addAttribute(amd2);
+		metaData.setNumberOfExamples(1);
+		AttributeMetaData amd3 = new AttributeMetaData("Time", Ontology.NUMERICAL);
+		amd3.setRole(AttributeColumn.REGULAR);
+		amd3.setNumberOfMissingValues(new MDInteger(0));
+		metaData.addAttribute(amd3);
+		metaData.setNumberOfExamples(1);
+		AttributeMetaData amd4 = new AttributeMetaData("Queued States", Ontology.NUMERICAL);
+		amd4.setRole(AttributeColumn.REGULAR);
+		amd4.setNumberOfMissingValues(new MDInteger(0));
+		metaData.addAttribute(amd4);
+		metaData.setNumberOfExamples(1);
+		AttributeMetaData amd5 = new AttributeMetaData("Fitness", Ontology.NUMERICAL);
+		amd5.setRole(AttributeColumn.REGULAR);
+		amd5.setNumberOfMissingValues(new MDInteger(0));
+		metaData.addAttribute(amd5);
+		metaData.setNumberOfExamples(1);
+		getTransformer().addRule(new GenerateNewMDRule(outputMetricsDetailed, metaData));
+	}
+
+	private void addMetricsPort() {
 		getTransformer().addRule(new GenerateNewMDRule(outputMetrics, ExampleSet.class));
 		ExampleSetMetaData metaData = new ExampleSetMetaData();
 		AttributeMetaData amd1 = new AttributeMetaData("Name", Ontology.STRING);
@@ -129,11 +181,6 @@ public class DataConformanceOperator extends Operator {
 		metaData.addAttribute(amd2);
 		metaData.setNumberOfExamples(1);
 		getTransformer().addRule(new GenerateNewMDRule(outputMetrics, metaData));
-
-		getTransformer().addRule(new GenerateNewMDRule(passthroughTransitionMapping, TransEvMappingIOObject.class));
-		getTransformer().addRule(new GenerateNewMDRule(passthroughVariableMapping, ExampleSet.class));
-		getTransformer().addRule(new GenerateNewMDRule(passthroughCosts, ExampleSet.class));
-		getTransformer().addRule(new GenerateNewMDRule(passthroughCostsData, ExampleSet.class));
 	}
 
 	@Override
@@ -146,14 +193,13 @@ public class DataConformanceOperator extends Operator {
 			TransEvClassMapping transitionMapping = getTransitionMapping();
 
 			DataPetriNet dpn = dpnIO.getArtifact();
-			
+
 			Marking initialMarking = dpnIO.getInitialMarking();
 			Marking[] finalMarkings = dpnIO.getFinalMarkingAsArray();
-			
+
 			BalancedProcessorConfiguration config = BalancedProcessorConfiguration.newDefaultInstance(dpn,
-					initialMarking, finalMarkings, log,
-					transitionMapping.getEventClassifier(), getDefaultCostLogMove(), getDefaultCostModelMove(),
-					getDefaultCostMissingWrite(), getDefaultCostWrongWrite());
+					initialMarking, finalMarkings, log, transitionMapping.getEventClassifier(), getDefaultCostLogMove(),
+					getDefaultCostModelMove(), getDefaultCostMissingWrite(), getDefaultCostWrongWrite());
 			applyUserDefinedTransitionMapping(transitionMapping, config);
 
 			if (inputVariableMapping.isConnected()) {
@@ -181,9 +227,14 @@ public class DataConformanceOperator extends Operator {
 				}
 			}
 
+			DataConformancePlusObserverImpl observer = new DataConformancePlusObserverImpl(dpnIO.getPluginContext());
+			config.setObserver(observer);
+
 			BalancedDataXAlignmentPlugin alignmentPlugin = new BalancedDataXAlignmentPlugin();
-			XAlignedLog alignedLog = XAlignmentExtension.instance()
-					.extendLog(alignmentPlugin.alignLog(new RapidProMProgress(getProgress()), dpn, log, config));
+			Stopwatch watch = Stopwatch.createStarted();
+			XLog alignLog = alignmentPlugin.alignLog(new RapidProMProgress(getProgress()), dpn, log, config);
+			long runTime = watch.elapsed(TimeUnit.MILLISECONDS);
+			XAlignedLog alignedLog = XAlignmentExtension.instance().extendLog(alignLog);
 
 			PrecisionConfig precisionConfig = new PrecisionConfig(initialMarking,
 					DataAwarePrecisionPlugin.convertMapping(config.getActivityMapping()),
@@ -193,11 +244,14 @@ public class DataConformanceOperator extends Operator {
 					alignedLog, precisionConfig);
 
 			outputAlignedLog.deliver(new XAlignedLogIOObject(alignedLog.getLog(), dpnIO.getPluginContext()));
-			outputMetrics.deliver(createMeasureTable(alignedLog, precisionResult));
+			outputMetrics.deliver(createMeasureTable(alignedLog, precisionResult, observer, runTime));
+			outputMetricsDetailed.deliver(createMeasureDetailedTable(log, observer));
+
 			passthroughCosts.deliver(new AlignmentCostIO().writeCostsToExampleSet(config.getMapEvClass2Cost(),
 					config.getMapTrans2Cost()));
 			passthroughCostsData.deliver(new DataAlignmentCostIO().writeCostsToExampleSet(config.getVariableCost()));
-			passthroughVariableMapping.deliver(new VariableMappingIO().writeVariableMapping(config.getVariableMapping()));
+			passthroughVariableMapping
+					.deliver(new VariableMappingIO().writeVariableMapping(config.getVariableMapping()));
 			passthroughTransitionMapping.deliver(inputTransitionMapping.getData(TransEvMappingIOObject.class));
 
 		} catch (ControlFlowAlignmentException | DataAlignmentException e) {
@@ -210,7 +264,38 @@ public class DataConformanceOperator extends Operator {
 
 	}
 
-	public ExampleSet createMeasureTable(XAlignedLog alignedLog, PrecisionResult precisionResult) {
+	private ExampleSet createMeasureDetailedTable(XLog log, DataConformancePlusObserverImpl observer) {
+		Attribute traceAttr = AttributeFactory.createAttribute("Trace", Ontology.STRING);
+		Attribute lengthAttr = AttributeFactory.createAttribute("Length", Ontology.NUMERICAL);
+		Attribute timeAttr = AttributeFactory.createAttribute("Time", Ontology.NUMERICAL);
+		Attribute queuedAttr = AttributeFactory.createAttribute("Queued States", Ontology.NUMERICAL);
+		Attribute fitnessAttr = AttributeFactory.createAttribute("Fitness", Ontology.NUMERICAL);
+
+		MemoryExampleTable table = new MemoryExampleTable(traceAttr, lengthAttr, timeAttr, queuedAttr, fitnessAttr);
+		DataRowFactory factory = new DataRowFactory(DataRowFactory.TYPE_DOUBLE_ARRAY, '.');
+		
+		double[] timeData = observer.getStatisticResults().get(StatisticResult.TIME_PER_TRACE).getData();
+		double[] queueData = observer.getStatisticResults().get(StatisticResult.QUEUED_STATES).getData();
+		double[] fitnessData = observer.getStatisticResults().get(StatisticResult.FITNESS).getData();
+
+		Iterator<XTrace> logIter = log.iterator();
+		int i = 0;
+		while (logIter.hasNext()) {
+			XTrace trace = (XTrace) logIter.next();
+			String name = "";
+			if (logIter.hasNext()) {
+				name = XUtils.getConceptName(logIter.next());
+			}			
+			table.addDataRow(factory.create(new Object[] { name, trace.size(), timeData[i], queueData[i], fitnessData[i] },
+					new Attribute[] { traceAttr, lengthAttr, timeAttr, queuedAttr, fitnessAttr }));
+			i++;
+		}
+
+		return table.createExampleSet();
+	}
+
+	public ExampleSet createMeasureTable(XAlignedLog alignedLog, PrecisionResult precisionResult,
+			DataConformancePlusObserverImpl observer, long runTime) {
 		Attribute nameAttr = AttributeFactory.createAttribute("Name", Ontology.STRING);
 		Attribute valueAttr = AttributeFactory.createAttribute("Value", Ontology.NUMERICAL);
 		MemoryExampleTable table = new MemoryExampleTable(nameAttr, valueAttr);
@@ -220,6 +305,18 @@ public class DataConformanceOperator extends Operator {
 				new Attribute[] { nameAttr, valueAttr }));
 		table.addDataRow(factory.create(new Object[] { "averagePrecision", precisionResult.getPrecision() },
 				new Attribute[] { nameAttr, valueAttr }));
+
+		table.addDataRow(factory.create(new Object[] { "runTime", runTime }, new Attribute[] { nameAttr, valueAttr }));
+
+		double cpuTime = 0.0;
+		for (double timeForTrace : observer.getStatisticResults().get(StatisticResult.TIME_PER_TRACE).getData()) {
+			cpuTime += timeForTrace;
+		}
+		table.addDataRow(factory.create(new Object[] { "cpuTime", cpuTime }, new Attribute[] { nameAttr, valueAttr }));
+
+		table.addDataRow(
+				factory.create(new Object[] { "averageQueuedStates", DoubleMath.mean(observer.getQueuedStatesArray()) },
+						new Attribute[] { nameAttr, valueAttr }));
 
 		return table.createExampleSet();
 	}
