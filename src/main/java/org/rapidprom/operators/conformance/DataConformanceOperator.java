@@ -26,6 +26,8 @@ import org.processmining.models.semantics.petrinet.Marking;
 import org.processmining.plugins.balancedconformance.BalancedDataXAlignmentPlugin;
 import org.processmining.plugins.balancedconformance.config.BalancedProcessorConfiguration;
 import org.processmining.plugins.balancedconformance.controlflow.ControlFlowAlignmentException;
+import org.processmining.plugins.balancedconformance.controlflow.adapter.SearchMethod;
+import org.processmining.plugins.balancedconformance.dataflow.DataAlignmentAdapter.ILPSolver;
 import org.processmining.plugins.balancedconformance.dataflow.exception.DataAlignmentException;
 import org.processmining.plugins.balancedconformance.observer.DataConformancePlusObserverImpl;
 import org.processmining.plugins.balancedconformance.result.StatisticResult;
@@ -41,17 +43,15 @@ import org.rapidprom.operators.conformance.util.AlignmentCostIO;
 import org.rapidprom.operators.conformance.util.DataAlignmentCostIO;
 import org.rapidprom.operators.conformance.util.VariableMappingIO;
 import org.rapidprom.operators.util.RapidProMProgress;
+import org.rapidprom.util.ObjectUtils;
 
 import com.google.common.base.Stopwatch;
-import com.google.common.math.BigIntegerMath;
 import com.google.common.math.DoubleMath;
-import com.google.common.primitives.Primitives;
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.example.table.AttributeFactory;
 import com.rapidminer.example.table.DataRowFactory;
 import com.rapidminer.example.table.MemoryExampleTable;
-import com.rapidminer.operator.IOObject;
 import com.rapidminer.operator.Operator;
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
@@ -68,6 +68,8 @@ import com.rapidminer.operator.ports.metadata.MetaData;
 import com.rapidminer.operator.ports.metadata.SimpleMetaDataError;
 import com.rapidminer.operator.ports.metadata.SimplePrecondition;
 import com.rapidminer.parameter.ParameterType;
+import com.rapidminer.parameter.ParameterTypeBoolean;
+import com.rapidminer.parameter.ParameterTypeCategory;
 import com.rapidminer.parameter.ParameterTypeInt;
 import com.rapidminer.parameter.UndefinedParameterError;
 import com.rapidminer.tools.Ontology;
@@ -87,15 +89,6 @@ import javassist.tools.rmi.ObjectNotFoundException;
  *
  */
 public class DataConformanceOperator extends Operator {
-
-	private static final String COST_LOG_MOVE_KEY = "Cost: Log move";
-	private static final String COST_MODEL_MOVE_KEY = "Cost: Model move";
-	private static final String COST_MISSING_WRITE_KEY = "Cost: Missing Write";
-	private static final String COST_WRONG_WRITE_KEY = "Cost: Wrong Write";
-
-	private static final String CONCURRENT_THREADS_KEY = "Number of Threads";
-	private static final String CONCURRENT_THREADS_DESCR = "Specify the number of threads used to calculate alignments in parallel."
-			+ " With each extra thread, more memory is used but less time is required.";
 
 	private InputPort inputXLog = getInputPorts().createPort("event log (ProM Event Log)", XLogIOObject.class);
 	private InputPort inputModel = getInputPorts().createPort("model (ProM Data petri net)",
@@ -200,6 +193,13 @@ public class DataConformanceOperator extends Operator {
 			BalancedProcessorConfiguration config = BalancedProcessorConfiguration.newDefaultInstance(dpn,
 					initialMarking, finalMarkings, log, transitionMapping.getEventClassifier(), getDefaultCostLogMove(),
 					getDefaultCostModelMove(), getDefaultCostMissingWrite(), getDefaultCostWrongWrite());
+			
+			config.setSearchMethod(getSearchMethod());
+			config.setIlpSolver(getMILPSolver());
+			config.setActivateDataViewCache(isMILPCache());
+			config.setUseOptimizations(isMILPOptimize());
+			config.setUsePartialDataAlignments(isStagedMethod());
+			
 			applyUserDefinedTransitionMapping(transitionMapping, config);
 
 			if (inputVariableMapping.isConnected()) {
@@ -265,29 +265,30 @@ public class DataConformanceOperator extends Operator {
 	}
 
 	private ExampleSet createMeasureDetailedTable(XLog log, DataConformancePlusObserverImpl observer) {
-		Attribute traceAttr = AttributeFactory.createAttribute("Trace", Ontology.STRING);
-		Attribute lengthAttr = AttributeFactory.createAttribute("Length", Ontology.NUMERICAL);
-		Attribute timeAttr = AttributeFactory.createAttribute("Time", Ontology.NUMERICAL);
-		Attribute queuedAttr = AttributeFactory.createAttribute("Queued States", Ontology.NUMERICAL);
-		Attribute fitnessAttr = AttributeFactory.createAttribute("Fitness", Ontology.NUMERICAL);
+		Attribute traceAttr = AttributeFactory.createAttribute("trace", Ontology.STRING);
+		Attribute lengthAttr = AttributeFactory.createAttribute("length", Ontology.NUMERICAL);
+		Attribute timeAttr = AttributeFactory.createAttribute("time", Ontology.NUMERICAL);
+		Attribute queuedAttr = AttributeFactory.createAttribute("queuedStates", Ontology.NUMERICAL);
+		Attribute fitnessAttr = AttributeFactory.createAttribute("fitness", Ontology.NUMERICAL);
 
 		MemoryExampleTable table = new MemoryExampleTable(traceAttr, lengthAttr, timeAttr, queuedAttr, fitnessAttr);
 		DataRowFactory factory = new DataRowFactory(DataRowFactory.TYPE_DOUBLE_ARRAY, '.');
-		
+
 		double[] timeData = observer.getStatisticResults().get(StatisticResult.TIME_PER_TRACE).getData();
 		double[] queueData = observer.getStatisticResults().get(StatisticResult.QUEUED_STATES).getData();
 		double[] fitnessData = observer.getStatisticResults().get(StatisticResult.FITNESS).getData();
+		double[] lengthData = observer.getStatisticResults().get("traceLength").getData();
 
 		Iterator<XTrace> logIter = log.iterator();
 		int i = 0;
 		while (logIter.hasNext()) {
-			XTrace trace = (XTrace) logIter.next();
 			String name = "";
 			if (logIter.hasNext()) {
 				name = XUtils.getConceptName(logIter.next());
-			}			
-			table.addDataRow(factory.create(new Object[] { name, trace.size(), timeData[i], queueData[i], fitnessData[i] },
-					new Attribute[] { traceAttr, lengthAttr, timeAttr, queuedAttr, fitnessAttr }));
+			}
+			table.addDataRow(
+					factory.create(new Object[] { name, lengthData[i], timeData[i], queueData[i], fitnessData[i] },
+							new Attribute[] { traceAttr, lengthAttr, timeAttr, queuedAttr, fitnessAttr }));
 			i++;
 		}
 
@@ -305,18 +306,18 @@ public class DataConformanceOperator extends Operator {
 				new Attribute[] { nameAttr, valueAttr }));
 		table.addDataRow(factory.create(new Object[] { "averagePrecision", precisionResult.getPrecision() },
 				new Attribute[] { nameAttr, valueAttr }));
-
-		table.addDataRow(factory.create(new Object[] { "runTime", runTime }, new Attribute[] { nameAttr, valueAttr }));
+		table.addDataRow(
+				factory.create(new Object[] { "averageQueuedStates", DoubleMath.mean(observer.getQueuedStatesArray()) },
+						new Attribute[] { nameAttr, valueAttr }));
+		table.addDataRow(
+				factory.create(new Object[] { "totalRunTime", runTime }, new Attribute[] { nameAttr, valueAttr }));
 
 		double cpuTime = 0.0;
 		for (double timeForTrace : observer.getStatisticResults().get(StatisticResult.TIME_PER_TRACE).getData()) {
 			cpuTime += timeForTrace;
 		}
-		table.addDataRow(factory.create(new Object[] { "cpuTime", cpuTime }, new Attribute[] { nameAttr, valueAttr }));
-
 		table.addDataRow(
-				factory.create(new Object[] { "averageQueuedStates", DoubleMath.mean(observer.getQueuedStatesArray()) },
-						new Attribute[] { nameAttr, valueAttr }));
+				factory.create(new Object[] { "totalWallTime", cpuTime }, new Attribute[] { nameAttr, valueAttr }));
 
 		return table.createExampleSet();
 	}
@@ -356,6 +357,22 @@ public class DataConformanceOperator extends Operator {
 				dpn.getTransitions(), variables);
 	}
 
+	private static final String COST_LOG_MOVE_KEY = "Cost: Log move";
+	private static final String COST_MODEL_MOVE_KEY = "Cost: Model move";
+	private static final String COST_MISSING_WRITE_KEY = "Cost: Missing Write";
+	private static final String COST_WRONG_WRITE_KEY = "Cost: Wrong Write";
+
+	private static final String CONCURRENT_THREADS_KEY = "Number of Threads";
+	private static final String CONCURRENT_THREADS_DESCR = "Specify the number of threads used to calculate alignments in parallel."
+			+ " With each extra thread, more memory is used but less time is required.";
+
+	private static final String MILP_SOLVER = "MILP Solver";
+	private static final String MILP_OPTIMIZE = "Optimize MILPs";
+	private static final String MILP_CACHE = "Cache MILPs";
+
+	private static final String SEARCH_METHOD = "Search method";
+	private static final String STAGED_METHOD = "Staged method";
+
 	@Override
 	public List<ParameterType> getParameterTypes() {
 		List<ParameterType> params = super.getParameterTypes();
@@ -366,6 +383,17 @@ public class DataConformanceOperator extends Operator {
 				new ParameterTypeInt(COST_MISSING_WRITE_KEY, "Default cost for a missing write operation.", 0, 100, 1));
 		params.add(new ParameterTypeInt(COST_MODEL_MOVE_KEY, "Default cost for a model move.", 0, 100, 1));
 		params.add(new ParameterTypeInt(COST_LOG_MOVE_KEY, "Default cost for a log move.", 0, 100, 1));
+		
+		params.add(new ParameterTypeCategory(SEARCH_METHOD, "Optimal alignment search method.",
+				ObjectUtils.toString(SearchMethod.values()), SearchMethod.ASTAR_GRAPH.ordinal()));
+		params.add(new ParameterTypeCategory(MILP_SOLVER, "MILP solver that should be used for the data perspective.",
+				ObjectUtils.toString(ILPSolver.values()), ILPSolver.ILP_LPSOLVE.ordinal(), true));
+		
+		params.add(new ParameterTypeBoolean(MILP_OPTIMIZE, "Use optimizations to avoid solving MILP problems when uneccesary.", true, true));
+		params.add(new ParameterTypeBoolean(MILP_CACHE, "Use LRU cache for MILP results.", true, true));
+		
+		params.add(new ParameterTypeBoolean(STAGED_METHOD, "Use old staged method (BPM'13).", true, true));
+		
 		return params;
 	}
 
@@ -383,6 +411,26 @@ public class DataConformanceOperator extends Operator {
 
 	private int getDefaultCostLogMove() throws UndefinedParameterError {
 		return getParameterAsInt(COST_LOG_MOVE_KEY);
+	}
+	
+	private SearchMethod getSearchMethod() throws UndefinedParameterError {
+		return SearchMethod.valueOf(getParameterAsString(SEARCH_METHOD));
+	}
+	
+	private ILPSolver getMILPSolver() throws UndefinedParameterError {
+		return ILPSolver.valueOf(getParameterAsString(MILP_SOLVER));
+	}
+	
+	private boolean isMILPOptimize() throws UndefinedParameterError {
+		return getParameterAsBoolean(MILP_OPTIMIZE);
+	}
+	
+	private boolean isMILPCache() throws UndefinedParameterError {
+		return getParameterAsBoolean(MILP_CACHE);
+	}
+	
+	private boolean isStagedMethod() throws UndefinedParameterError {
+		return getParameterAsBoolean(STAGED_METHOD);
 	}
 
 	private ExampleSet getCostsControlFlow() throws UserError {
