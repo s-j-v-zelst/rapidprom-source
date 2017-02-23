@@ -28,12 +28,14 @@ import org.processmining.plugins.balancedconformance.config.BalancedProcessorCon
 import org.processmining.plugins.connectionfactories.logpetrinet.TransEvClassMapping;
 import org.processmining.plugins.graphviz.dot.Dot;
 import org.processmining.xesalignmentextension.XAlignmentExtension.XAlignedLog;
+import org.processmining.xeslite.external.XFactoryExternalStore;
 import org.processmining.xeslite.lite.factory.XFactoryLiteImpl;
 import org.rapidprom.ioobjects.DataPetriNetIOObject;
 import org.rapidprom.ioobjects.DotIOObject;
 import org.rapidprom.ioobjects.TransEvMappingIOObject;
 import org.rapidprom.ioobjects.XAlignedLogIOObject;
 import org.rapidprom.ioobjects.XLogIOObject;
+import org.xeslite.external.ExternalStore;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.eventbus.EventBus;
@@ -75,7 +77,7 @@ public class ProjectAlignedLogOnDPNOperator extends Operator {
 
 		@Override
 		public XFactory getFactory() {
-			return new XFactoryLiteImpl();
+			return new XFactoryExternalStore.InMemoryStoreAlignmentAwareImpl();
 		}
 
 		@Override
@@ -259,7 +261,7 @@ public class ProjectAlignedLogOnDPNOperator extends Operator {
 			netView.updateData();
 			// no need to call netView.updateUI();
 
-			NetVisualizationPanel visualization = new NetVisualizationPanel(updatableExplorer, explorerModel);
+			NetVisualizationPanel visualization = new NetVisualizationPanel(updatableExplorer, explorerContext, explorerModel);
 			visualization.updateData(netView.getModelDecorationData());
 			Dot dot = visualization.getDpnAsDot().getDot();
 
