@@ -326,6 +326,10 @@
                     <class>org.rapidprom.operators.generation.GenerateEventLogFromPetriNetOperator</class>
                 </operator>
                 <operator>
+                    <key>generate_log_with_conceptdrift</key>
+                    <class>org.rapidprom.operators.generation.GenerateConceptDriftOperator</class>
+                </operator>
+                <operator>
                     <key>generate_log</key>
                     <class>org.rapidprom.operators.generation.GenerateEventLogOperator</class>
                 </operator>
