@@ -322,6 +322,10 @@
                     <class>org.rapidprom.operators.generation.GenerateNewickTreeOperator</class>
                 </operator>
                 <operator>
+                    <key>generate_log_from_petrinet</key>
+                    <class>org.rapidprom.operators.generation.GenerateEventLogFromPetriNetOperator</class>
+                </operator>
+                <operator>
                     <key>generate_log</key>
                     <class>org.rapidprom.operators.generation.GenerateEventLogOperator</class>
                 </operator>

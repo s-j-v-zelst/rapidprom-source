@@ -69,15 +69,15 @@ extensionConfig {
 	
     // define RapidMiner version and extension dependencies
     dependencies {
-        rapidminer '7.2.0'
-        //extension namespace: 'text', version: '7.2.0'
+        rapidminer '7.4.0'
+        //extension namespace: 'text', version: '7.4.0'
     }
 }
 
 // Define third party library dependencies
 dependencies {
 	
-	compile group:"org.rapidprom", name:"ProM-Framework", version:"31245"
+	compile group:"org.rapidprom", name:"ProM-Framework", version:"34109"
 	compile "org.rapidprom:AcceptingPetriNet:6.7.93"
 	compile "org.rapidprom:AlphaMiner:6.5.47"
 	compile "org.rapidprom:Animation:6.5.50"
@@ -105,10 +105,12 @@ dependencies {
 	compile "org.rapidprom:ModelRepair:6.5.12"
 	compile "org.rapidprom:Murata:6.5.54"
 	compile "org.rapidprom:PetriNets:6.7.95"
+	compile "org.rapidprom:PetriNetSimulator:6.7.10"
 	compile "org.rapidprom:PNetAlignmentAnalysis:6.5.35"
 	compile "org.rapidprom:PNAnalysis:6.7.122"
 	compile "org.rapidprom:PNetReplayer:6.7.99"
 	compile "org.rapidprom:PTConversions:6.5.3"
+	compile "org.rapidprom:PTAndLogGenerator:6.7.92"
 	compile "org.rapidprom:PomPomView:6.5.36"
 	compile "org.rapidprom:SocialNetwork:6.5.35"
 	compile "org.rapidprom:StreamAlphaMiner:6.5.15"
