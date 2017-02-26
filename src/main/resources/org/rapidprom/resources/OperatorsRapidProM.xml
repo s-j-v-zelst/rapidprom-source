@@ -251,6 +251,11 @@
                 <class>org.rapidprom.operators.io.ImportDataPetriNetOperator</class>
                 <icon>inbox_into.png</icon>
             </operator>
+            <operator>
+                <key>import_cpnxes_log</key>
+                <class>org.rapidprom.operators.io.ImportCPNXESLogOperator</class>
+                <icon>inbox_into.png</icon>
+            </operator>            
         </group>
         <group key="log_manipulation">
         	<group key="log_abstraction">

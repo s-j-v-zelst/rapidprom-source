@@ -190,42 +190,8 @@ public class DataConformanceOperator extends Operator {
 			Marking initialMarking = dpnIO.getInitialMarking();
 			Marking[] finalMarkings = dpnIO.getFinalMarkingAsArray();
 
-			BalancedProcessorConfiguration config = BalancedProcessorConfiguration.newDefaultInstance(dpn,
-					initialMarking, finalMarkings, log, transitionMapping.getEventClassifier(), getDefaultCostLogMove(),
-					getDefaultCostModelMove(), getDefaultCostMissingWrite(), getDefaultCostWrongWrite());
-			
-			config.setSearchMethod(getSearchMethod());
-			config.setIlpSolver(getMILPSolver());
-			config.setActivateDataViewCache(isMILPCache());
-			config.setUseOptimizations(isMILPOptimize());
-			config.setUsePartialDataAlignments(!isStagedMethod());
-			
-			applyUserDefinedTransitionMapping(transitionMapping, config);
-
-			if (inputVariableMapping.isConnected()) {
-				try {
-					applyUserDefinedVariableMapping(getVariableMapping(), config);
-				} catch (ExampleSetReaderException e) {
-					inputVariableMapping
-							.addError(new SimpleMetaDataError(Severity.WARNING, inputVariableMapping, e.getMessage()));
-				}
-			}
-
-			if (inputCosts.isConnected()) {
-				try {
-					applyUserDefinedCosts(getCostsControlFlow(), log, dpn, config);
-				} catch (ExampleSetReaderException e) {
-					inputCosts.addError(new SimpleMetaDataError(Severity.WARNING, inputCosts, e.getMessage()));
-				}
-			}
-
-			if (inputCostsData.isConnected()) {
-				try {
-					applyUserDefinedDataCosts(getCostsData(), log, dpn, config);
-				} catch (ExampleSetReaderException e) {
-					inputCostsData.addError(new SimpleMetaDataError(Severity.WARNING, inputCostsData, e.getMessage()));
-				}
-			}
+			BalancedProcessorConfiguration config = getAlignmentConfig(log, transitionMapping, dpn, initialMarking,
+					finalMarkings);
 
 			DataConformancePlusObserverImpl observer = new DataConformancePlusObserverImpl(dpnIO.getPluginContext());
 			config.setObserver(observer);
@@ -236,9 +202,7 @@ public class DataConformanceOperator extends Operator {
 			long runTime = watch.elapsed(TimeUnit.MILLISECONDS);
 			XAlignedLog alignedLog = XAlignmentExtension.instance().extendLog(alignLog);
 
-			PrecisionConfig precisionConfig = new PrecisionConfig(initialMarking,
-					DataAwarePrecisionPlugin.convertMapping(config.getActivityMapping()),
-					config.getActivityMapping().getEventClassifier(), config.getVariableMapping());
+			PrecisionConfig precisionConfig = getPrecisionConfig(initialMarking, config);
 			precisionConfig.setAssumeUnassignedVariablesFree(true);
 			PrecisionResult precisionResult = new DataAwarePrecisionPlugin().doMeasurePrecisionWithAlignment(dpn, log,
 					alignedLog, precisionConfig);
@@ -264,6 +228,55 @@ public class DataConformanceOperator extends Operator {
 
 	}
 
+	private BalancedProcessorConfiguration getAlignmentConfig(XLog log, TransEvClassMapping transitionMapping,
+			DataPetriNet dpn, Marking initialMarking, Marking[] finalMarkings)
+			throws UndefinedParameterError, UserError {
+		BalancedProcessorConfiguration config = BalancedProcessorConfiguration.newDefaultInstance(dpn, initialMarking,
+				finalMarkings, log, transitionMapping.getEventClassifier(), getDefaultCostLogMove(),
+				getDefaultCostModelMove(), getDefaultCostMissingWrite(), getDefaultCostWrongWrite());
+
+		config.setSearchMethod(getSearchMethod());
+		config.setIlpSolver(getMILPSolver());
+		config.setActivateDataViewCache(isMILPCache());
+		config.setUseOptimizations(isMILPOptimize());
+		config.setUsePartialDataAlignments(!isStagedMethod());
+
+		applyUserDefinedTransitionMapping(transitionMapping, config);
+
+		if (inputVariableMapping.isConnected()) {
+			try {
+				applyUserDefinedVariableMapping(getVariableMapping(), config);
+			} catch (ExampleSetReaderException e) {
+				inputVariableMapping
+						.addError(new SimpleMetaDataError(Severity.WARNING, inputVariableMapping, e.getMessage()));
+			}
+		}
+
+		if (inputCosts.isConnected()) {
+			try {
+				applyUserDefinedCosts(getCostsControlFlow(), log, dpn, config);
+			} catch (ExampleSetReaderException e) {
+				inputCosts.addError(new SimpleMetaDataError(Severity.WARNING, inputCosts, e.getMessage()));
+			}
+		}
+
+		if (inputCostsData.isConnected()) {
+			try {
+				applyUserDefinedDataCosts(getCostsData(), log, dpn, config);
+			} catch (ExampleSetReaderException e) {
+				inputCostsData.addError(new SimpleMetaDataError(Severity.WARNING, inputCostsData, e.getMessage()));
+			}
+		}
+		return config;
+	}
+
+	private PrecisionConfig getPrecisionConfig(Marking initialMarking, BalancedProcessorConfiguration config) {
+		PrecisionConfig precisionConfig = new PrecisionConfig(initialMarking,
+				DataAwarePrecisionPlugin.convertMapping(config.getActivityMapping()),
+				config.getActivityMapping().getEventClassifier(), config.getVariableMapping());
+		return precisionConfig;
+	}
+
 	private ExampleSet createMeasureDetailedTable(XLog log, DataConformancePlusObserverImpl observer) {
 		Attribute traceAttr = AttributeFactory.createAttribute("trace", Ontology.STRING);
 		Attribute lengthAttr = AttributeFactory.createAttribute("length", Ontology.NUMERICAL);
@@ -282,10 +295,7 @@ public class DataConformanceOperator extends Operator {
 		Iterator<XTrace> logIter = log.iterator();
 		int i = 0;
 		while (logIter.hasNext()) {
-			String name = "";
-			if (logIter.hasNext()) {
-				name = XUtils.getConceptName(logIter.next());
-			}
+			String name = XUtils.getConceptName(logIter.next());
 			table.addDataRow(
 					factory.create(new Object[] { name, lengthData[i], timeData[i], queueData[i], fitnessData[i] },
 							new Attribute[] { traceAttr, lengthAttr, timeAttr, queuedAttr, fitnessAttr }));
@@ -383,17 +393,18 @@ public class DataConformanceOperator extends Operator {
 				new ParameterTypeInt(COST_MISSING_WRITE_KEY, "Default cost for a missing write operation.", 0, 100, 1));
 		params.add(new ParameterTypeInt(COST_MODEL_MOVE_KEY, "Default cost for a model move.", 0, 100, 1));
 		params.add(new ParameterTypeInt(COST_LOG_MOVE_KEY, "Default cost for a log move.", 0, 100, 1));
-		
+
 		params.add(new ParameterTypeCategory(SEARCH_METHOD, "Optimal alignment search method.",
 				ObjectUtils.toString(SearchMethod.values()), SearchMethod.ASTAR_GRAPH.ordinal()));
 		params.add(new ParameterTypeCategory(MILP_SOLVER, "MILP solver that should be used for the data perspective.",
 				ObjectUtils.toString(ILPSolver.values()), ILPSolver.ILP_LPSOLVE.ordinal(), true));
-		
-		params.add(new ParameterTypeBoolean(MILP_OPTIMIZE, "Use optimizations to avoid solving MILP problems when uneccesary.", true, true));
+
+		params.add(new ParameterTypeBoolean(MILP_OPTIMIZE,
+				"Use optimizations to avoid solving MILP problems when uneccesary.", true, true));
 		params.add(new ParameterTypeBoolean(MILP_CACHE, "Use LRU cache for MILP results.", true, true));
-		
+
 		params.add(new ParameterTypeBoolean(STAGED_METHOD, "Use old staged method (BPM'13).", false, true));
-		
+
 		return params;
 	}
 
@@ -412,33 +423,33 @@ public class DataConformanceOperator extends Operator {
 	private int getDefaultCostLogMove() throws UndefinedParameterError {
 		return getParameterAsInt(COST_LOG_MOVE_KEY);
 	}
-	
+
 	private SearchMethod getSearchMethod() throws UndefinedParameterError {
-		for (SearchMethod method: SearchMethod.values()) {
+		for (SearchMethod method : SearchMethod.values()) {
 			if (method.toString().equals(getParameterAsString(SEARCH_METHOD))) {
 				return method;
 			}
 		}
 		return SearchMethod.ASTAR_GRAPH;
 	}
-	
+
 	private ILPSolver getMILPSolver() throws UndefinedParameterError {
-		for (ILPSolver solver: ILPSolver.values()) {
+		for (ILPSolver solver : ILPSolver.values()) {
 			if (solver.toString().equals(getParameterAsString(MILP_SOLVER))) {
 				return solver;
 			}
 		}
 		return ILPSolver.ILP_LPSOLVE;
 	}
-	
+
 	private boolean isMILPOptimize() throws UndefinedParameterError {
 		return getParameterAsBoolean(MILP_OPTIMIZE);
 	}
-	
+
 	private boolean isMILPCache() throws UndefinedParameterError {
 		return getParameterAsBoolean(MILP_CACHE);
 	}
-	
+
 	private boolean isStagedMethod() throws UndefinedParameterError {
 		return getParameterAsBoolean(STAGED_METHOD);
 	}
