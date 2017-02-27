@@ -240,6 +240,8 @@ public class DataConformanceOperator extends Operator {
 		config.setActivateDataViewCache(isMILPCache());
 		config.setUseOptimizations(isMILPOptimize());
 		config.setUsePartialDataAlignments(!isStagedMethod());
+		
+		config.setMaxQueuedStates(getMaxQueuedStates());
 
 		applyUserDefinedTransitionMapping(transitionMapping, config);
 
@@ -382,6 +384,7 @@ public class DataConformanceOperator extends Operator {
 
 	private static final String SEARCH_METHOD = "Search method";
 	private static final String STAGED_METHOD = "Staged method";
+	private static final String MAX_QUEUE = "Maximum queue size";
 
 	@Override
 	public List<ParameterType> getParameterTypes() {
@@ -404,6 +407,8 @@ public class DataConformanceOperator extends Operator {
 		params.add(new ParameterTypeBoolean(MILP_CACHE, "Use LRU cache for MILP results.", true, true));
 
 		params.add(new ParameterTypeBoolean(STAGED_METHOD, "Use old staged method (BPM'13).", false, true));
+		
+		params.add(new ParameterTypeInt(MAX_QUEUE, "Maximum queue size", 1, Integer.MAX_VALUE, Integer.MAX_VALUE));		
 
 		return params;
 	}
@@ -422,6 +427,11 @@ public class DataConformanceOperator extends Operator {
 
 	private int getDefaultCostLogMove() throws UndefinedParameterError {
 		return getParameterAsInt(COST_LOG_MOVE_KEY);
+	}
+	
+
+	private int getMaxQueuedStates() throws UndefinedParameterError {
+		return getParameterAsInt(MAX_QUEUE);
 	}
 
 	private SearchMethod getSearchMethod() throws UndefinedParameterError {

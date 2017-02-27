@@ -9,11 +9,13 @@ import java.util.logging.Logger;
 import org.deckfour.xes.extension.std.XTimeExtension;
 import org.deckfour.xes.factory.XFactory;
 import org.deckfour.xes.factory.XFactoryNaiveImpl;
+import org.deckfour.xes.factory.XFactoryRegistry;
 import org.deckfour.xes.model.XAttributeMap;
 import org.deckfour.xes.model.XEvent;
 import org.deckfour.xes.model.XLog;
 import org.deckfour.xes.model.XTrace;
 import org.rapidprom.ioobjects.XLogIOObject;
+import org.xeslite.external.XFactoryExternalStore;
 
 import com.rapidminer.operator.Operator;
 import com.rapidminer.operator.OperatorDescription;
@@ -43,9 +45,13 @@ public class AddNoiseOperator extends Operator {
 
 			PARAMETER_3_KEY = "Seed",
 			PARAMETER_3_DESCR = "This parameter defines the seed used to evaluate noise "
-					+ "probability and apply the noise type.";
+					+ "probability and apply the noise type.",
+					
+			PARAMETER_4_KEY = "Iterations",
+			PARAMETER_4_DESCR = "The number of iterations that the noise operation is applied to the log.";
+	
 	private static final String HEAD = "Remove Head", BODY = "Remove Body",
-			EXTRA = "Add Event", SWAP = "Swap Tasks", REMOVE = "Remove Task";
+			EXTRA = "Add Event", SWAP = "Swap Tasks", SWAP_TIME = "Swap Tasks & Time", REMOVE = "Remove Task";
 
 	private InputPort inputXLog = getInputPorts()
 			.createPort("event log (ProM Event Log)", XLogIOObject.class);
@@ -68,7 +74,11 @@ public class AddNoiseOperator extends Operator {
 
 		XLogIOObject xLogIOObject = inputXLog.getData(XLogIOObject.class);
 		XLog logOriginal = xLogIOObject.getArtifact();
-		XLog logModified = filterLog(logOriginal);
+		XLog logModified = logOriginal;
+		int iterations = getParameterAsInt(PARAMETER_4_KEY);
+		for (int i = 0; i < iterations; i++) {
+			logModified = filterLog(logModified, i);
+		}
 		XLogIOObject result = new XLogIOObject(logModified,
 				xLogIOObject.getPluginContext());
 
@@ -79,18 +89,18 @@ public class AddNoiseOperator extends Operator {
 						+ (System.currentTimeMillis() - time) / 1000 + " sec)");
 	}
 
-	private XLog filterLog(XLog log) throws UndefinedParameterError {
+	private XLog filterLog(XLog log, int iteration) throws UndefinedParameterError {
 
-		XFactory factory = new XFactoryNaiveImpl();
+		XFactory factory = XFactoryRegistry.instance().currentDefault();
 		XLog result = factory.createLog(log.getAttributes());
 		result.getClassifiers().addAll(log.getClassifiers());
 
 		int traceCounter = 0;
-		Random rOverall = new Random(getParameterAsInt(PARAMETER_3_KEY));
+		Random rOverall = new Random(getParameterAsInt(PARAMETER_3_KEY) + (iteration-1));
 		for (XTrace t : log) {
 			XTrace copy = factory.createTrace(t.getAttributes());
 			Random r = new Random(getParameterAsInt(PARAMETER_3_KEY)
-					+ new Integer(traceCounter).hashCode());
+					+ new Integer(traceCounter).hashCode() + (iteration-1));
 			double nextDouble = rOverall.nextDouble();
 			// System.out.println("nextDouble:" + nextDouble);
 			if (nextDouble < getParameterAsDouble(PARAMETER_1_KEY)) {
@@ -208,6 +218,38 @@ public class AddNoiseOperator extends Operator {
 							copy.add(copyEvent);
 						}
 					}
+				} else if (getParameterAsString(PARAMETER_2_KEY).equals(SWAP_TIME)) {
+					int indexFirstTaskToSwap = safeNextInt(r, t.size());
+					int indexSecondTaskToSwap = safeNextInt(r, t.size());
+					XEvent firstTaskToSwap = null;
+					XEvent secondTaskToSwap = null;
+					XEvent event = null;
+					if (indexFirstTaskToSwap != indexSecondTaskToSwap) {
+						// it makes sense to swap
+						firstTaskToSwap = t.get(indexSecondTaskToSwap);
+						secondTaskToSwap = t.get(indexFirstTaskToSwap);
+
+						for (int i = 0; i < t.size(); i++) {
+							if (i == indexFirstTaskToSwap) {
+								event = (XEvent) firstTaskToSwap.clone();
+							} else if (i == indexSecondTaskToSwap) {
+								event = (XEvent) secondTaskToSwap.clone();
+							} else {
+								event = t.get(i);
+							}
+							XEvent copyEvent = factory
+									.createEvent((XAttributeMap) event
+											.getAttributes().clone());
+							copy.add(copyEvent);
+						}
+					} else {
+						// we still need to copy
+						for (XEvent e : t) {
+							XEvent copyEvent = factory.createEvent(
+									(XAttributeMap) e.getAttributes().clone());
+							copy.add(copyEvent);
+						}
+					}
 				} else {
 					// remove an event
 					int pos = Math.abs(r.nextInt()) % (t.size() + 1);
@@ -263,7 +305,7 @@ public class AddNoiseOperator extends Operator {
 		parameterTypes.add(parameterType1);
 
 		String[] par2categories = new String[] { REMOVE, HEAD, BODY, EXTRA,
-				SWAP };
+				SWAP, SWAP_TIME };
 		ParameterTypeCategory parameterType2 = new ParameterTypeCategory(
 				PARAMETER_2_KEY, PARAMETER_2_DESCR, par2categories, 0);
 		parameterTypes.add(parameterType2);
@@ -271,6 +313,10 @@ public class AddNoiseOperator extends Operator {
 		ParameterTypeInt parameterType3 = new ParameterTypeInt(PARAMETER_3_KEY,
 				PARAMETER_3_DESCR, 0, Integer.MAX_VALUE, 1);
 		parameterTypes.add(parameterType3);
+		
+		ParameterTypeInt parameterType4 = new ParameterTypeInt(PARAMETER_4_KEY,
+				PARAMETER_4_DESCR, 0, Integer.MAX_VALUE, 1);
+		parameterTypes.add(parameterType4);
 		return parameterTypes;
 	}
 
