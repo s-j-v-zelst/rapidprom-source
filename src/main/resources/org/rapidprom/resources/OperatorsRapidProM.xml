@@ -176,6 +176,13 @@
                 <icon>inbox_out.png</icon>
             </operator>
         </group>
+        <group key="filtering">
+            <operator>
+                <key>filter_log_automaton</key>
+                <class>org.rapidprom.operators.filtering.FilterOutInfrequentBehaviorLogAutomatonOperatorImpl</class>
+                <icon>funnel.png</icon>
+            </operator>
+        </group>
         <group key="import">
             <operator>
                 <key>extract_log_from_file</key>

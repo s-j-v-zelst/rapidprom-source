@@ -34,6 +34,11 @@
     </group>
     
     <group>
+        <key>filtering</key>
+        <name>Filtering</name>
+    </group>
+    
+    <group>
       <key>log_manipulation</key>
       <name>Log Manipulation</name>
     </group>
@@ -189,6 +194,17 @@
         <help>This operator sorts traces and events within traces by timestamp.</help>
     <key>timestamp_sort</key>
   </operator>
+  
+  
+  <operator>
+      <name>Filter Infrequent Behavior (Log Automaton)</name>
+      <synopsis>Event log filter able to filter out infrequent behavior. Based on: Conforti, R., La Rosa, M., and, ter Hofstede, A.; Filtering Out Infrequent Behavior from Business Process Event Logs"; IEEE Transactions on Knowledge and Data Engineering, Vol 29., No 2.</synopsis> 
+      <help> Event log filter able to filter out infrequent behavior. The filter creates an automaton based on the event log and uses the threshold to filter out infrequent transitions within the automaton. Based on: Conforti, R., La Rosa, M., and, ter Hofstede, A.; Filtering Out Infrequent Behavior from Business Process Event Logs"; IEEE Transactions on Knowledge and Data Engineering, Vol 29., No 2.</help>
+      <key>filter_log_automaton</key> 
+  </operator>
+  
+  
+  
   
    <operator>
         <name>Alpha Miner (Petri Net)</name>
