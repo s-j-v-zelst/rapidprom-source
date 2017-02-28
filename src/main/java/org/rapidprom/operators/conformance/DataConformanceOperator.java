@@ -25,6 +25,9 @@ import org.processmining.models.graphbased.directed.petrinetwithdata.newImpl.Dat
 import org.processmining.models.semantics.petrinet.Marking;
 import org.processmining.plugins.balancedconformance.BalancedDataXAlignmentPlugin;
 import org.processmining.plugins.balancedconformance.config.BalancedProcessorConfiguration;
+import org.processmining.plugins.balancedconformance.config.BalancedProcessorConfiguration.ControlFlowStorageHandlerType;
+import org.processmining.plugins.balancedconformance.config.BalancedProcessorConfiguration.DataStateStorageHandlerType;
+import org.processmining.plugins.balancedconformance.config.BalancedProcessorConfiguration.UnassignedMode;
 import org.processmining.plugins.balancedconformance.controlflow.ControlFlowAlignmentException;
 import org.processmining.plugins.balancedconformance.controlflow.adapter.SearchMethod;
 import org.processmining.plugins.balancedconformance.dataflow.DataAlignmentAdapter.ILPSolver;
@@ -235,13 +238,21 @@ public class DataConformanceOperator extends Operator {
 				finalMarkings, log, transitionMapping.getEventClassifier(), getDefaultCostLogMove(),
 				getDefaultCostModelMove(), getDefaultCostMissingWrite(), getDefaultCostWrongWrite());
 
+		config.setConcurrentThreads(Math.min(Runtime.getRuntime().availableProcessors(), getParameterAsInt(CONCURRENT_THREADS_KEY)));
 		config.setSearchMethod(getSearchMethod());
 		config.setIlpSolver(getMILPSolver());
 		config.setActivateDataViewCache(isMILPCache());
 		config.setUseOptimizations(isMILPOptimize());
 		config.setUsePartialDataAlignments(!isStagedMethod());
-		
 		config.setMaxQueuedStates(getMaxQueuedStates());
+		config.setVariablesUnassignedMode(UnassignedMode.NULL);
+		
+		if (config.getConcurrentThreads() == 1) {
+			config.setControlFlowStorageHandler(ControlFlowStorageHandlerType.MEMORY_EFFICIENT);
+			config.setDataStateStorageHandler(DataStateStorageHandlerType.PRIMITIVE_NOLOCK);
+			config.setKeepDataFlowSearchSpace(false);
+			config.setKeepControlFlowSearchSpace(false);
+		}	
 
 		applyUserDefinedTransitionMapping(transitionMapping, config);
 
