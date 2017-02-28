@@ -60,13 +60,15 @@ public class TransitionSystemMinerOperator extends AbstractRapidProMDiscoveryOpe
 		classifiers[0] = getXEventClassifier();
 
 		XEventClassifier transitionClassifier = getXEventClassifier();
+		
+		TSMinerInput settings = getConfiguration(pluginContext, classifiers, transitionClassifier);
 
 		Object[] result = TSMinerPlugin.main(pluginContext, getXLog(), classifiers, transitionClassifier,
-				getConfiguration(pluginContext, classifiers, transitionClassifier));
+				settings);
 
 		// TO-DO: for now we use default parameters, we should use the same
 		// parameters used in prom.
-		TransitionSystemIOObject ts = new TransitionSystemIOObject((TSMinerTransitionSystem) result[0], pluginContext);
+		TransitionSystemIOObject ts = new TransitionSystemIOObject((TSMinerTransitionSystem) result[0], settings, pluginContext);
 		output.deliver(ts);
 
 		logger.log(Level.INFO, "End: transition system miner (" + (System.currentTimeMillis() - time) / 1000 + " sec)");

@@ -171,6 +171,18 @@
                 <icon>inbox_out.png</icon>
             </operator>
         </group>
+        <group key="concept_drift">
+            <operator>
+                <key>concept_drift_1</key>
+                <class>org.rapidprom.operators.conceptdrift.DecisionPointAnalysisOperator</class>
+                <icon>hardhat.png</icon>
+            </operator>
+            <operator>
+                <key>concept_drift_qut</key>
+                <class>org.rapidprom.operators.conceptdrift.QUTDrifterOperator</class>
+                <icon>hardhat.png</icon>
+            </operator>
+        </group>
         <group key="import">
             <operator>
                 <key>extract_log_from_file</key>

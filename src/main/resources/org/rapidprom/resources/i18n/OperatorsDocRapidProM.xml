@@ -9,6 +9,11 @@
     </group>
     
     <group>
+    <key>concept_drift</key>
+    <name>Concept Drift</name>
+    </group>
+    
+    <group>
       <key>conformance</key>
       <name>Conformance</name>
     </group>
@@ -177,9 +182,8 @@
    <operator>
         <name>Import Event Log</name>
         <synopsis>This operator can be used to import a ProM XES event log from a file.</synopsis>
-        <help>This operator can be used to import a ProM XES event log file. 
-        Note that only .xes files can be read.</help>
-    <key>import_xlog</key>
+        <help>This operator can be used to import a ProM XES event log file. Note that only .xes files can be read.</help>
+    	<key>import_xlog</key>
   </operator>
   
   <operator>
@@ -483,6 +487,21 @@
 		<help> </help>
 		<key>generate_process_tree</key>
 	</operator>
+	
+	 <operator>
+		<name>Detect Concept Drift (Decision Point Analysis) </name>
+		<synopsis>This is a synopsis  </synopsis>
+		<help> help is coming!</help>
+		<key>concept_drift_1</key>
+	</operator>
+	
+	 <operator>
+		<name>Detect Concept Drift (QUT) </name>
+		<synopsis> this is a synopsis </synopsis>
+		<help> help is coming!</help>
+		<key>concept_drift_qut</key>
+	</operator>
+	
 	<operator>
 		<name>Generate Event Log from Newick Tree</name>
 		<synopsis>  </synopsis>
@@ -492,8 +511,8 @@
 	
 	<operator>
 		<name>Generate Event Log from Petri Net</name>
-		<synopsis>  </synopsis>
-		<help> </help>
+		<synopsis> this is a synopsis </synopsis>
+		<help> help is coming!</help>
 		<key>generate_log_from_petrinet</key>
     </operator>
     <operator>
