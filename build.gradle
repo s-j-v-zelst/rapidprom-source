@@ -107,7 +107,7 @@ dependencies {
 	compile "org.rapidprom:Murata:6.5.54"
 	compile "org.rapidprom:NoiseFiltering:0.0.1"
 	compile "org.rapidprom:PetriNets:6.7.136"
-	compile "org.rapidprom:PNetAlignmentAnalysis:6.5.35"
+	compile "org.rapidprom:PNetAlignmentAnalysis:6.7.91"
 	compile "org.rapidprom:PNAnalysis:6.7.128"
 	compile "org.rapidprom:PNetReplayer:6.7.142"
 	compile "org.rapidprom:PTConversions:6.5.3"
