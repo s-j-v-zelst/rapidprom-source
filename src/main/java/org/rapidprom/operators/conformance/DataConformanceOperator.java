@@ -2,7 +2,6 @@ package org.rapidprom.operators.conformance;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -306,15 +305,13 @@ public class DataConformanceOperator extends Operator {
 		double[] queueData = observer.getStatisticResults().get(StatisticResult.QUEUED_STATES).getData();
 		double[] fitnessData = observer.getStatisticResults().get(StatisticResult.FITNESS).getData();
 		double[] lengthData = observer.getStatisticResults().get("traceLength").getData();
+		XTrace[] originalTraces = observer.getOriginalTraces();
 
-		Iterator<XTrace> logIter = log.iterator();
-		int i = 0;
-		while (logIter.hasNext()) {
-			String name = XUtils.getConceptName(logIter.next());
+		for (int i = 0; i < lengthData.length; i++) {
+			String name = XUtils.getConceptName(originalTraces[i]);
 			table.addDataRow(
 					factory.create(new Object[] { name, lengthData[i], timeData[i], queueData[i], fitnessData[i] },
 							new Attribute[] { traceAttr, lengthAttr, timeAttr, queuedAttr, fitnessAttr }));
-			i++;
 		}
 
 		return table.createExampleSet();

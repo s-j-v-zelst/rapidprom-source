@@ -88,7 +88,7 @@ dependencies {
 	compile "org.rapidprom:CPNet:6.5.84"
 	compile "org.rapidprom:DataAwareCNetMiner:6.7.98"
 	compile "org.rapidprom:DataAwareExplorer:6.7.383"
-	compile "org.rapidprom:DataAwareReplayer:6.7.654"
+	compile "org.rapidprom:DataAwareReplayer:6.7.656"
 	compile "org.rapidprom:DataDiscovery:6.7.89"
 	compile "org.rapidprom:DataExpression:6.7.49"	
 	compile "org.rapidprom:DataPetriNets:6.7.421"
