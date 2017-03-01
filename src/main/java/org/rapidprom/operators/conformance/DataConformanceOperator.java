@@ -74,6 +74,7 @@ import com.rapidminer.parameter.ParameterType;
 import com.rapidminer.parameter.ParameterTypeBoolean;
 import com.rapidminer.parameter.ParameterTypeCategory;
 import com.rapidminer.parameter.ParameterTypeInt;
+import com.rapidminer.parameter.ParameterTypeLong;
 import com.rapidminer.parameter.UndefinedParameterError;
 import com.rapidminer.tools.Ontology;
 
@@ -245,6 +246,7 @@ public class DataConformanceOperator extends Operator {
 		config.setUseOptimizations(isMILPOptimize());
 		config.setUsePartialDataAlignments(!isStagedMethod());
 		config.setMaxQueuedStates(getMaxQueuedStates());
+		config.setTimeLimitPerTrace(getMaxTimePerTrace());
 		config.setVariablesUnassignedMode(UnassignedMode.NULL);
 		
 		if (config.getConcurrentThreads() == 1) {
@@ -329,19 +331,24 @@ public class DataConformanceOperator extends Operator {
 				new Attribute[] { nameAttr, valueAttr }));
 		table.addDataRow(factory.create(new Object[] { "averagePrecision", precisionResult.getPrecision() },
 				new Attribute[] { nameAttr, valueAttr }));
-		table.addDataRow(
-				factory.create(new Object[] { "averageQueuedStates", DoubleMath.mean(observer.getQueuedStatesArray()) },
-						new Attribute[] { nameAttr, valueAttr }));
+		
+		if (alignedLog.size() > 0) {
+			table.addDataRow(
+					factory.create(new Object[] { "averageQueuedStates", DoubleMath.mean(observer.getQueuedStatesArray()) },
+							new Attribute[] { nameAttr, valueAttr }));
+	
+			double cpuTime = 0.0;
+			for (double timeForTrace : observer.getStatisticResults().get(StatisticResult.TIME_PER_TRACE).getData()) {
+				cpuTime += timeForTrace;
+			}
+			
+			table.addDataRow(
+					factory.create(new Object[] { "totalWallTime", cpuTime }, new Attribute[] { nameAttr, valueAttr }));
+		}
+		
 		table.addDataRow(
 				factory.create(new Object[] { "totalRunTime", runTime }, new Attribute[] { nameAttr, valueAttr }));
-
-		double cpuTime = 0.0;
-		for (double timeForTrace : observer.getStatisticResults().get(StatisticResult.TIME_PER_TRACE).getData()) {
-			cpuTime += timeForTrace;
-		}
-		table.addDataRow(
-				factory.create(new Object[] { "totalWallTime", cpuTime }, new Attribute[] { nameAttr, valueAttr }));
-
+		
 		return table.createExampleSet();
 	}
 
@@ -396,6 +403,7 @@ public class DataConformanceOperator extends Operator {
 	private static final String SEARCH_METHOD = "Search method";
 	private static final String STAGED_METHOD = "Staged method";
 	private static final String MAX_QUEUE = "Maximum queue size";
+	private static final String MAX_TIME = "Maximum time per trace";
 
 	@Override
 	public List<ParameterType> getParameterTypes() {
@@ -419,7 +427,8 @@ public class DataConformanceOperator extends Operator {
 
 		params.add(new ParameterTypeBoolean(STAGED_METHOD, "Use old staged method (BPM'13).", false, true));
 		
-		params.add(new ParameterTypeInt(MAX_QUEUE, "Maximum queue size", 1, Integer.MAX_VALUE, Integer.MAX_VALUE));		
+		params.add(new ParameterTypeInt(MAX_QUEUE, "Maximum queue size", 1, Integer.MAX_VALUE, Integer.MAX_VALUE));
+		params.add(new ParameterTypeLong(MAX_TIME, "Maximum time per trace (seconds)", 1, Long.MAX_VALUE, Long.MAX_VALUE));
 
 		return params;
 	}
@@ -439,12 +448,15 @@ public class DataConformanceOperator extends Operator {
 	private int getDefaultCostLogMove() throws UndefinedParameterError {
 		return getParameterAsInt(COST_LOG_MOVE_KEY);
 	}
-	
 
 	private int getMaxQueuedStates() throws UndefinedParameterError {
 		return getParameterAsInt(MAX_QUEUE);
 	}
-
+	
+	private long getMaxTimePerTrace() throws UndefinedParameterError {
+		return getParameterAsLong(MAX_TIME);
+	}	
+	
 	private SearchMethod getSearchMethod() throws UndefinedParameterError {
 		for (SearchMethod method : SearchMethod.values()) {
 			if (method.toString().equals(getParameterAsString(SEARCH_METHOD))) {

@@ -324,6 +324,11 @@
                 <key>random_sample</key>
                 <class>org.rapidprom.operators.logmanipulation.RandomSampleOperator</class>
             </operator>
+            <operator>
+                <key>repair_log_data_types</key>
+                <class>org.rapidprom.operators.logmanipulation.RepairLogOperator</class>
+            </operator>            
+            
 			<operator>
                 <key>filter_events</key>
                 <class>org.rapidprom.operators.logmanipulation.FilterEventsOperator</class>
