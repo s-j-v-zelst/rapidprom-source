@@ -15,7 +15,6 @@ import org.deckfour.xes.model.XEvent;
 import org.deckfour.xes.model.XLog;
 import org.deckfour.xes.model.XTrace;
 import org.rapidprom.ioobjects.XLogIOObject;
-import org.xeslite.external.XFactoryExternalStore;
 
 import com.rapidminer.operator.Operator;
 import com.rapidminer.operator.OperatorDescription;

@@ -308,10 +308,12 @@ public class DataConformanceOperator extends Operator {
 		XTrace[] originalTraces = observer.getOriginalTraces();
 
 		for (int i = 0; i < lengthData.length; i++) {
-			String name = XUtils.getConceptName(originalTraces[i]);
-			table.addDataRow(
-					factory.create(new Object[] { name, lengthData[i], timeData[i], queueData[i], fitnessData[i] },
-							new Attribute[] { traceAttr, lengthAttr, timeAttr, queuedAttr, fitnessAttr }));
+			if (originalTraces[i] != null) {
+				String name = XUtils.getConceptName(originalTraces[i]);
+				table.addDataRow(
+						factory.create(new Object[] { name, lengthData[i], timeData[i], queueData[i], fitnessData[i] },
+								new Attribute[] { traceAttr, lengthAttr, timeAttr, queuedAttr, fitnessAttr }));
+			} 
 		}
 
 		return table.createExampleSet();
