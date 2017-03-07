@@ -106,8 +106,8 @@ public class DecisionPointAnalysisOperator extends Operator {
 	public List<ParameterType> getParameterTypes() {
 		List<ParameterType> parameterTypes = super.getParameterTypes();
 		
-		ParameterTypeDouble par1 = new ParameterTypeDouble(PARAMETER_1_KEY, PARAMETER_1_DESCR, 0, 1, 0.1);
-		ParameterTypeDouble par2 = new ParameterTypeDouble(PARAMETER_2_KEY, PARAMETER_2_DESCR, 0, 1, 0.1);
+		ParameterTypeDouble par1 = new ParameterTypeDouble(PARAMETER_1_KEY, PARAMETER_1_DESCR, 0, 1, 1);
+		ParameterTypeDouble par2 = new ParameterTypeDouble(PARAMETER_2_KEY, PARAMETER_2_DESCR, 0, 1, 0.05);
 
 		parameterTypes.add(par1);
 		parameterTypes.add(par2);

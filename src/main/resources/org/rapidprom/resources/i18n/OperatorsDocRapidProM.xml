@@ -502,6 +502,13 @@
 		<key>concept_drift_qut</key>
 	</operator>
 	
+	 <operator>
+		<name>Measure Concept Drift</name>
+		<synopsis> this is a synopsis </synopsis>
+		<help> help is coming!</help>
+		<key>measure_concept_drift</key>
+	</operator>
+	
 	<operator>
 		<name>Generate Event Log from Newick Tree</name>
 		<synopsis>  </synopsis>

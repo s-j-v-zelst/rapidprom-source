@@ -182,6 +182,11 @@
                 <class>org.rapidprom.operators.conceptdrift.QUTDrifterOperator</class>
                 <icon>hardhat.png</icon>
             </operator>
+            <operator>
+                <key>measure_concept_drift</key>
+                <class>org.rapidprom.operators.conceptdrift.MeasureDriftDetectionOperator</class>
+                <icon>hardhat.png</icon>
+            </operator>
         </group>
         <group key="import">
             <operator>
