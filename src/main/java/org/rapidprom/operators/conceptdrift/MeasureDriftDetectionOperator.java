@@ -138,28 +138,38 @@ public class MeasureDriftDetectionOperator extends Operator {
 				attributes.toArray(new Attribute[attributes.size()])));
 		table.addDataRow(factory.create(new Object[] { "False Negatives", FN },
 				attributes.toArray(new Attribute[attributes.size()])));
-		
-		double precision = ((double) TP) /((double)TP + FP);
+
+		double precision = ((double) TP) / ((double) TP + FP);
+		if (Double.isNaN(precision))
+			precision = 0;
 		table.addDataRow(factory.create(new Object[] { "Precision", precision },
 				attributes.toArray(new Attribute[attributes.size()])));
-		
-		double recall =  ((double) TP) /((double)TP + FN);
-		table.addDataRow(factory.create(new Object[] { "Recall",recall},
+
+		double recall = ((double) TP) / ((double) TP + FN);
+		if (Double.isNaN(recall))
+			recall = 0;
+		table.addDataRow(factory.create(new Object[] { "Recall", recall },
 				attributes.toArray(new Attribute[attributes.size()])));
-		
-		double f1score = (2*precision*recall)/(precision + recall);
-		table.addDataRow(factory.create(new Object[] { "F1-score", f1score},
+
+		double f1score = (2 * precision * recall) / (precision + recall);
+		if (Double.isNaN(f1score))
+			f1score = 0;
+		table.addDataRow(factory.create(new Object[] { "F1-score", f1score },
 				attributes.toArray(new Attribute[attributes.size()])));
-		
-		table.addDataRow(factory.create(new Object[] { "Rooted Mean Square Error", RMSE},
+
+		if (Double.isNaN(RMSE))
+			RMSE = 0;
+		table.addDataRow(factory.create(new Object[] { "Rooted Mean Square Error", RMSE },
 				attributes.toArray(new Attribute[attributes.size()])));
-		
+
 		es = table.createExampleSet();
 		output.deliver(es);
 	}
 
 	private long getTimeInMiliseconds(double input, String timeUnit) {
 		switch (timeUnit) {
+		case SettingsConstants.MILISECONDS:
+			return Math.round(input);
 		case SettingsConstants.SECONDS:
 			return Math.round(input * 1000.0);
 		case SettingsConstants.MINUTES:

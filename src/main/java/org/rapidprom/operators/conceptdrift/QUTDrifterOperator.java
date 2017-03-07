@@ -102,14 +102,6 @@ public class QUTDrifterOperator extends Operator {
 				table.addDataRow(dataRow);
 				traceID++;
 			}
-		} else {
-			DataRowFactory factory = new DataRowFactory(DataRowFactory.TYPE_DOUBLE_ARRAY, '.');
-			Object[] vals = new Object[2];
-			vals[0] = "?";
-			vals[1] = Double.NaN;
-
-			DataRow dataRow = factory.create(vals, attributes.toArray(new Attribute[attributes.size()]));
-			table.addDataRow(dataRow);
 		}
 
 		es = table.createExampleSet();

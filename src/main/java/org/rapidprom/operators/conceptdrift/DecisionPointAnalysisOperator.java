@@ -96,27 +96,30 @@ public class DecisionPointAnalysisOperator extends Operator {
 		Set<SplittingPoint> processVariants = VariantFinder.findProcessVariants(log.getArtifact(), getSettigns(),
 				pluginContext, ats);
 
-		SplittingPoint winner = processVariants.iterator().next();
-
-		fillDriftPoints(winner.getSplittingPoint());
+		if (!processVariants.isEmpty()) {
+			SplittingPoint winner = processVariants.iterator().next();
+			fillDriftPoints(winner.getSplittingPoint());
+		}
+		else
+			fillDriftPoints(null);
 
 		logger.log(Level.INFO, "End: detecting concept drift (" + (System.currentTimeMillis() - time) / 1000 + " sec)");
 	}
 
 	public List<ParameterType> getParameterTypes() {
 		List<ParameterType> parameterTypes = super.getParameterTypes();
-		
+
 		ParameterTypeDouble par1 = new ParameterTypeDouble(PARAMETER_1_KEY, PARAMETER_1_DESCR, 0, 1, 1);
 		ParameterTypeDouble par2 = new ParameterTypeDouble(PARAMETER_2_KEY, PARAMETER_2_DESCR, 0, 1, 0.05);
 
 		parameterTypes.add(par1);
 		parameterTypes.add(par2);
-		
+
 		return parameterTypes;
 	}
 
 	public Settings getSettigns() {
-		
+
 		Settings settings = null;
 		try {
 			settings = new Settings(getParameterAsDouble(PARAMETER_1_KEY), getParameterAsDouble(PARAMETER_2_KEY));
@@ -152,15 +155,7 @@ public class DecisionPointAnalysisOperator extends Operator {
 				table.addDataRow(dataRow);
 				traceID++;
 			}
-		} else {
-			DataRowFactory factory = new DataRowFactory(DataRowFactory.TYPE_DOUBLE_ARRAY, '.');
-			Object[] vals = new Object[2];
-			vals[0] = "?";
-			vals[1] = Double.NaN;
-
-			DataRow dataRow = factory.create(vals, attributes.toArray(new Attribute[attributes.size()]));
-			table.addDataRow(dataRow);
-		}
+		} 
 
 		es = table.createExampleSet();
 		output.deliver(es);
