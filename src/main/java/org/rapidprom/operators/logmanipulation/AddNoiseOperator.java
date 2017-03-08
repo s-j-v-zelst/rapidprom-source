@@ -46,8 +46,8 @@ public class AddNoiseOperator extends Operator {
 			PARAMETER_3_DESCR = "This parameter defines the seed used to evaluate noise "
 					+ "probability and apply the noise type.",
 					
-			PARAMETER_4_KEY = "Iterations",
-			PARAMETER_4_DESCR = "The number of iterations that the noise operation is applied to the log.";
+			PARAMETER_4_KEY = "Event Percentage",
+			PARAMETER_4_DESCR = "The percentage of events in a trace that noise will be applied to. The default 0 is used as a special value, which indicates that just one event is changed.";
 	
 	private static final String HEAD = "Remove Head", BODY = "Remove Body",
 			EXTRA = "Add Event", SWAP = "Swap Tasks", SWAP_TIME = "Swap Tasks & Time", REMOVE = "Remove Task";
@@ -73,12 +73,7 @@ public class AddNoiseOperator extends Operator {
 
 		XLogIOObject xLogIOObject = inputXLog.getData(XLogIOObject.class);
 		XLog logOriginal = xLogIOObject.getArtifact();
-		XLog logModified = logOriginal;
-		int iterations = getParameterAsInt(PARAMETER_4_KEY);
-		for (int i = 0; i < iterations; i++) {
-			logModified = filterLog(logModified, i);
-		}
-		XLogIOObject result = new XLogIOObject(logModified,
+		XLogIOObject result = new XLogIOObject(filterLog(logOriginal),
 				xLogIOObject.getPluginContext());
 
 		outputEventLog.deliverMD(md);
@@ -88,178 +83,33 @@ public class AddNoiseOperator extends Operator {
 						+ (System.currentTimeMillis() - time) / 1000 + " sec)");
 	}
 
-	private XLog filterLog(XLog log, int iteration) throws UndefinedParameterError {
+	private XLog filterLog(XLog log) throws UndefinedParameterError {
 
 		XFactory factory = XFactoryRegistry.instance().currentDefault();
 		XLog result = factory.createLog(log.getAttributes());
 		result.getClassifiers().addAll(log.getClassifiers());
 
 		int traceCounter = 0;
-		Random rOverall = new Random(getParameterAsInt(PARAMETER_3_KEY) + (iteration-1));
+		Random rOverall = new Random(getParameterAsInt(PARAMETER_3_KEY));
 		for (XTrace t : log) {
 			XTrace copy = factory.createTrace(t.getAttributes());
-			Random r = new Random(getParameterAsInt(PARAMETER_3_KEY)
-					+ new Integer(traceCounter).hashCode() + (iteration-1));
+			Random noiseRandom = new Random(getParameterAsInt(PARAMETER_3_KEY)
+					+ new Integer(traceCounter).hashCode());
 			double nextDouble = rOverall.nextDouble();
 			// System.out.println("nextDouble:" + nextDouble);
 			if (nextDouble < getParameterAsDouble(PARAMETER_1_KEY)) {
-				double oneThird = t.size() / 3.0;
-				if (getParameterAsString(PARAMETER_2_KEY).equals(HEAD)) {
-					int start = safeNextInt(r, (int) oneThird);
-					for (int i = start; i < t.size(); i++) {
-						XEvent e = t.get(i);
-						XEvent copyEvent = factory
-								.createEvent(e.getAttributes());
-						copy.add(copyEvent);
-					}
-				} else if (getParameterAsString(PARAMETER_2_KEY).equals(BODY)) {
-					int stopFirst = safeNextInt(r, (int) oneThird);
-					for (int i = 0; i < stopFirst; i++) {
-						XEvent e = t.get(i);
-						XEvent copyEvent = factory
-								.createEvent(e.getAttributes());
-						copy.add(copyEvent);
-					}
-
-					int startLast = t.size() - safeNextInt(r, (int) oneThird);
-					for (int i = startLast; i < t.size(); i++) {
-						XEvent e = t.get(i);
-						XEvent copyEvent = factory
-								.createEvent(e.getAttributes());
-						copy.add(copyEvent);
-					}
-				} else if (getParameterAsString(PARAMETER_2_KEY)
-						.equals(EXTRA)) {
-					for (XEvent e : t) {
-						XEvent copyEvent = factory
-								.createEvent(e.getAttributes());
-						copy.add(copyEvent);
-					}
-					// add event
-					int pos = safeNextInt(r, t.size());
-
-					System.out.println("Pos: " + pos);
-
-					// get the previous event to check for timestamp
-					Date lowb = (pos != 0) ? XTimeExtension.instance()
-							.extractTimestamp(copy.get(pos - 1)) : null;
-					Date upb = (pos != t.size()) ? XTimeExtension.instance()
-							.extractTimestamp(copy.get(pos)) : null;
-
-					// if(lowb!= null)
-					// System.out.println("Low: " + lowb.toString());
-					//
-					// if(upb!=null)
-					// System.out.println("Up: " + upb.toString());
-
-					if ((lowb != null) && (upb != null)) {
-						// the new event has timestamp in between
-						copy.add(pos,
-								createEvent(log, log.size(), r, new Date(
-										(upb.getTime() + lowb.getTime()) / 2),
-								XTimeExtension.instance()));
-					} else if (lowb != null) {
-						// there is a lower bound
-						copy.add(pos,
-								createEvent(log, log.size(), r,
-										new Date(lowb.getTime() + 1),
-										XTimeExtension.instance()));
-					} else if (upb != null) {
-						// there is an upper bound
-						copy.add(pos,
-								createEvent(log, log.size(), r,
-										new Date(upb.getTime() - 1),
-										XTimeExtension.instance()));
-					} else {
-						// there is neither a lower or an upper bound
-						copy.add(pos, createEvent(log, log.size(), r, null,
-								XTimeExtension.instance()));
-					}
-				} else if (getParameterAsString(PARAMETER_2_KEY).equals(SWAP)) {
-					int indexFirstTaskToSwap = safeNextInt(r, t.size());
-					int indexSecondTaskToSwap = safeNextInt(r, t.size());
-					XEvent firstTaskToSwap = null;
-					XEvent secondTaskToSwap = null;
-					XEvent event = null;
-					if (indexFirstTaskToSwap != indexSecondTaskToSwap) {
-						// it makes sense to swap
-						firstTaskToSwap = t.get(indexSecondTaskToSwap);
-						secondTaskToSwap = t.get(indexFirstTaskToSwap);
-						// swap also the timestamps
-						Date firstTimestamp = XTimeExtension.instance()
-								.extractTimestamp(firstTaskToSwap);
-						Date secondTimestamp = XTimeExtension.instance()
-								.extractTimestamp(secondTaskToSwap);
-
-						for (int i = 0; i < t.size(); i++) {
-							if (i == indexFirstTaskToSwap) {
-								event = (XEvent) firstTaskToSwap.clone();
-								XTimeExtension.instance().assignTimestamp(event,
-										secondTimestamp);
-							} else if (i == indexSecondTaskToSwap) {
-								event = (XEvent) secondTaskToSwap.clone();
-								XTimeExtension.instance().assignTimestamp(event,
-										firstTimestamp);
-							} else {
-								event = t.get(i);
-							}
-							XEvent copyEvent = factory
-									.createEvent((XAttributeMap) event
-											.getAttributes().clone());
-							copy.add(copyEvent);
-
+				double eventPercentage = getParameterAsDouble(PARAMETER_4_KEY);
+				if (eventPercentage != 0) {
+					int eventsToModify = (int) Math.ceil(t.size() * eventPercentage);
+					for (int k = 0; k < eventsToModify; k++) {
+						applyNoise(log, factory, t, copy, noiseRandom);	
+						t = copy;
+						if (k < eventsToModify-1) {
+							copy = factory.createTrace(t.getAttributes());
 						}
-					} else {
-						// we still need to copy
-						for (XEvent e : t) {
-							XEvent copyEvent = factory.createEvent(
-									(XAttributeMap) e.getAttributes().clone());
-							copy.add(copyEvent);
-						}
-					}
-				} else if (getParameterAsString(PARAMETER_2_KEY).equals(SWAP_TIME)) {
-					int indexFirstTaskToSwap = safeNextInt(r, t.size());
-					int indexSecondTaskToSwap = safeNextInt(r, t.size());
-					XEvent firstTaskToSwap = null;
-					XEvent secondTaskToSwap = null;
-					XEvent event = null;
-					if (indexFirstTaskToSwap != indexSecondTaskToSwap) {
-						// it makes sense to swap
-						firstTaskToSwap = t.get(indexSecondTaskToSwap);
-						secondTaskToSwap = t.get(indexFirstTaskToSwap);
-
-						for (int i = 0; i < t.size(); i++) {
-							if (i == indexFirstTaskToSwap) {
-								event = (XEvent) firstTaskToSwap.clone();
-							} else if (i == indexSecondTaskToSwap) {
-								event = (XEvent) secondTaskToSwap.clone();
-							} else {
-								event = t.get(i);
-							}
-							XEvent copyEvent = factory
-									.createEvent((XAttributeMap) event
-											.getAttributes().clone());
-							copy.add(copyEvent);
-						}
-					} else {
-						// we still need to copy
-						for (XEvent e : t) {
-							XEvent copyEvent = factory.createEvent(
-									(XAttributeMap) e.getAttributes().clone());
-							copy.add(copyEvent);
-						}
-					}
+					}					
 				} else {
-					// remove an event
-					int pos = Math.abs(r.nextInt()) % (t.size() + 1);
-					for (int i = 0; i < t.size(); i++) {
-						if (i != pos) {
-							XEvent event = t.get(i);
-							XEvent copyEvent = factory
-									.createEvent(event.getAttributes());
-							copy.add(copyEvent);
-						}
-					}
+					applyNoise(log, factory, t, copy, noiseRandom);					
 				}
 			} else {
 				for (XEvent e : t) {
@@ -271,6 +121,167 @@ public class AddNoiseOperator extends Operator {
 			result.add(copy);
 		}
 		return result;
+	}
+
+	private void applyNoise(XLog log, XFactory factory, XTrace t, XTrace copy, Random noiseRandom) throws UndefinedParameterError {
+		double oneThird = t.size() / 3.0;
+		if (getParameterAsString(PARAMETER_2_KEY).equals(HEAD)) {
+			int start = safeNextInt(noiseRandom, (int) oneThird);
+			for (int i = start; i < t.size(); i++) {
+				XEvent e = t.get(i);
+				XEvent copyEvent = factory
+						.createEvent(e.getAttributes());
+				copy.add(copyEvent);
+			}
+		} else if (getParameterAsString(PARAMETER_2_KEY).equals(BODY)) {
+			int stopFirst = safeNextInt(noiseRandom, (int) oneThird);
+			for (int i = 0; i < stopFirst; i++) {
+				XEvent e = t.get(i);
+				XEvent copyEvent = factory
+						.createEvent(e.getAttributes());
+				copy.add(copyEvent);
+			}
+
+			int startLast = t.size() - safeNextInt(noiseRandom, (int) oneThird);
+			for (int i = startLast; i < t.size(); i++) {
+				XEvent e = t.get(i);
+				XEvent copyEvent = factory
+						.createEvent(e.getAttributes());
+				copy.add(copyEvent);
+			}
+		} else if (getParameterAsString(PARAMETER_2_KEY)
+				.equals(EXTRA)) {
+			for (XEvent e : t) {
+				XEvent copyEvent = factory
+						.createEvent(e.getAttributes());
+				copy.add(copyEvent);
+			}
+			// add event
+			int pos = safeNextInt(noiseRandom, t.size());
+
+			System.out.println("Pos: " + pos);
+
+			// get the previous event to check for timestamp
+			Date lowb = (pos != 0) ? XTimeExtension.instance()
+					.extractTimestamp(copy.get(pos - 1)) : null;
+			Date upb = (pos != t.size()) ? XTimeExtension.instance()
+					.extractTimestamp(copy.get(pos)) : null;
+
+			// if(lowb!= null)
+			// System.out.println("Low: " + lowb.toString());
+			//
+			// if(upb!=null)
+			// System.out.println("Up: " + upb.toString());
+
+			if ((lowb != null) && (upb != null)) {
+				// the new event has timestamp in between
+				copy.add(pos,
+						createEvent(log, log.size(), noiseRandom, new Date(
+								(upb.getTime() + lowb.getTime()) / 2),
+						XTimeExtension.instance()));
+			} else if (lowb != null) {
+				// there is a lower bound
+				copy.add(pos,
+						createEvent(log, log.size(), noiseRandom,
+								new Date(lowb.getTime() + 1),
+								XTimeExtension.instance()));
+			} else if (upb != null) {
+				// there is an upper bound
+				copy.add(pos,
+						createEvent(log, log.size(), noiseRandom,
+								new Date(upb.getTime() - 1),
+								XTimeExtension.instance()));
+			} else {
+				// there is neither a lower or an upper bound
+				copy.add(pos, createEvent(log, log.size(), noiseRandom, null,
+						XTimeExtension.instance()));
+			}
+		} else if (getParameterAsString(PARAMETER_2_KEY).equals(SWAP)) {
+			int indexFirstTaskToSwap = safeNextInt(noiseRandom, t.size());
+			int indexSecondTaskToSwap = safeNextInt(noiseRandom, t.size());
+			XEvent firstTaskToSwap = null;
+			XEvent secondTaskToSwap = null;
+			XEvent event = null;
+			if (indexFirstTaskToSwap != indexSecondTaskToSwap) {
+				// it makes sense to swap
+				firstTaskToSwap = t.get(indexSecondTaskToSwap);
+				secondTaskToSwap = t.get(indexFirstTaskToSwap);
+				// swap also the timestamps
+				Date firstTimestamp = XTimeExtension.instance()
+						.extractTimestamp(firstTaskToSwap);
+				Date secondTimestamp = XTimeExtension.instance()
+						.extractTimestamp(secondTaskToSwap);
+
+				for (int i = 0; i < t.size(); i++) {
+					if (i == indexFirstTaskToSwap) {
+						event = (XEvent) firstTaskToSwap.clone();
+						XTimeExtension.instance().assignTimestamp(event,
+								secondTimestamp);
+					} else if (i == indexSecondTaskToSwap) {
+						event = (XEvent) secondTaskToSwap.clone();
+						XTimeExtension.instance().assignTimestamp(event,
+								firstTimestamp);
+					} else {
+						event = t.get(i);
+					}
+					XEvent copyEvent = factory
+							.createEvent((XAttributeMap) event
+									.getAttributes().clone());
+					copy.add(copyEvent);
+
+				}
+			} else {
+				// we still need to copy
+				for (XEvent e : t) {
+					XEvent copyEvent = factory.createEvent(
+							(XAttributeMap) e.getAttributes().clone());
+					copy.add(copyEvent);
+				}
+			}
+		} else if (getParameterAsString(PARAMETER_2_KEY).equals(SWAP_TIME)) {
+			int indexFirstTaskToSwap = safeNextInt(noiseRandom, t.size());
+			int indexSecondTaskToSwap = safeNextInt(noiseRandom, t.size());
+			XEvent firstTaskToSwap = null;
+			XEvent secondTaskToSwap = null;
+			XEvent event = null;
+			if (indexFirstTaskToSwap != indexSecondTaskToSwap) {
+				// it makes sense to swap
+				firstTaskToSwap = t.get(indexSecondTaskToSwap);
+				secondTaskToSwap = t.get(indexFirstTaskToSwap);
+
+				for (int i = 0; i < t.size(); i++) {
+					if (i == indexFirstTaskToSwap) {
+						event = (XEvent) firstTaskToSwap.clone();
+					} else if (i == indexSecondTaskToSwap) {
+						event = (XEvent) secondTaskToSwap.clone();
+					} else {
+						event = t.get(i);
+					}
+					XEvent copyEvent = factory
+							.createEvent((XAttributeMap) event
+									.getAttributes().clone());
+					copy.add(copyEvent);
+				}
+			} else {
+				// we still need to copy
+				for (XEvent e : t) {
+					XEvent copyEvent = factory.createEvent(
+							(XAttributeMap) e.getAttributes().clone());
+					copy.add(copyEvent);
+				}
+			}
+		} else {
+			// remove an event
+			int pos = Math.abs(noiseRandom.nextInt()) % (t.size() + 1);
+			for (int i = 0; i < t.size(); i++) {
+				if (i != pos) {
+					XEvent event = t.get(i);
+					XEvent copyEvent = factory
+							.createEvent(event.getAttributes());
+					copy.add(copyEvent);
+				}
+			}
+		}
 	}
 
 	private int safeNextInt(Random r, int maxInt) {
@@ -313,8 +324,8 @@ public class AddNoiseOperator extends Operator {
 				PARAMETER_3_DESCR, 0, Integer.MAX_VALUE, 1);
 		parameterTypes.add(parameterType3);
 		
-		ParameterTypeInt parameterType4 = new ParameterTypeInt(PARAMETER_4_KEY,
-				PARAMETER_4_DESCR, 0, Integer.MAX_VALUE, 1);
+		ParameterTypeDouble parameterType4 = new ParameterTypeDouble(PARAMETER_4_KEY,
+				PARAMETER_4_DESCR, 0, 1, 0);
 		parameterTypes.add(parameterType4);
 		return parameterTypes;
 	}
