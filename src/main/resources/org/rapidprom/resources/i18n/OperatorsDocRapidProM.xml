@@ -198,6 +198,13 @@
   </operator>
   
   <operator>
+    <name>Causal Graph (Flexible Heuristics Miner)</name>
+    <synopsis>This operator discovers a causal graph, based on the Flexible Heuristics Miner.</synopsis>
+    <help>This operator discovers a causal graph, based on the Flexible Heuristics Miner as described in:  Weijters, A. J. M. M., and J. T. S. Ribeiro. "Flexible heuristics miner (FHM)." Computational Intelligence and Data Mining (CIDM), 2011 IEEE Symposium on. IEEE, 2011. </help>
+    <key>discover_causal_graph_fhm</key>
+  </operator> 	
+  
+  <operator>
         <name>ILP Miner (Petri Net)</name>
         <synopsis>This operator can be used to execute the ILP Miner discovery algorithm.</synopsis>
         <help>This operator can be used to execute the ILP Miner algorithm which provides a Petri Net and a marking. As input a log file is needed.</help>
@@ -381,6 +388,13 @@
         <synopsis>This operator mines a Fuzzy Model as described &lt;a href="http://dx.doi.org/10.6100/IR644335"&gt;here&lt;/a&gt;. This miner is best suited for flexible or unstructured processes, where other miners give very complex models as result.</synopsis>
         <help>A log is required for input</help>
     	<key>mine_fuzzy_model</key>
+  	</operator>
+  	
+  	<operator>
+  		<name>Complexity Metrics (Petri net)</name>
+  		<synopsis>This operator computes Petri net (Workflow net) complexity metrics mainly based on: K.B. Lassen and W.M.P. van der Aalst; Complexity Metrics for Workflow Nets; Information and Software Technology, 51(3):610-626, 2009.</synopsis>
+  		<help>This operator computes Petri net (Workflow net) complexity metrics mainly based on: K.B. Lassen and W.M.P. van der Aalst; Complexity Metrics for Workflow Nets; Information and Software Technology, 51(3):610-626, 2009. It contains the following metrics: Cardoso Metric, Cyclomatic Metric, Density Metric, Number of Arcs, Number of Places, Number of Transitions and Structuredness.</help>
+  		<key>complexity_metrics_petri_net</key>
   	</operator>
   	
   	<!-- STREAMS -->
