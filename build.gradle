@@ -13,7 +13,7 @@ repositories {
     jcenter()
 	maven { url 'https://maven.rapidminer.com/content/groups/public/' }
 	ivy {
-		url "https://github.com/rapidprom/rapidprom-libraries/raw/${project.properties["version"]}/prom/"
+		url "https://github.com/rapidprom/rapidprom-libraries/raw/${project.properties["libs"]}/prom/"
 		layout "pattern", {
 			artifact "[module]-[revision]/[module]-[revision].[ext]"
 			artifact "[module]-[revision]/[artifact].[ext]"
@@ -21,14 +21,14 @@ repositories {
 		}
 	}
 	ivy {
-		url "https://github.com/rapidprom/rapidprom-libraries/raw/${project.properties["version"]}/thirdparty/lib/"
+		url "https://github.com/rapidprom/rapidprom-libraries/raw/${project.properties["libs"]}/thirdparty/lib/"
 		layout "pattern", {
 			artifact "[module]-[revision]/[module]-[revision].[ext]"
 			ivy "[module]-[revision]/ivy-[module]-[revision].xml"
 		}
 	}
 	ivy {
-		url "https://github.com/rapidprom/rapidprom-libraries/raw/${project.properties["version"]}/thirdparty/resource/"
+		url "https://github.com/rapidprom/rapidprom-libraries/raw/${project.properties["libs"]}/thirdparty/resource/"
 		layout "pattern", {
 			artifact "[module]-[revision]/[module]-[revision].[ext]"
 			ivy "[module]-[revision]/ivy-[module]-[revision].xml"
@@ -108,7 +108,7 @@ dependencies {
 	compile "org.rapidprom:PetriNets:6.7.136"
 	compile "org.rapidprom:PNetAlignmentAnalysis:6.5.35"
 	compile "org.rapidprom:PNAnalysis:6.7.128"
-	compile "org.rapidprom:PNetReplayer:6.7.99"
+	compile "org.rapidprom:PNetReplayer:6.7.152"
 	compile "org.rapidprom:PTConversions:6.5.3"
 	compile "org.rapidprom:PomPomView:6.5.36"
 	compile "org.rapidprom:SocialNetwork:6.5.35"

@@ -10,7 +10,7 @@ import org.processmining.models.causalgraph.SimpleCausalGraph;
 import org.processmining.models.causalgraph.XEventClassifierAwareSimpleCausalGraph;
 import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.XEventClassifierAwareSimpleCausalGraphIOObject;
-import org.rapidprom.operators.abstr.AbstractRapidProMDiscoveryOperator;
+import org.rapidprom.operators.abstr.AbstractRapidProMEventLogBasedOperator;
 
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
@@ -21,7 +21,7 @@ import com.rapidminer.parameter.ParameterTypeBoolean;
 import com.rapidminer.parameter.ParameterTypeDouble;
 import com.rapidminer.tools.LogService;
 
-public class CausalGraphHeuristicsMinerOperator extends AbstractRapidProMDiscoveryOperator {
+public class CausalGraphHeuristicsMinerOperator extends AbstractRapidProMEventLogBasedOperator {
 
 	private static final String PARAM_KEY_FREQ = "frequency";
 	private static final String PARAM_DESC_FREQ = "Frequency Threshold";

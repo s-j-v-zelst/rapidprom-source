@@ -15,7 +15,7 @@ import org.processmining.plugins.transitionsystem.miner.util.TSAbstractions;
 import org.processmining.plugins.transitionsystem.miner.util.TSDirections;
 import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.TransitionSystemIOObject;
-import org.rapidprom.operators.abstr.AbstractRapidProMDiscoveryOperator;
+import org.rapidprom.operators.abstr.AbstractRapidProMEventLogBasedOperator;
 
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
@@ -27,7 +27,7 @@ import com.rapidminer.parameter.ParameterTypeCategory;
 import com.rapidminer.parameter.ParameterTypeInt;
 import com.rapidminer.tools.LogService;
 
-public class TransitionSystemMinerOperator extends AbstractRapidProMDiscoveryOperator {
+public class TransitionSystemMinerOperator extends AbstractRapidProMEventLogBasedOperator {
 
 	public static final String PARAMETER_1_KEY = "Abstraction",
 			PARAMETER_1_DESCR = "Defines the abstraction used to define a state: "

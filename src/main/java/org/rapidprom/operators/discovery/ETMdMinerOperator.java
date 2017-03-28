@@ -11,7 +11,7 @@ import org.processmining.plugins.etm.parameters.ETMParamFactory;
 import org.processmining.plugins.etm.ui.plugins.ETMwithoutGUI;
 import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.ProcessTreeIOObject;
-import org.rapidprom.operators.abstr.AbstractRapidProMDiscoveryOperator;
+import org.rapidprom.operators.abstr.AbstractRapidProMEventLogBasedOperator;
 
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
@@ -23,7 +23,7 @@ import com.rapidminer.parameter.ParameterTypeInt;
 import com.rapidminer.parameter.UndefinedParameterError;
 import com.rapidminer.tools.LogService;
 
-public class ETMdMinerOperator extends AbstractRapidProMDiscoveryOperator {
+public class ETMdMinerOperator extends AbstractRapidProMEventLogBasedOperator {
 
 	private static final String PARAMETER_1_KEY = "Population Size",
 			PARAMETER_1_DESCR = "the number of candidate process models to change and evaluate "
