@@ -59,6 +59,11 @@
                 <icon>checks.png</icon>
             </operator>
             <operator>
+                <key>boolean_conformance_checker</key>
+                <class>org.rapidprom.operators.conformance.BooleanConformanceCheckerOperator</class>
+                <icon>checks.png</icon>
+            </operator>
+            <operator>
                 <key>measure_precision</key>
                 <class>org.rapidprom.operators.conformance.MeasurePrecisionAnalysisOperator</class>
                 <icon>checks.png</icon>
@@ -176,6 +181,23 @@
                 <icon>inbox_out.png</icon>
             </operator>
         </group>
+        <group key="concept_drift">
+            <operator>
+                <key>concept_drift_1</key>
+                <class>org.rapidprom.operators.conceptdrift.DecisionPointAnalysisOperator</class>
+                <icon>hardhat.png</icon>
+            </operator>
+            <operator>
+                <key>concept_drift_qut</key>
+                <class>org.rapidprom.operators.conceptdrift.QUTDrifterOperator</class>
+                <icon>hardhat.png</icon>
+            </operator>
+            <operator>
+                <key>measure_concept_drift</key>
+                <class>org.rapidprom.operators.conceptdrift.MeasureDriftDetectionOperator</class>
+                <icon>hardhat.png</icon>
+            </operator>
+        </group>
         <group key="import">
             <operator>
                 <key>extract_log_from_file</key>
@@ -235,6 +257,10 @@
             <operator>
                 <key>timestamp_sort</key>
                 <class>org.rapidprom.operators.logmanipulation.TimestampSortOperator</class>
+            </operator>
+            <operator>
+                <key>unique_traces_calculator</key>
+                <class>org.rapidprom.operators.logmanipulation.CountUniqueTracesOperator</class>
             </operator>
         </group> 
         <group key="streams">
@@ -311,5 +337,52 @@
                 <class>org.rapidprom.operators.util.RapidProMMemoryCleanUpOperator</class>
                 <icon>wrench.png</icon>
             </operator>
+            <operator>
+                <key>rprom_count_pc_size</key>
+                <class>org.rapidprom.operators.util.PluginContextSizeOperator</class>
+                <icon>wrench.png</icon>
+            </operator>
         </group>
+        <group key="generation">
+            	<operator>
+                    <key>generate_process_tree</key>
+                    <class>org.rapidprom.operators.generation.GenerateNewickTreeOperator</class>
+                </operator>
+                <operator>
+                    <key>generate_log_from_petrinet</key>
+                    <class>org.rapidprom.operators.generation.GenerateEventLogFromPetriNetOperator</class>
+                </operator>
+                <operator>
+                    <key>generate_log_with_conceptdrift</key>
+                    <class>org.rapidprom.operators.generation.GenerateConceptDriftOperator</class>
+                </operator>
+                <operator>
+                    <key>generate_log</key>
+                    <class>org.rapidprom.operators.generation.GenerateEventLogOperator</class>
+                </operator>
+                <operator>
+                    <key>convert_newickTree_to_processTree</key>
+                    <class>org.rapidprom.operators.generation.ConvertNewickTreeToProcessTree</class>
+                </operator>
+                <operator>
+                    <key>generate_noisy_log_event</key>
+                    <class>org.rapidprom.operators.generation.GenerateNoisyLogOperator</class>
+                </operator>
+                <operator>
+                    <key>generate_noisy_log_trace</key>
+                    <class>org.rapidprom.operators.generation.GenerateNoisyLog2Operator</class>
+                </operator>
+                <operator>
+                    <key>log_cross_validation</key>
+                    <class>org.rapidprom.operators.validation.XLogKFoldCrossValidationOperator</class>
+                </operator>
+                <operator>
+                    <key>log_split</key>
+                    <class>org.rapidprom.operators.logmanipulation.SplitXLogOperator</class>
+                </operator>
+                <operator>
+                    <key>unique_paths_calculator</key>
+                    <class>org.rapidprom.operators.generation.NoUniquePathsCalculatorOperator</class>
+                </operator>
+            </group>
 </operators>
