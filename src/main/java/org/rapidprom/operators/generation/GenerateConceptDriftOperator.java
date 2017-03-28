@@ -9,11 +9,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.deckfour.xes.factory.XFactory;
+import org.deckfour.xes.factory.XFactoryBufferedImpl;
 import org.processmining.framework.plugin.PluginContext;
 import org.processmining.petrinetsimulator.algorithms.ConceptDrifter;
 import org.processmining.petrinetsimulator.constants.SettingsConstants;
 import org.processmining.petrinetsimulator.parameters.ConceptDriftSettings;
 import org.processmining.petrinetsimulator.parameters.SimulationSettings;
+import org.processmining.xeslite.lite.factory.XFactoryLiteImpl;
 import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.PetriNetIOObject;
 import org.rapidprom.ioobjects.XLogIOObject;
@@ -179,10 +182,12 @@ public class GenerateConceptDriftOperator extends Operator {
 
 		ConceptDrifter cd = null;
 		ConceptDriftSettings cds = getSettingsObject();
+		
+		XFactory factory = new XFactoryLiteImpl();
 		try {
 
 			cd = new ConceptDrifter(pNet_base.getArtifact(), pNet_base.getInitialMarking(), pNet_drift.getArtifact(),
-					pNet_drift.getInitialMarking(), cds);
+					pNet_drift.getInitialMarking(), cds, factory);
 		} catch (ObjectNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

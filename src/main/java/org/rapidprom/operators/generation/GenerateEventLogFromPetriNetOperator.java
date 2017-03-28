@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.deckfour.xes.factory.XFactory;
+import org.deckfour.xes.factory.XFactoryBufferedImpl;
 import org.deckfour.xes.model.XLog;
 import org.processmining.framework.plugin.PluginContext;
 import org.processmining.petrinetsimulator.algorithms.Simulator;
@@ -95,8 +97,9 @@ public class GenerateEventLogFromPetriNetOperator extends Operator {
 
 		Simulator sim;
 		XLog result = null;
+		XFactory factory = new XFactoryBufferedImpl();
 		try {
-			sim = new Simulator(pNet.getArtifact(), pNet.getInitialMarking(), getSettingsObject());
+			sim = new Simulator(pNet.getArtifact(), pNet.getInitialMarking(), getSettingsObject(), factory);
 			result = sim.simulate();
 		} catch (ObjectNotFoundException e) {
 			// TODO Auto-generated catch block

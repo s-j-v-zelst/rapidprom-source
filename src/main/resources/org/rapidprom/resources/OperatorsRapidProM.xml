@@ -205,6 +205,11 @@
                 <icon>box_out.png</icon>
             </operator>
             <operator>
+                <key>extract_petrinet_from_file</key>
+                <class>org.rapidprom.operators.extract.ExtractPetriNetOperator</class>
+                <icon>box_out.png</icon>
+            </operator>
+            <operator>
                 <key>import_accepting_petri_net</key>
                 <class>org.rapidprom.operators.io.ImportAcceptingPetriNetOperator</class>
                 <icon>inbox_into.png</icon>
