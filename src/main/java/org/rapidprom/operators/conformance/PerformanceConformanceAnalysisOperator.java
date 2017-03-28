@@ -38,7 +38,7 @@ import org.processmining.plugins.petrinet.replayresult.PNRepResult;
 import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.ManifestIOObject;
 import org.rapidprom.ioobjects.PetriNetIOObject;
-import org.rapidprom.operators.abstr.AbstractRapidProMDiscoveryOperator;
+import org.rapidprom.operators.abstr.AbstractRapidProMEventLogBasedOperator;
 
 import com.google.common.util.concurrent.SimpleTimeLimiter;
 import com.google.common.util.concurrent.UncheckedTimeoutException;
@@ -54,7 +54,7 @@ import com.rapidminer.tools.LogService;
 
 import javassist.tools.rmi.ObjectNotFoundException;
 
-public class PerformanceConformanceAnalysisOperator extends AbstractRapidProMDiscoveryOperator {
+public class PerformanceConformanceAnalysisOperator extends AbstractRapidProMEventLogBasedOperator {
 
 	private static final String PARAMETER_1_KEY = "Max Explored States (in Thousands)",
 			PARAMETER_1_DESCR = "The maximum number of states that are searched for a trace alignment.",

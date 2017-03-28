@@ -8,7 +8,7 @@ import org.processmining.plugins.inductiveVisualMiner.InductiveVisualMiner;
 import org.processmining.plugins.inductiveVisualMiner.InductiveVisualMiner.InductiveVisualMinerLauncher;
 import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.InductiveVisualMinerLauncherIOObject;
-import org.rapidprom.operators.abstr.AbstractRapidProMDiscoveryOperator;
+import org.rapidprom.operators.abstr.AbstractRapidProMEventLogBasedOperator;
 
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
@@ -16,7 +16,7 @@ import com.rapidminer.operator.ports.OutputPort;
 import com.rapidminer.operator.ports.metadata.GenerateNewMDRule;
 import com.rapidminer.tools.LogService;
 
-public class InductiveVisualMinerOperator extends AbstractRapidProMDiscoveryOperator {
+public class InductiveVisualMinerOperator extends AbstractRapidProMEventLogBasedOperator {
 
 	private OutputPort outputInteractiveMinerLauncher = getOutputPorts()
 			.createPort("model (ProM InteractiveVisualMiner)");

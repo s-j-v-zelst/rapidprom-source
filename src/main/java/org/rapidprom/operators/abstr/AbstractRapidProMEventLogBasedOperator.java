@@ -15,7 +15,7 @@ import com.rapidminer.operator.ports.InputPort;
 import com.rapidminer.parameter.ParameterType;
 import com.rapidminer.parameter.UndefinedParameterError;
 
-public class AbstractRapidProMDiscoveryOperator extends Operator {
+public class AbstractRapidProMEventLogBasedOperator extends Operator {
 
 	private InputPort inputXLog = getInputPorts().createPort("event log (ProM Event Log)", XLogIOObject.class);
 
@@ -24,7 +24,7 @@ public class AbstractRapidProMDiscoveryOperator extends Operator {
 	private static XEventClassifier[] PARAMETER_DEFAULT_CLASSIFIERS = new XEventClassifier[] {
 			new XEventNameClassifier() };
 
-	public AbstractRapidProMDiscoveryOperator(OperatorDescription description) {
+	public AbstractRapidProMEventLogBasedOperator(OperatorDescription description) {
 		super(description);
 		// TODO: make the precondition give a more meaningful warning if the
 		// metadata is null

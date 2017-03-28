@@ -13,7 +13,7 @@ import com.rapidminer.parameter.ParameterTypeCategory;
 import com.rapidminer.parameter.ParameterTypeDouble;
 import com.rapidminer.parameter.UndefinedParameterError;
 
-public abstract class AbstractInductiveMinerOperator extends AbstractRapidProMDiscoveryOperator {
+public abstract class AbstractInductiveMinerOperator extends AbstractRapidProMEventLogBasedOperator {
 
 	public AbstractInductiveMinerOperator(OperatorDescription description) {
 		super(description);
