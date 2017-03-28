@@ -3,6 +3,7 @@ package org.rapidprom.operators.conformance;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -47,7 +48,8 @@ import com.rapidminer.example.Attribute;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.example.table.AttributeFactory;
 import com.rapidminer.example.table.DataRowFactory;
-import com.rapidminer.example.table.MemoryExampleTable;
+import com.rapidminer.example.utils.ExampleSetBuilder;
+import com.rapidminer.example.utils.ExampleSets;
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
 import com.rapidminer.operator.UserError;
@@ -343,9 +345,9 @@ public class ConformanceAnalysisOperator extends AbstractRapidProMEventLogBasedO
 				? (Double) info.get(PNRepResult.QUEUEDSTATE) : Double.NaN;
 		values[ArrayUtils.indexOf(COLUMNS_NAMES_LOG_LEVEL, COLUMN_LL_COMPUTATION_TIME)] = reliable
 				? (Double) info.get(PNRepResult.TIME) : Double.NaN;
-		MemoryExampleTable table = new MemoryExampleTable(attributes);
+		ExampleSetBuilder table = ExampleSets.from(attributes);
 		table.addDataRow(getDataRowFactory().create(values, attributes));
-		return table.createExampleSet();
+		return table.build();
 	}
 
 	public Pair<ExampleSet, ExampleSet> constructTraceLevelStatistics(PNRepResult repResult) throws UserError {
@@ -354,13 +356,13 @@ public class ConformanceAnalysisOperator extends AbstractRapidProMEventLogBasedO
 			traceVariantAttributes[i] = AttributeFactory.createAttribute(COLUMNS_NAMES_TRACE_VARIANT_LEVEL[i],
 					COLUMN_TYPES_TRACE_VARIANT_LEVEL[i]);
 		}
-		MemoryExampleTable traceVariantTable = new MemoryExampleTable(traceVariantAttributes);
+		ExampleSetBuilder traceVariantTable = ExampleSets.from(traceVariantAttributes);
 		Attribute[] traceAttributes = new Attribute[COLUMNS_NAMES_TRACE_LEVEL.length];
 		for (int i = 0; i < traceAttributes.length; i++) {
 			traceAttributes[i] = AttributeFactory.createAttribute(COLUMNS_NAMES_TRACE_LEVEL[i],
 					COLUMN_TYPES_TRACE_LEVEL[i]);
 		}
-		MemoryExampleTable traceTable = new MemoryExampleTable(traceAttributes);
+		ExampleSetBuilder traceTable = ExampleSets.from(traceAttributes);
 		for (SyncReplayResult res : repResult) {
 			Object[] traceVariantValues = new Object[traceVariantAttributes.length];
 			Object[] traceValues = new Object[traceAttributes.length];
@@ -420,7 +422,7 @@ public class ConformanceAnalysisOperator extends AbstractRapidProMEventLogBasedO
 				traceTable.addDataRow(getDataRowFactory().create(traceInstance, traceAttributes));
 			}
 		}
-		return new Pair<ExampleSet, ExampleSet>(traceVariantTable.createExampleSet(), traceTable.createExampleSet());
+		return new Pair<ExampleSet, ExampleSet>(traceVariantTable.build(), traceTable.build());
 
 	}
 
@@ -507,7 +509,11 @@ public class ConformanceAnalysisOperator extends AbstractRapidProMEventLogBasedO
 		parameters.setNumThreads(getParameterAsInt(PARAMETER_KEY_NUM_THREADS));
 		parameters.setQueueingModel(getUIQueueingModel());
 		parameters.setAsynchronousMoveSort(getUIASyncMoveSorting());
-		parameters.setType(getUIHeuristicType());
+		AStarThread.Type heurType = getUIHeuristicType();
+		parameters.setType(heurType);
+		if (EnumSet.of(AStarThread.Type.WEIGHTED_DYNAMIC, AStarThread.Type.WEIGHTED_STATIC).contains(heurType)) {
+			parameters.setEpsilon(getParameterAsDouble(PARAMETER_KEY_WEIGHTED_EPSILON));
+		}
 
 		((CostBasedCompleteParam) parameters).setMaxNumOfStates(getParameterAsInt(PARAMETER_KEY_MAX_STATES) * 1000);
 
