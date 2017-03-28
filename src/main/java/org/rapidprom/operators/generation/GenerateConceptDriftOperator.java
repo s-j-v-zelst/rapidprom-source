@@ -193,8 +193,8 @@ public class GenerateConceptDriftOperator extends Operator {
 		fillSampleProbabilitiesOverTime(cd.getTimePoints());
 		fillSampleProbabilitiesOverTraceID(cd.getTracePoints());
 
-//		DrawUtils.printProbabilityHistogram(cd.getTimePoints(), "Time");
-//		DrawUtils.printProbabilityHistogram(cd.getTracePoints(), "Trace ID");
+		// DrawUtils.printProbabilityHistogram(cd.getTimePoints(), "Time");
+		// DrawUtils.printProbabilityHistogram(cd.getTracePoints(), "Trace ID");
 
 		logger.log(Level.INFO, "End: generating event log with concept drift ("
 				+ (System.currentTimeMillis() - time) / 1000 + " sec)");
@@ -594,7 +594,7 @@ public class GenerateConceptDriftOperator extends Operator {
 		es = table.createExampleSet();
 		output3.deliver(es);
 	}
-	
+
 	@SuppressWarnings("deprecation")
 	private void fillSampleProbabilitiesOverTraceID(List<Pair<Long, Double>> samples) {
 		ExampleSet es = null;

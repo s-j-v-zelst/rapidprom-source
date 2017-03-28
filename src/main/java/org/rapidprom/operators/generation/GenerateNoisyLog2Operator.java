@@ -12,7 +12,7 @@ import org.processmining.ptandloggenerator.plugins.Alfredo_GenerateNoisyLog;
 import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.PetriNetIOObject;
 import org.rapidprom.ioobjects.XLogIOObject;
-import org.rapidprom.operators.abstr.AbstractRapidProMDiscoveryOperator;
+import org.rapidprom.operators.abstr.AbstractRapidProMEventLogBasedOperator;
 
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
@@ -26,7 +26,7 @@ import com.rapidminer.tools.LogService;
 
 import javassist.tools.rmi.ObjectNotFoundException;
 
-public class GenerateNoisyLog2Operator extends AbstractRapidProMDiscoveryOperator {
+public class GenerateNoisyLog2Operator extends AbstractRapidProMEventLogBasedOperator {
 
 	public static final String PARAMETER_1_KEY = "Probability of Add Event",
 			PARAMETER_1_DESCR = "The probability of, for a given trace, adding an event in a random position",

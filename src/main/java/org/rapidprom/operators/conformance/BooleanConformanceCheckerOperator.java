@@ -24,7 +24,7 @@ import org.processmining.plugins.balancedconformance.observer.DataConformancePlu
 import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.PetriNetIOObject;
 import org.rapidprom.ioobjects.XLogIOObject;
-import org.rapidprom.operators.abstr.AbstractRapidProMDiscoveryOperator;
+import org.rapidprom.operators.abstr.AbstractRapidProMEventLogBasedOperator;
 
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.ExampleSet;
@@ -46,7 +46,7 @@ import com.rapidminer.tools.Ontology;
 
 import javassist.tools.rmi.ObjectNotFoundException;
 
-public class BooleanConformanceCheckerOperator extends AbstractRapidProMDiscoveryOperator {
+public class BooleanConformanceCheckerOperator extends AbstractRapidProMEventLogBasedOperator {
 
 	private static final String NAMECOL = "case id", VALUECOL = "fits model?";
 
@@ -109,12 +109,12 @@ public class BooleanConformanceCheckerOperator extends AbstractRapidProMDiscover
 
 				@Override
 				public void log(String message) {
-					//logger.log(Level.WARNING, message);
+					// logger.log(Level.WARNING, message);
 				}
 
 				@Override
 				public void log(String message, Throwable e) {
-					//logger.log(Level.SEVERE, message + ":\n" + e.toString());
+					// logger.log(Level.SEVERE, message + ":\n" + e.toString());
 				}
 
 			});

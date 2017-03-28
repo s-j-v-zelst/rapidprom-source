@@ -43,8 +43,7 @@ public class GenerateEventLogFromPetriNetOperator extends Operator {
 					+ "event log. trace uniqueness is not guaranteed.",
 			PARAMETER_2_KEY = "max activities per trace",
 			PARAMETER_2_DESCR = "the maximum number of activities that will be generated in a single trace (limit for models with loops)",
-			PARAMETER_3_KEY = "start time",
-			PARAMETER_3_DESCR = "initial time to start the simulation.",
+			PARAMETER_3_KEY = "start time", PARAMETER_3_DESCR = "initial time to start the simulation.",
 			PARAMETER_4_KEY = "index of first trace",
 			PARAMETER_4_DESCR = "this is for when you wnat to merge two simulated logs. this way, the indexes of traces can be incremental and unique.",
 			// time between arrivals
@@ -202,9 +201,9 @@ public class GenerateEventLogFromPetriNetOperator extends Operator {
 	public SimulationSettings getSettingsObject() throws OperatorException {
 
 		AbstractContinousDistribution tba = null, tbe = null;
-		RandomEngine engine = new DRand(getParameterAsInt(PARAMETER_17_KEY)); 
+		RandomEngine engine = new DRand(getParameterAsInt(PARAMETER_17_KEY));
 		System.out.println("works");
-		
+
 		switch (getParameterAsString(PARAMETER_5_KEY)) {
 		default:
 		case SettingsConstants.EXPONENTIAL:

@@ -11,7 +11,7 @@ import org.deckfour.xes.classification.XEventClassifier;
 import org.deckfour.xes.model.XEvent;
 import org.deckfour.xes.model.XLog;
 import org.deckfour.xes.model.XTrace;
-import org.rapidprom.operators.abstr.AbstractRapidProMDiscoveryOperator;
+import org.rapidprom.operators.abstr.AbstractRapidProMEventLogBasedOperator;
 
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.example.ExampleSetFactory;
@@ -21,7 +21,7 @@ import com.rapidminer.operator.ports.OutputPort;
 import com.rapidminer.operator.ports.metadata.GenerateNewMDRule;
 import com.rapidminer.tools.LogService;
 
-public class CountUniqueTracesOperator extends AbstractRapidProMDiscoveryOperator {
+public class CountUniqueTracesOperator extends AbstractRapidProMEventLogBasedOperator {
 
 	private OutputPort output = getOutputPorts().createPort("example set");
 
@@ -43,7 +43,7 @@ public class CountUniqueTracesOperator extends AbstractRapidProMDiscoveryOperato
 
 		Set<XTrace> traceSet = new TreeSet<XTrace>(new TraceComparator(getXEventClassifier()));
 		traceSet.addAll(log);
-		
+
 		outputString[0][1] = Integer.toString(traceSet.size());
 
 		ExampleSet es = ExampleSetFactory.createExampleSet(outputString);

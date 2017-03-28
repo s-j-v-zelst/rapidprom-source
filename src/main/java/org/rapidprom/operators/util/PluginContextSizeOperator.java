@@ -5,7 +5,7 @@ import java.util.logging.Logger;
 
 import org.processmining.framework.plugin.PluginContext;
 import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
-import org.rapidprom.operators.abstr.AbstractRapidProMDiscoveryOperator;
+import org.rapidprom.operators.abstr.AbstractRapidProMEventLogBasedOperator;
 
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.example.ExampleSetFactory;
@@ -15,7 +15,7 @@ import com.rapidminer.operator.ports.OutputPort;
 import com.rapidminer.operator.ports.metadata.GenerateNewMDRule;
 import com.rapidminer.tools.LogService;
 
-public class PluginContextSizeOperator extends AbstractRapidProMDiscoveryOperator {
+public class PluginContextSizeOperator extends AbstractRapidProMEventLogBasedOperator {
 
 	private OutputPort output = getOutputPorts().createPort("example set");
 

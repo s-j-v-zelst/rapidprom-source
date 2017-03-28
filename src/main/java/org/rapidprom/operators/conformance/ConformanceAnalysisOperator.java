@@ -270,7 +270,7 @@ public class ConformanceAnalysisOperator extends AbstractRapidProMEventLogBasedO
 			AttributeColumn.REGULAR, AttributeColumn.REGULAR, AttributeColumn.REGULAR, AttributeColumn.REGULAR,
 			AttributeColumn.REGULAR };
 
-	private DataRowFactory dataRowFactory = new DataRowFactory(DataRowFactory.TYPE_DOUBLE_ARRAY, '.');
+	private final DataRowFactory dataRowFactory = new DataRowFactory(DataRowFactory.TYPE_DOUBLE_ARRAY, '.');
 	private InputPort inputPN = getInputPorts().createPort("model (ProM Petri Net)", PetriNetIOObject.class);
 
 	private OutputPort outputPortLogLevelStatistics = getOutputPorts()
@@ -630,9 +630,5 @@ public class ConformanceAnalysisOperator extends AbstractRapidProMEventLogBasedO
 			}
 		}
 		return null;
-	}
-
-	public void setDataRowFactory(DataRowFactory dataRowFactory) {
-		this.dataRowFactory = dataRowFactory;
 	}
 }
