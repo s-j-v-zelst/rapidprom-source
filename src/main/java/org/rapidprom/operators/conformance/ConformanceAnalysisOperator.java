@@ -487,7 +487,7 @@ public class ConformanceAnalysisOperator extends AbstractRapidProMEventLogBasedO
 			outputPortProMObject.deliver(new PNRepResultIOObject(null, pluginContext, null, null, null));
 		}
 
-		repResult = repResult.isEmpty() ? null : repResult;
+		repResult = repResult == null || repResult.isEmpty() ? null : repResult;
 		final boolean reliable = repResult == null ? false : !containsUnreliableAlignment(repResult);
 		outputPortLogLevelStatistics.deliver(constructLogLevelStatistics(repResult, reliable));
 		Pair<ExampleSet, ExampleSet> traceStatistics = constructTraceLevelStatistics(repResult);
