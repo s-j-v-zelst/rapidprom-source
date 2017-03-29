@@ -177,20 +177,20 @@ public class AddNoiseOperator extends Operator {
 						firstTaskToSwap = t.get(indexSecondTaskToSwap);
 						secondTaskToSwap = t.get(indexFirstTaskToSwap);
 						// swap also the timestamps
-						Date firstTimestamp = XTimeExtension.instance()
-								.extractTimestamp(firstTaskToSwap);
-						Date secondTimestamp = XTimeExtension.instance()
-								.extractTimestamp(secondTaskToSwap);
+//						Date firstTimestamp = XTimeExtension.instance()
+//								.extractTimestamp(firstTaskToSwap);
+//						Date secondTimestamp = XTimeExtension.instance()
+//								.extractTimestamp(secondTaskToSwap);
 
 						for (int i = 0; i < t.size(); i++) {
 							if (i == indexFirstTaskToSwap) {
 								event = (XEvent) firstTaskToSwap.clone();
-								XTimeExtension.instance().assignTimestamp(event,
-										secondTimestamp);
+//								XTimeExtension.instance().assignTimestamp(event,
+//										secondTimestamp);
 							} else if (i == indexSecondTaskToSwap) {
 								event = (XEvent) secondTaskToSwap.clone();
-								XTimeExtension.instance().assignTimestamp(event,
-										firstTimestamp);
+//								XTimeExtension.instance().assignTimestamp(event,
+//										firstTimestamp);
 							} else {
 								event = t.get(i);
 							}
