@@ -363,64 +363,77 @@ public class ConformanceAnalysisOperator extends AbstractRapidProMEventLogBasedO
 					COLUMN_TYPES_TRACE_LEVEL[i]);
 		}
 		ExampleSetBuilder traceTable = ExampleSets.from(traceAttributes);
-		for (SyncReplayResult res : repResult) {
-			Object[] traceVariantValues = new Object[traceVariantAttributes.length];
-			Object[] traceValues = new Object[traceAttributes.length];
-			// alignment costs
-			traceVariantValues[ArrayUtils.indexOf(COLUMNS_NAMES_TRACE_VARIANT_LEVEL,
-					COLUMN_TVL_TL_ALIGNMENT_COSTS)] = traceValues[ArrayUtils.indexOf(COLUMNS_NAMES_TRACE_LEVEL,
-							COLUMN_TVL_TL_ALIGNMENT_COSTS)] = res.getInfo().get(PNRepResult.RAWFITNESSCOST);
+		if (repResult != null) {
+			for (SyncReplayResult res : repResult) {
+				Object[] traceVariantValues = new Object[traceVariantAttributes.length];
+				Object[] traceValues = new Object[traceAttributes.length];
+				// alignment costs
+				traceVariantValues[ArrayUtils.indexOf(COLUMNS_NAMES_TRACE_VARIANT_LEVEL,
+						COLUMN_TVL_TL_ALIGNMENT_COSTS)] = traceValues[ArrayUtils.indexOf(COLUMNS_NAMES_TRACE_LEVEL,
+								COLUMN_TVL_TL_ALIGNMENT_COSTS)] = res.getInfo().get(PNRepResult.RAWFITNESSCOST);
 
-			// move log
-			traceVariantValues[ArrayUtils.indexOf(COLUMNS_NAMES_TRACE_VARIANT_LEVEL,
-					COLUMN_TVL_TL_MOVE_LOG_FITNESS)] = traceValues[ArrayUtils.indexOf(COLUMNS_NAMES_TRACE_LEVEL,
-							COLUMN_TVL_TL_MOVE_LOG_FITNESS)] = res.getInfo().get(PNRepResult.MOVELOGFITNESS);
+				// move log
+				traceVariantValues[ArrayUtils.indexOf(COLUMNS_NAMES_TRACE_VARIANT_LEVEL,
+						COLUMN_TVL_TL_MOVE_LOG_FITNESS)] = traceValues[ArrayUtils.indexOf(COLUMNS_NAMES_TRACE_LEVEL,
+								COLUMN_TVL_TL_MOVE_LOG_FITNESS)] = res.getInfo().get(PNRepResult.MOVELOGFITNESS);
 
-			// move model
-			traceVariantValues[ArrayUtils.indexOf(COLUMNS_NAMES_TRACE_VARIANT_LEVEL,
-					COLUMN_TVL_TL_MOVE_MODEL_FITNESS)] = traceValues[ArrayUtils.indexOf(COLUMNS_NAMES_TRACE_LEVEL,
-							COLUMN_TVL_TL_MOVE_MODEL_FITNESS)] = res.getInfo().get(PNRepResult.MOVEMODELFITNESS);
+				// move model
+				traceVariantValues[ArrayUtils.indexOf(COLUMNS_NAMES_TRACE_VARIANT_LEVEL,
+						COLUMN_TVL_TL_MOVE_MODEL_FITNESS)] = traceValues[ArrayUtils.indexOf(COLUMNS_NAMES_TRACE_LEVEL,
+								COLUMN_TVL_TL_MOVE_MODEL_FITNESS)] = res.getInfo().get(PNRepResult.MOVEMODELFITNESS);
 
-			// reliable
-			traceVariantValues[ArrayUtils.indexOf(COLUMNS_NAMES_TRACE_VARIANT_LEVEL,
-					COLUMN_TVL_TL_RELIABLE)] = traceValues[ArrayUtils.indexOf(COLUMNS_NAMES_TRACE_LEVEL,
-							COLUMN_TVL_TL_RELIABLE)] = res.isReliable() ? (new Boolean(true)).toString()
-									: (new Boolean(false)).toString();
+				// reliable
+				traceVariantValues[ArrayUtils.indexOf(COLUMNS_NAMES_TRACE_VARIANT_LEVEL,
+						COLUMN_TVL_TL_RELIABLE)] = traceValues[ArrayUtils.indexOf(COLUMNS_NAMES_TRACE_LEVEL,
+								COLUMN_TVL_TL_RELIABLE)] = res.isReliable() ? (new Boolean(true)).toString()
+										: (new Boolean(false)).toString();
 
-			// trace fitness
-			traceVariantValues[ArrayUtils.indexOf(COLUMNS_NAMES_TRACE_VARIANT_LEVEL,
-					COLUMN_TVL_TL_TRACE_FITNESS)] = traceValues[ArrayUtils.indexOf(COLUMNS_NAMES_TRACE_LEVEL,
-							COLUMN_TVL_TL_TRACE_FITNESS)] = res.getInfo().get(PNRepResult.TRACEFITNESS);
+				// trace fitness
+				traceVariantValues[ArrayUtils.indexOf(COLUMNS_NAMES_TRACE_VARIANT_LEVEL,
+						COLUMN_TVL_TL_TRACE_FITNESS)] = traceValues[ArrayUtils.indexOf(COLUMNS_NAMES_TRACE_LEVEL,
+								COLUMN_TVL_TL_TRACE_FITNESS)] = res.getInfo().get(PNRepResult.TRACEFITNESS);
 
-			// time
-			traceVariantValues[ArrayUtils.indexOf(COLUMNS_NAMES_TRACE_VARIANT_LEVEL, COLUMN_TVL_COMPUTATION_TIME)] = res
-					.getInfo().get(PNRepResult.TIME);
+				// time
+				traceVariantValues[ArrayUtils.indexOf(COLUMNS_NAMES_TRACE_VARIANT_LEVEL,
+						COLUMN_TVL_COMPUTATION_TIME)] = res.getInfo().get(PNRepResult.TIME);
 
-			// states
-			traceVariantValues[ArrayUtils.indexOf(COLUMNS_NAMES_TRACE_VARIANT_LEVEL,
-					COLUMN_TVL_NUM_STATES_VISITED)] = res.getInfo().get(PNRepResult.NUMSTATEGENERATED);
+				// states
+				traceVariantValues[ArrayUtils.indexOf(COLUMNS_NAMES_TRACE_VARIANT_LEVEL,
+						COLUMN_TVL_NUM_STATES_VISITED)] = res.getInfo().get(PNRepResult.NUMSTATEGENERATED);
 
-			// queued
-			traceVariantValues[ArrayUtils.indexOf(COLUMNS_NAMES_TRACE_VARIANT_LEVEL, COLUMN_TVL_QUEUED_STATES)] = res
-					.getInfo().get(PNRepResult.QUEUEDSTATE);
+				// queued
+				traceVariantValues[ArrayUtils.indexOf(COLUMNS_NAMES_TRACE_VARIANT_LEVEL,
+						COLUMN_TVL_QUEUED_STATES)] = res.getInfo().get(PNRepResult.QUEUEDSTATE);
 
-			List<Integer> listArray = convertIntListToArray(res.getTraceIndex().toString());
-			traceVariantValues[ArrayUtils.indexOf(COLUMNS_NAMES_TRACE_VARIANT_LEVEL, COLUMN_TVL_TRACE_INDICES)] = res
-					.getTraceIndex().toString();
+				List<Integer> listArray = convertIntListToArray(res.getTraceIndex().toString());
+				traceVariantValues[ArrayUtils.indexOf(COLUMNS_NAMES_TRACE_VARIANT_LEVEL,
+						COLUMN_TVL_TRACE_INDICES)] = res.getTraceIndex().toString();
 
-			traceVariantValues[ArrayUtils.indexOf(COLUMNS_NAMES_TRACE_VARIANT_LEVEL, COLUMN_TVL_NUM_TRACES)] = listArray
-					.size();
+				traceVariantValues[ArrayUtils.indexOf(COLUMNS_NAMES_TRACE_VARIANT_LEVEL,
+						COLUMN_TVL_NUM_TRACES)] = listArray.size();
 
-			traceVariantTable.addDataRow(getDataRowFactory().create(traceVariantValues, traceVariantAttributes));
+				traceVariantTable.addDataRow(getDataRowFactory().create(traceVariantValues, traceVariantAttributes));
 
-			for (Integer index : listArray) {
-				// get the right trace
-				Object[] traceInstance = Arrays.copyOf(traceValues, traceValues.length);
-				traceInstance[ArrayUtils.indexOf(COLUMNS_NAMES_TRACE_LEVEL, COLUMN_TL_TRACE_INDEX)] = index;
-				traceInstance[ArrayUtils.indexOf(COLUMNS_NAMES_TRACE_LEVEL, COLUMN_TL_TRACE_ID)] = XConceptExtension
-						.instance().extractName(getXLog().get(index));
-				traceTable.addDataRow(getDataRowFactory().create(traceInstance, traceAttributes));
+				for (Integer index : listArray) {
+					// get the right trace
+					Object[] traceInstance = Arrays.copyOf(traceValues, traceValues.length);
+					traceInstance[ArrayUtils.indexOf(COLUMNS_NAMES_TRACE_LEVEL, COLUMN_TL_TRACE_INDEX)] = index;
+					traceInstance[ArrayUtils.indexOf(COLUMNS_NAMES_TRACE_LEVEL, COLUMN_TL_TRACE_ID)] = XConceptExtension
+							.instance().extractName(getXLog().get(index));
+					traceTable.addDataRow(getDataRowFactory().create(traceInstance, traceAttributes));
+				}
 			}
+		} else {
+			Object[] traceVariantValues = new Object[traceVariantAttributes.length];
+			for (int i = 0; i < traceVariantValues.length; i++) {
+				traceVariantValues[i] = Double.NaN;
+			}
+			traceVariantTable.addDataRow(getDataRowFactory().create(traceVariantValues, traceVariantAttributes));
+			Object[] traceValues = new Object[traceAttributes.length];
+			for (int i = 0; i < traceValues.length; i++) {
+				traceValues[i] = Double.NaN;
+			}
+			traceTable.addDataRow(getDataRowFactory().create(traceValues, traceAttributes));
 		}
 		return new Pair<ExampleSet, ExampleSet>(traceVariantTable.build(), traceTable.build());
 
