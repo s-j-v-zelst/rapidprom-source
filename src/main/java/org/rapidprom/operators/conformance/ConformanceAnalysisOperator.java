@@ -224,16 +224,6 @@ public class ConformanceAnalysisOperator extends AbstractRapidProMEventLogBasedO
 	private final String COLUMN_TVL_TL_TRACE_FITNESS = "trace_fitness";
 	private final String COLUMN_TVL_TRACE_INDICES = "trace_indicess";
 
-	private final int[] COLUMN_TYPES_LOG_LEVEL = new int[] { Ontology.BINOMINAL, Ontology.REAL, Ontology.REAL,
-			Ontology.REAL, Ontology.REAL, Ontology.REAL, Ontology.REAL, Ontology.REAL };
-
-	private final int[] COLUMN_TYPES_TRACE_LEVEL = new int[] { Ontology.INTEGER, Ontology.STRING, Ontology.BINOMINAL,
-			Ontology.REAL, Ontology.REAL, Ontology.REAL, Ontology.INTEGER };
-
-	private final int[] COLUMN_TYPES_TRACE_VARIANT_LEVEL = new int[] { Ontology.STRING, Ontology.INTEGER,
-			Ontology.BINOMINAL, Ontology.REAL, Ontology.REAL, Ontology.REAL, Ontology.INTEGER, Ontology.INTEGER,
-			Ontology.INTEGER, Ontology.REAL };
-
 	private final MDInteger[] COLUMNS_MISSING_LOG_LEVEL = new MDInteger[] { new MDInteger(0), new MDInteger(0),
 			new MDInteger(0), new MDInteger(0), new MDInteger(0), new MDInteger(0), new MDInteger(0),
 			new MDInteger(0) };
@@ -272,39 +262,49 @@ public class ConformanceAnalysisOperator extends AbstractRapidProMEventLogBasedO
 			AttributeColumn.REGULAR, AttributeColumn.REGULAR, AttributeColumn.REGULAR, AttributeColumn.REGULAR,
 			AttributeColumn.REGULAR };
 
+	private final int[] COLUMNS_TYPES_LOG_LEVEL = new int[] { Ontology.BINOMINAL, Ontology.REAL, Ontology.REAL,
+			Ontology.REAL, Ontology.REAL, Ontology.REAL, Ontology.REAL, Ontology.REAL };
+
+	private final int[] COLUMNS_TYPES_TRACE_LEVEL = new int[] { Ontology.INTEGER, Ontology.STRING, Ontology.BINOMINAL,
+			Ontology.REAL, Ontology.REAL, Ontology.REAL, Ontology.INTEGER };
+
+	private final int[] COLUMNS_TYPES_TRACE_VARIANT_LEVEL = new int[] { Ontology.STRING, Ontology.INTEGER,
+			Ontology.BINOMINAL, Ontology.REAL, Ontology.REAL, Ontology.REAL, Ontology.INTEGER, Ontology.INTEGER,
+			Ontology.INTEGER, Ontology.REAL };
+
 	private final DataRowFactory dataRowFactory = new DataRowFactory(DataRowFactory.TYPE_DOUBLE_ARRAY, '.');
 	private InputPort inputPN = getInputPorts().createPort("model (ProM Petri Net)", PetriNetIOObject.class);
 
+	private ExampleSetMetaData logLevelStatisticsMetaData = null;
 	private OutputPort outputPortLogLevelStatistics = getOutputPorts()
 			.createPort("example set with metrics, log level (Data Table)");
-	private ExampleSetMetaData logLevelStatisticsMetaData = null;
 
-	private OutputPort outputPortTraceVariantLevelStatistics = getOutputPorts()
-			.createPort("example set with alignment values, trace-variant level (Data Table)");
-	private ExampleSetMetaData traceVariantLevelStatisticsMetaData = null;
-
+	private OutputPort outputPortProMObject = getOutputPorts().createPort("alignments (ProM PNRepResult)");
 	private OutputPort outputPortTraceLevelStatistics = getOutputPorts()
 			.createPort("example set with alignment values, trace level (Data Table)");
 
+	private OutputPort outputPortTraceVariantLevelStatistics = getOutputPorts()
+			.createPort("example set with alignment values, trace-variant level (Data Table)");
+
 	private ExampleSetMetaData traceLevelStatisticsMetaData = null;
 
-	private OutputPort outputPortProMObject = getOutputPorts().createPort("alignments (ProM PNRepResult)");
+	private ExampleSetMetaData traceVariantLevelStatisticsMetaData = null;
 
 	public ConformanceAnalysisOperator(OperatorDescription description) {
 		super(description);
 
 		logLevelStatisticsMetaData = constructExampleSetMetaData(new ExampleSetMetaData(), COLUMNS_NAMES_LOG_LEVEL,
-				COLUMN_TYPES_LOG_LEVEL, COLUMNS_ROLES_LOG_LEVEL, COLUMNS_MISSING_LOG_LEVEL);
+				COLUMNS_TYPES_LOG_LEVEL, COLUMNS_ROLES_LOG_LEVEL, COLUMNS_MISSING_LOG_LEVEL);
 		getTransformer().addRule(new GenerateNewMDRule(outputPortLogLevelStatistics, logLevelStatisticsMetaData));
 
 		traceVariantLevelStatisticsMetaData = constructExampleSetMetaData(new ExampleSetMetaData(),
-				COLUMNS_NAMES_TRACE_VARIANT_LEVEL, COLUMN_TYPES_TRACE_VARIANT_LEVEL, COLUMNS_ROLES_TRACE_VARIANT_LEVEL,
+				COLUMNS_NAMES_TRACE_VARIANT_LEVEL, COLUMNS_TYPES_TRACE_VARIANT_LEVEL, COLUMNS_ROLES_TRACE_VARIANT_LEVEL,
 				COLUMNS_MISSING_TRACE_VARIANT_LEVEL);
 		getTransformer().addRule(
 				new GenerateNewMDRule(outputPortTraceVariantLevelStatistics, traceVariantLevelStatisticsMetaData));
 
 		traceLevelStatisticsMetaData = constructExampleSetMetaData(new ExampleSetMetaData(), COLUMNS_NAMES_TRACE_LEVEL,
-				COLUMN_TYPES_TRACE_LEVEL, COLUMNS_ROLES_TRACE_LEVEL, COLUMNS_MISSING_TRACE_LEVEL);
+				COLUMNS_TYPES_TRACE_LEVEL, COLUMNS_ROLES_TRACE_LEVEL, COLUMNS_MISSING_TRACE_LEVEL);
 		getTransformer().addRule(new GenerateNewMDRule(outputPortTraceLevelStatistics, traceLevelStatisticsMetaData));
 
 		getTransformer().addRule(new GenerateNewMDRule(outputPortProMObject, PNRepResultIOObject.class));
@@ -324,7 +324,7 @@ public class ConformanceAnalysisOperator extends AbstractRapidProMEventLogBasedO
 	public ExampleSet constructLogLevelStatistics(final PNRepResult repResult, final boolean reliable) {
 		Attribute[] attributes = new Attribute[COLUMNS_NAMES_LOG_LEVEL.length];
 		for (int i = 0; i < COLUMNS_NAMES_LOG_LEVEL.length; i++) {
-			attributes[i] = AttributeFactory.createAttribute(COLUMNS_NAMES_LOG_LEVEL[i], COLUMN_TYPES_LOG_LEVEL[i]);
+			attributes[i] = AttributeFactory.createAttribute(COLUMNS_NAMES_LOG_LEVEL[i], COLUMNS_TYPES_LOG_LEVEL[i]);
 		}
 		Object[] values = new Object[COLUMNS_NAMES_LOG_LEVEL.length];
 		Map<String, Object> info = reliable ? repResult.getInfo() : null;
@@ -354,13 +354,13 @@ public class ConformanceAnalysisOperator extends AbstractRapidProMEventLogBasedO
 		Attribute[] traceVariantAttributes = new Attribute[COLUMNS_NAMES_TRACE_VARIANT_LEVEL.length];
 		for (int i = 0; i < traceVariantAttributes.length; i++) {
 			traceVariantAttributes[i] = AttributeFactory.createAttribute(COLUMNS_NAMES_TRACE_VARIANT_LEVEL[i],
-					COLUMN_TYPES_TRACE_VARIANT_LEVEL[i]);
+					COLUMNS_TYPES_TRACE_VARIANT_LEVEL[i]);
 		}
 		ExampleSetBuilder traceVariantTable = ExampleSets.from(traceVariantAttributes);
 		Attribute[] traceAttributes = new Attribute[COLUMNS_NAMES_TRACE_LEVEL.length];
 		for (int i = 0; i < traceAttributes.length; i++) {
 			traceAttributes[i] = AttributeFactory.createAttribute(COLUMNS_NAMES_TRACE_LEVEL[i],
-					COLUMN_TYPES_TRACE_LEVEL[i]);
+					COLUMNS_TYPES_TRACE_LEVEL[i]);
 		}
 		ExampleSetBuilder traceTable = ExampleSets.from(traceAttributes);
 		if (repResult != null) {
@@ -426,17 +426,16 @@ public class ConformanceAnalysisOperator extends AbstractRapidProMEventLogBasedO
 		} else {
 			Object[] traceVariantValues = new Object[traceVariantAttributes.length];
 			for (int i = 0; i < traceVariantValues.length; i++) {
-				traceVariantValues[i] = Double.NaN;
+				traceVariantValues[i] = getNotAvailableObject(COLUMNS_TYPES_TRACE_VARIANT_LEVEL[i]);
 			}
 			traceVariantTable.addDataRow(getDataRowFactory().create(traceVariantValues, traceVariantAttributes));
 			Object[] traceValues = new Object[traceAttributes.length];
 			for (int i = 0; i < traceValues.length; i++) {
-				traceValues[i] = Double.NaN;
+				traceValues[i] = getNotAvailableObject(COLUMNS_TYPES_TRACE_LEVEL[i]);
 			}
 			traceTable.addDataRow(getDataRowFactory().create(traceValues, traceAttributes));
 		}
 		return new Pair<ExampleSet, ExampleSet>(traceVariantTable.build(), traceTable.build());
-
 	}
 
 	private boolean containsUnreliableAlignment(final PNRepResult repRes) {
@@ -543,6 +542,19 @@ public class ConformanceAnalysisOperator extends AbstractRapidProMEventLogBasedO
 
 	public DataRowFactory getDataRowFactory() {
 		return dataRowFactory;
+	}
+
+	private Object getNotAvailableObject(final int type) {
+		// hooray for using ints instead of enums!
+		if (type == Ontology.REAL) {
+			return Double.NaN;
+		} else if (type == Ontology.INTEGER) {
+			return -1;
+		} else if (type == Ontology.BINOMINAL || type == Ontology.STRING) {
+			return "";
+		} else {
+			return new Object();
+		}
 	}
 
 	public List<ParameterType> getParameterTypes() {
