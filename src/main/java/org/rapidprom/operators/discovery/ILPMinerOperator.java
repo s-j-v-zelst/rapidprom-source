@@ -1,54 +1,62 @@
 package org.rapidprom.operators.discovery;
 
-import java.util.EnumSet;
 import java.util.List;
-import java.util.Set;
 
 import org.deckfour.xes.classification.XEventClassifier;
 import org.deckfour.xes.model.XLog;
-import org.processmining.causalactivitygraph.models.CausalActivityGraph;
-import org.processmining.causalactivitygraphcreator.algorithms.DiscoverCausalActivityGraphAlgorithm;
-import org.processmining.causalactivitygraphcreator.parameters.DiscoverCausalActivityGraphParameters;
 import org.processmining.framework.plugin.PluginContext;
-import org.processmining.hybridilpminer.parameters.DiscoveryStrategy;
-import org.processmining.hybridilpminer.parameters.DiscoveryStrategyType;
-import org.processmining.hybridilpminer.parameters.LPConstraintType;
 import org.processmining.hybridilpminer.parameters.LPFilter;
 import org.processmining.hybridilpminer.parameters.LPFilterType;
 import org.processmining.hybridilpminer.parameters.XLogHybridILPMinerParametersImpl;
 import org.processmining.hybridilpminer.plugins.HybridILPMinerPlugin;
+import org.processmining.models.causalgraph.XEventClassifierAwareSimpleCausalGraph;
 import org.processmining.models.graphbased.directed.petrinet.Petrinet;
 import org.processmining.models.semantics.petrinet.Marking;
 import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.PetriNetIOObject;
-import org.rapidprom.operators.abstr.AbstractRapidProMDiscoveryOperator;
+import org.rapidprom.ioobjects.XEventClassifierAwareSimpleCausalGraphIOObject;
+import org.rapidprom.ioobjects.XLogIOObject;
 
+import com.rapidminer.operator.Operator;
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
+import com.rapidminer.operator.UserError;
+import com.rapidminer.operator.ports.InputPort;
 import com.rapidminer.operator.ports.OutputPort;
 import com.rapidminer.operator.ports.metadata.GenerateNewMDRule;
 import com.rapidminer.parameter.ParameterType;
-import com.rapidminer.parameter.ParameterTypeBoolean;
 import com.rapidminer.parameter.ParameterTypeCategory;
 import com.rapidminer.parameter.ParameterTypeDouble;
 import com.rapidminer.parameter.UndefinedParameterError;
 import com.rapidminer.parameter.conditions.EqualStringCondition;
 
-public class ILPMinerOperator extends AbstractRapidProMDiscoveryOperator {
+public class ILPMinerOperator extends Operator {
 
 	private OutputPort outputPetrinet = getOutputPorts().createPort("model (ProM Petri Net)");
 
-	private static final String PARAMETER_KEY_EAC = "enforce_emptiness_after_completion";
-	private static final String PARAMETER_DESC_EAC = "Indicates whether the net is empty after replaying the event log";
+	private InputPort inputXLog = getInputPorts().createPort("event log ", XLogIOObject.class);
 
-	private static final String PARAMETER_KEY_FILTER = "filter";
+	private InputPort inputCausalGraph = getInputPorts().createPort("causal graph",
+			XEventClassifierAwareSimpleCausalGraphIOObject.class);
+
+	// private static final String PARAMETER_KEY_EAC =
+	// "enforce_emptiness_after_completion";
+	// private static final String PARAMETER_DESC_EAC = "Indicates whether the
+	// net is empty after replaying the event log";
+
+	// private static final String PARAMETER_KEY_SINK = "find_sink";
+	// private static final String PARAMETER_DESC_SINK = "Indicates whether the
+	// miner needs to search for a sink place, only works if emptiness after
+	// completion is selected";
+
+	private static final String PARAMETER_KEY_FILTER = "Filter";
 	private static final String PARAMETER_DESC_FILTER = "We can either apply no filtering, which guarantees perfect replay-fitness, or filter using Sequence Encoding Filtering (SEF)";
 	private static final String[] PARAMETER_OPTIONS_FITLER = new String[] { LPFilterType.NONE.toString(),
 			LPFilterType.SEQUENCE_ENCODING.toString() };
 	private static final LPFilterType[] PARAMETER_REFERENCE_FILTER = new LPFilterType[] { LPFilterType.NONE,
 			LPFilterType.SEQUENCE_ENCODING };
 
-	private static final String PARAMETER_KEY_FILTER_THRESHOLD = "filter_threshold";
+	private static final String PARAMETER_KEY_FILTER_THRESHOLD = "Filter Threshold";
 	private static final String PARAMETER_DESC_FILTER_THRESHOLD = "Set the sequence encoding threshold t, for which 0 <= t <= 1.";
 
 	public ILPMinerOperator(OperatorDescription description) {
@@ -60,57 +68,53 @@ public class ILPMinerOperator extends AbstractRapidProMDiscoveryOperator {
 	public void doWork() throws OperatorException {
 		PluginContext context = RapidProMGlobalContext.instance().getPluginContext();
 		XLog log = getXLog();
-		XEventClassifier classifier = getXEventClassifier();
+		XEventClassifier classifier = getEventClassifier();
 		XLogHybridILPMinerParametersImpl params = new XLogHybridILPMinerParametersImpl(context, log, classifier);
-		params = setCausalActivityGraph(context, log, classifier, params);
-		params.setFilter(getFilter());
-		params.setLPConstraintTypes(getConstraintTypes());
-		Object[] pnAndMarking = HybridILPMinerPlugin.mine(context, log, params);
-		Petrinet pn = (Petrinet) pnAndMarking[0];
-		Marking finalMarking = null;
-		/**
-		 * If empiness after completion is enforced, make an empty final marking
-		 */
-		if (getConstraintTypes().contains(LPConstraintType.EMPTY_AFTER_COMPLETION))
-			finalMarking = new Marking();
 
-		PetriNetIOObject petrinetIOObject = new PetriNetIOObject(pn, (Marking) pnAndMarking[1], finalMarking, context);
+		params.setFindSink(true);
+		params.setFilter(getFilter());
+
+		Object[] pnAndMarking = HybridILPMinerPlugin.applyFlexHeur(context, log, getCausalGraph(), params);
+
+		PetriNetIOObject petrinetIOObject = new PetriNetIOObject((Petrinet) pnAndMarking[0], (Marking) pnAndMarking[1],
+				(Marking) pnAndMarking[2], context);
 		outputPetrinet.deliver(petrinetIOObject);
 	}
 
-	private Set<LPConstraintType> getConstraintTypes() {
-		Set<LPConstraintType> constraints = EnumSet.of(LPConstraintType.THEORY_OF_REGIONS,
-				LPConstraintType.NO_TRIVIAL_REGION);
-		if (getParameterAsBoolean(PARAMETER_KEY_EAC)) {
-			constraints.add(LPConstraintType.EMPTY_AFTER_COMPLETION);
-		}
-		return constraints;
-	}
-
-	private XLogHybridILPMinerParametersImpl setCausalActivityGraph(PluginContext context, XLog log,
-			XEventClassifier classifier, XLogHybridILPMinerParametersImpl params) {
-		DiscoverCausalActivityGraphParameters cagParameters = new DiscoverCausalActivityGraphParameters(log);
-		cagParameters.setClassifier(classifier);
-		DiscoverCausalActivityGraphAlgorithm discoCagAlgo = new DiscoverCausalActivityGraphAlgorithm();
-		CausalActivityGraph graph = discoCagAlgo.apply(context, log, cagParameters);
-		params.setDiscoveryStrategy(new DiscoveryStrategy(DiscoveryStrategyType.CAUSAL));
-		params.getDiscoveryStrategy().setCausalActivityGraphParameters(cagParameters);
-		params.getDiscoveryStrategy().setCausalActivityGraph(graph);
-		return params;
-	}
+	// private Set<LPConstraintType> getConstraintTypes() {
+	// Set<LPConstraintType> constraints =
+	// EnumSet.of(LPConstraintType.THEORY_OF_REGIONS,
+	// LPConstraintType.NO_TRIVIAL_REGION);
+	// // if (getParameterAsBoolean(PARAMETER_KEY_EAC)) {
+	// constraints.add(LPConstraintType.EMPTY_AFTER_COMPLETION);
+	// // }
+	// return constraints;
+	// }
 
 	@Override
 	public List<ParameterType> getParameterTypes() {
 		List<ParameterType> params = super.getParameterTypes();
-		addEmptinessAfterCompletionParameter(params);
+		// addEmptinessAfterCompletionParameter(params);
+
 		addFilterParameter(params);
 		return params;
 	}
 
-	private List<ParameterType> addEmptinessAfterCompletionParameter(List<ParameterType> params) {
-		params.add(new ParameterTypeBoolean(PARAMETER_KEY_EAC, PARAMETER_DESC_EAC, false));
-		return params;
-	}
+	// private List<ParameterType>
+	// addEmptinessAfterCompletionParameter(List<ParameterType> params) {
+	// ParameterTypeBoolean empty = new ParameterTypeBoolean(PARAMETER_KEY_EAC,
+	// PARAMETER_DESC_EAC, true, false);
+	// params.add(empty);
+	//
+	// ParameterTypeBoolean sink = new ParameterTypeBoolean(PARAMETER_KEY_SINK,
+	// PARAMETER_DESC_SINK, true, false);
+	// sink.setOptional(true);
+	// sink.registerDependencyCondition(new BooleanParameterCondition(this,
+	// PARAMETER_KEY_EAC, true, true));
+	// params.add(sink);
+	//
+	// return params;
+	// }
 
 	private List<ParameterType> addFilterParameter(List<ParameterType> params) {
 		params.add(new ParameterTypeCategory(PARAMETER_KEY_FILTER, PARAMETER_DESC_FILTER, PARAMETER_OPTIONS_FITLER, 0,
@@ -138,5 +142,18 @@ public class ILPMinerOperator extends AbstractRapidProMDiscoveryOperator {
 			break;
 		}
 		return filter;
+	}
+
+	protected XLog getXLog() throws UserError {
+		return ((XLogIOObject) inputXLog.getData(XLogIOObject.class)).getArtifact();
+	}
+
+	protected XEventClassifier getEventClassifier() throws UserError {
+		return getCausalGraph().getEventClassifier();
+	}
+
+	protected XEventClassifierAwareSimpleCausalGraph getCausalGraph() throws UserError {
+		return ((XEventClassifierAwareSimpleCausalGraphIOObject) inputCausalGraph
+				.getData(XEventClassifierAwareSimpleCausalGraphIOObject.class)).getArtifact();
 	}
 }
