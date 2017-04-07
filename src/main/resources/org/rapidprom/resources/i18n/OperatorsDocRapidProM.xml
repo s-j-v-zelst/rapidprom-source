@@ -202,7 +202,12 @@
       <help> Event log filter able to filter out infrequent behavior. The filter creates an automaton based on the event log and uses the threshold to filter out infrequent transitions within the automaton. Based on: Conforti, R., La Rosa, M., and, ter Hofstede, A.; Filtering Out Infrequent Behavior from Business Process Event Logs"; IEEE Transactions on Knowledge and Data Engineering, Vol 29., No 2.</help>
       <key>filter_log_automaton</key> 
   </operator>
-  
+  <operator>  
+  	<name>Matrix Filter</name>
+  	<synopsis>...</synopsis>
+  	<help>LONGER HELP</help>
+  	<key>matrix_filter</key>
+  </operator>
   
   
   
