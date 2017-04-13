@@ -1,5 +1,6 @@
 package org.rapidprom.operators.filtering;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.deckfour.xes.model.XLog;
@@ -41,7 +42,7 @@ public class SequenceFilterOperatorImpl extends AbstractFilteringOperator {
 		XLog noisyLog = getInputLogPort().getData(XLogIOObject.class).getArtifact();
 
 		SequenceFilterParameter parameters = new SequenceFilterParameter(
-				getXEventClassifier().getDefiningAttributeKeys()[0]);
+				getXEventClassifier());
 		parameters.setHighSupportPattern(getParameterAsDouble(Minimum_HighFrequentPatterns));
 		parameters.setConfHighConfRules(getParameterAsDouble(Minimum_Confidence_HighFrequentRules));
 		parameters.setSuppHighConfRules(getParameterAsDouble(Minimum_Support_HighFrequentRules));
@@ -51,7 +52,12 @@ public class SequenceFilterOperatorImpl extends AbstractFilteringOperator {
 				
 
 		PluginContext context = RapidProMGlobalContext.instance().getPluginContext();
-		getOutputLogPort().deliver(new XLogIOObject(SequenceFilterPlugin.run(context, noisyLog, parameters), context));
+		try {
+			getOutputLogPort().deliver(new XLogIOObject(SequenceFilterPlugin.run(context, noisyLog, parameters), context));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override

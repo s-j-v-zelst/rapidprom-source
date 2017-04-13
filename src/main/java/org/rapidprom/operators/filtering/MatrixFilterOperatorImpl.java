@@ -29,7 +29,7 @@ public class MatrixFilterOperatorImpl extends AbstractFilteringOperator {
 		XLog noisyLog = getInputLogPort().getData(XLogIOObject.class).getArtifact();
 
 		MatrixFilterParameter parameters = new MatrixFilterParameter(
-				getXEventClassifier().getDefiningAttributeKeys()[0]);
+				getXEventClassifier());
 		parameters.setProbabilityOfRemoval(getParameterAsDouble(PARAMETER_KEY_FILTER_THRESHOLD));
 
 		PluginContext context = RapidProMGlobalContext.instance().getPluginContext();
