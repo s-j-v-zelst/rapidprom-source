@@ -187,6 +187,11 @@
             	<class>org.rapidprom.operators.filtering.MatrixFilterOperatorImpl</class>
             	<icon>funnel.png</icon>
             </operator>
+            <operator>
+            	<key>sequence_filter</key>
+            	<class>org.rapidprom.operators.filtering.SequenceFilterOperatorImpl</class>
+            	<icon>funnel.png</icon>
+            </operator>
         </group>
         <group key="import">
             <operator>

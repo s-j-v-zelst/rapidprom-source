@@ -204,11 +204,15 @@
   </operator>
   <operator>  
   	<name>Matrix Filter</name>
-  	<synopsis>...</synopsis>
+  	<synopsis>...This Filter works based on the matrix method. More information about it will be published soon...</synopsis>
   	<help>LONGER HELP</help>
   	<key>matrix_filter</key>
   </operator>
-  
+    	<name>Sequence Filter</name>
+  	<synopsis>...This Filter works based on the Sequence Mining. More information about it will be published soon...</synopsis>
+  	<help>LONGER HELP</help>
+  	<key>sequence_filter</key>
+  </operator>
   
   
    <operator>
