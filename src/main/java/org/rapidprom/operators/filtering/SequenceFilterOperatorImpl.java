@@ -1,5 +1,6 @@
 package org.rapidprom.operators.filtering;
 
+
 import java.io.IOException;
 import java.util.List;
 
@@ -55,9 +56,8 @@ public class SequenceFilterOperatorImpl extends AbstractFilteringOperator {
 		try {
 			getOutputLogPort().deliver(new XLogIOObject(SequenceFilterPlugin.run(context, noisyLog, parameters), context));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
+		
 	}
 
 	@Override
