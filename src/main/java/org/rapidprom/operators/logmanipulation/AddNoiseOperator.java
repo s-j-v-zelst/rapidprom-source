@@ -159,7 +159,7 @@ public class AddNoiseOperator extends Operator {
 			// add event
 			int pos = safeNextInt(noiseRandom, t.size());
 
-			System.out.println("Pos: " + pos);
+			//System.out.println("Pos: " + pos);
 
 			// get the previous event to check for timestamp
 			Date lowb = (pos != 0) ? XTimeExtension.instance()

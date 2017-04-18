@@ -684,7 +684,14 @@
         <help> This operator tries to free the memory used by RapidProM (and also Rapid Miner itself). It does so by clearing the Plugin Context object (which is originating from the ProM framework, i.e., the base of RapidProM)</help>
         <key>rprom_free_memory</key>
     </operator>
-    
+
+    <operator>
+        <name>Select Default XFactory</name>
+        <synopsis>Select the default XFactory that is used to create event logs.</synopsis>
+        <help>Select the default XFactory that is used to create event logs.</help>
+        <key>select_xlog_factoryy</key>
+    </operator>
+        
     <operator>
         <name>Creates a Transitions and Event Classes Mapping</name>
         <synopsis>Converts an example set with columns 'transition', 'eventclass' to a ProM mapping.</synopsis>
@@ -692,5 +699,46 @@
         <key>create_transevmapping</key>
     </operator>
     
-	
+    <operator>
+        <name>GED between Causal nets</name>
+        <synopsis>Compute the graph edit distance between two Causal nets.</synopsis>
+        <help>Compute the graph edit distance between two Causal nets based on the approach published in: Dijkman, Remco, Marlon Dumas, and Luciano Garcia-Banuelos. Graph matching algorithms for business process model similarity search. BPM 2009</help>
+        <key>ged_causal_net</key>
+    </operator>
+    
+    <operator>
+        <name>GED between Petri nets</name>
+        <synopsis>Compute the graph edit distance between two Petri nets.</synopsis>
+        <help>Compute the graph edit distance between two Petri nets based on the approach published in: Dijkman, Remco, Marlon Dumas, and Luciano Garcia-Banuelos. Graph matching algorithms for business process model similarity search. BPM 2009</help>
+        <key>ged_causal_net</key>
+    </operator>    
+    
+    <operator>
+        <name>GED between Petri nets</name>
+        <synopsis>Compute the graph edit distance between two Petri nets.</synopsis>
+        <help>Compute the graph edit distance between two Petri nets based on the approach published in: Dijkman, Remco, Marlon Dumas, and Luciano Garcia-Banuelos. Graph matching algorithms for business process model similarity search. BPM 2009</help>
+        <key>ged_causal_net</key>
+    </operator>
+
+    <operator>
+        <name>Causal net to Petri net</name>
+        <synopsis>Converts a Causal net into a Petri net representation.</synopsis>
+        <help>Converts a Causal net into a Petri net representation.</help>
+        <key>convert_causal_net_into_petri_net</key>
+    </operator>
+
+    <operator>
+        <name>Export Causal net</name>
+        <synopsis>Exports a Causal net to a XML file.</synopsis>
+        <help>Exports a Causal net to a XML file..</help>
+        <key>export_causal_net</key>
+    </operator>
+    
+    <operator>
+        <name>Import Causal net</name>
+        <synopsis>Imports a Causal net from a file.</synopsis>
+        <help>Imports a Causal net from a file.</help>
+        <key>import_causal_net</key>
+    </operator>
+                	
 </operatorHelp>

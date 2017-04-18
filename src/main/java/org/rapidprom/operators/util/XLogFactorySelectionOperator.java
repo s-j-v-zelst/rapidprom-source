@@ -23,13 +23,13 @@ import com.rapidminer.parameter.ParameterTypeCategory;
  */
 public class XLogFactorySelectionOperator extends Operator {
 
-	private final static String PARAMETER_KEY_IMPORTER = "importer";
-	private final static String PARAMETER_DESC_IMPORTER = "Select the implementing importer, importers differ in terms of performance: "
-			+ "The \"Naive\" importer loads the Log completely in memory (faster, but more memory usage). "
-			+ "The \"Buffered by MAPDB\" importer loads only log, trace and event ids, "
+	private final static String PARAMETER_KEY_IMPORTER = "Default Factory";
+	private final static String PARAMETER_DESC_IMPORTER = "Select the default factory to create event log. Factories differ in terms of performance: "
+			+ "The \"Naive\" factory loads the Log completely in memory (faster, but more memory usage). "
+			+ "The \"Buffered by MAPDB\" factory loads only log, trace and event ids, "
 			+ "and the rest of the data (mainly attribute values) are stored in disk by MapDB "
 			+ "(slower, but less memory usage). "
-			+ "The \"Lightweight & Sequential IDs\" importer is a balance between the \"Naive\" and the \"Buffered by MapDB\" importers";
+			+ "The \"Lightweight & Sequential IDs\" factory is a balance between the \"Naive\" and the \"Buffered by MapDB\" importers";
 
 	private final static ImplementingPlugin[] PARAMETER_OPTIONS_IMPORTER = EnumSet.allOf(ImplementingPlugin.class)
 			.toArray(new ImplementingPlugin[EnumSet.allOf(ImplementingPlugin.class).size()]);
