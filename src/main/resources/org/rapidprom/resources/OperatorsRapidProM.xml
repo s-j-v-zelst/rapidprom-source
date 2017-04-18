@@ -7,6 +7,11 @@
                 <icon>magnifying_glass.png</icon>
             </operator>
             <operator>
+            	<key>complexity_metrics_petri_net</key>
+            	<class>org.rapidprom.operators.analysis.PetriNetMetricsOperatorImpl</class>
+            	<icon>magnifying_glass.png</icon>
+            </operator>
+            <operator>
                 <key>show_pompom_view</key>
                 <class>org.rapidprom.operators.analysis.ShowPomPomViewOperator</class>
                 <icon>magnifying_glass.png</icon>
@@ -30,7 +35,7 @@
                 <key>reduce_petrinet</key>
                 <class>org.rapidprom.operators.analysis.MurataReductionOperator</class>
                 <icon>magnifying_glass.png</icon>
-            </operator>    
+            </operator>
             <operator>
                 <key>perform_predictions_of_business_process_features</key>
                 <class>org.rapidprom.operators.analysis.FeaturePredictionAnalysisOperator</class>
@@ -155,6 +160,11 @@
             <operator>
                 <key>alpha_miner</key>
                 <class>org.rapidprom.operators.discovery.AlphaMinerOperator</class>
+                <icon>hardhat.png</icon>
+            </operator>
+            <operator>
+                <key>discover_causal_graph_fhm</key>
+                <class>org.rapidprom.operators.discovery.CausalGraphHeuristicsMinerOperator</class>
                 <icon>hardhat.png</icon>
             </operator>
             <operator>
