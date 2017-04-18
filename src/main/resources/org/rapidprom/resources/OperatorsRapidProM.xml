@@ -173,6 +173,11 @@
                 <icon>hardhat.png</icon>
             </operator>
             <operator>
+                <key>dataaware_heuristic_miner</key>
+                <class>org.rapidprom.operators.discovery.DataAwareHeuristicMinerOperator</class>
+                <icon>hardhat.png</icon>
+            </operator>
+            <operator>
                 <key>mine_petri_net_with_inductive_miner</key>
                 <class>org.rapidprom.operators.discovery.InductiveMinerPNOperator</class>
                 <icon>hardhat.png</icon>

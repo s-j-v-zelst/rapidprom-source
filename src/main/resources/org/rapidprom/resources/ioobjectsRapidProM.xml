@@ -110,6 +110,13 @@
 		reportable="true">
 		<renderer>org.rapidprom.ioobjectrenderers.HeuristicsNetIOObjectRenderer</renderer>
 	</ioobject>
+
+	<ioobject
+		name="CausalNetProM"
+		class="org.rapidprom.ioobjects.CausalNetIOObject"
+		reportable="true">
+		<renderer>org.rapidprom.ioobjectrenderers.CausalNetIOObjectRenderer</renderer>
+	</ioobject>
 	
 	<ioobject
 		name="ProcessTreeProM"
