@@ -1,7 +1,6 @@
 package org.rapidprom.operators.analysis;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.processmining.pnanalysis.metrics.impl.PetriNetCardosoMetric;
@@ -17,7 +16,6 @@ import org.rapidprom.ioobjects.PetriNetIOObject;
 
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.table.AttributeFactory;
-import com.rapidminer.example.table.DataRow;
 import com.rapidminer.example.table.DataRowFactory;
 import com.rapidminer.example.table.MemoryExampleTable;
 import com.rapidminer.operator.Operator;

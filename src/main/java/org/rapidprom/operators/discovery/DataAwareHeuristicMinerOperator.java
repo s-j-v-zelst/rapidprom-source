@@ -15,7 +15,6 @@ import org.processmining.dataawarecnetminer.mining.classic.HeuristicCausalNetMin
 import org.processmining.dataawarecnetminer.mining.classic.HeuristicsCausalGraphMiner;
 import org.processmining.dataawarecnetminer.mining.classic.HeuristicCausalNetMiner.CausalNetConfig;
 import org.processmining.dataawarecnetminer.mining.classic.HeuristicsCausalGraphBuilder.HeuristicsConfig;
-import org.processmining.dataawarecnetminer.model.DataAwareCausalGraph;
 import org.processmining.dataawarecnetminer.model.DataRelationStorage;
 import org.processmining.dataawarecnetminer.model.DependencyAwareCausalGraph;
 import org.processmining.dataawarecnetminer.model.EventRelationStorage;
@@ -27,7 +26,6 @@ import org.processmining.models.cnet.CausalNet;
 import org.rapidprom.exceptions.ExampleSetReaderException;
 import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.CausalNetIOObject;
-import org.rapidprom.ioobjects.HeuristicsNetIOObject;
 import org.rapidprom.operators.abstr.AbstractRapidProMDiscoveryOperator;
 
 import com.google.common.collect.ImmutableSet;
@@ -53,8 +51,9 @@ import com.rapidminer.parameter.UndefinedParameterError;
 import com.rapidminer.tools.Ontology;
 
 /**
- * 
- * 
+ * Data-aware Heuristic Miner, a technique to discover Causal nets based on the
+ * heuristics miner algorithm and classification techniques that reveal
+ * interesting infrequent behavior.
  * 
  * @author F. Mannhardt
  *
@@ -80,24 +79,24 @@ public class DataAwareHeuristicMinerOperator extends AbstractRapidProMDiscoveryO
 			PARAMETER_ACCEPTED_CONNECTED = "Heuristic: Connect accepted",
 			PARAMETER_ACCEPTED_CONNECTED_DESCR = "Force every task that is included in the initial dependency graph to have at least one input and one output arc.",
 			PARAMETER_OBSERVATION_THRESHOLD = "Heuristic: Frequency of observation",
-			PARAMETER_OBSERVATION_THRESHOLD_DESCR = "",
-			PARAMETER_BINDINGS_THRESHOLD = "Heuristic: Binding threshold",
+			PARAMETER_OBSERVATION_THRESHOLD_DESCR = "", PARAMETER_BINDINGS_THRESHOLD = "Heuristic: Binding threshold",
 			PARAMETER_BINDINGS_THRESHOLD_DESCR = "Strength of input and output binding to be considered for the heuristic discovery of C-net bindings.",
 			PARAMETER_CONDITION_THRESHOLD = "Data: Condition",
 			PARAMETER_CONDITION_THRESHOLD_DESCR = "Strength of the data conditions that are considered.";
 
 	private static final String ATTRIBUTE_COLUMN = "attribute";
 
-	private static final String PARAMETER_BOOLEAN_SPLIT = "Data: Boolean splits", 
-			PARAMETER_BOOLEAN_SPLIT_DESCR = "",
+	private static final String PARAMETER_USE_DATA = "Activate Data-driven Discovery",
+			PARAMETER_USE_DATA_DESCR = "Activate the data-aware discovery of Causal nets as described in the CAiSE 2017 paper.",
+			PARAMETER_BOOLEAN_SPLIT = "Data: Boolean splits",
+			PARAMETER_BOOLEAN_SPLIT_DESCR = "Force binary splits in the decision tree induction.",
 			PARAMETER_CONFIDENCE_THRESHOLD = "Data: Confidence for pruning",
-			PARAMETER_CONFIDENCE_THRESHOLD_DESCR = "", 
+			PARAMETER_CONFIDENCE_THRESHOLD_DESCR = "Pruning confidence parameter for C4.5 induction.",
 			PARAMETER_CROSSVALIDATE = "Data: Cross validation",
 			PARAMETER_CROSSVALIDATE_DESCR = "Activate 10-times 10-fold stratified cross validation to estimate the quality of data conditions.",
 			PARAMETER_MIN_PERCENTAGE_LEAF = "Data: Minimum percentage of instances",
 			PARAMETER_MIN_PERCENTAGE_LEAF_DESCR = "The minimum percentage of instances per leaf for the decision tree.",
-			PARAMETER_UNPRUNED = "Data: Unpruned tree", 
-			PARAMETER_UNPRUNED_DESCR = "", 
+			PARAMETER_UNPRUNED = "Data: Unpruned tree", PARAMETER_UNPRUNED_DESCR = "",
 			PARAMETER_WEIGHTS = "Data: Use weights",
 			PARAMETER_WEIGHTS_DESCR = "Minimize memory usage by using weighted instances. Beneficial for a small set of categorical attributes.";
 
@@ -113,7 +112,7 @@ public class DataAwareHeuristicMinerOperator extends AbstractRapidProMDiscoveryO
 		amd1.setNumberOfMissingValues(new MDInteger(0));
 		metaData.addAttribute(amd1);
 		inputAttributeSelection.addPrecondition(new SimplePrecondition(inputAttributeSelection, metaData, false));
-		getTransformer().addRule(new GenerateNewMDRule(outputCausalNet, HeuristicsNetIOObject.class));
+		getTransformer().addRule(new GenerateNewMDRule(outputCausalNet, CausalNetIOObject.class));
 	}
 
 	public void doWork() throws OperatorException {
@@ -228,20 +227,23 @@ public class DataAwareHeuristicMinerOperator extends AbstractRapidProMDiscoveryO
 
 		EventRelationStorage eventRelations = EventRelationStorage.Factory.createEventRelations(log, classifier,
 				executor);
-		DataRelationStorage dataRelations = DataRelationStorage.Factory.createDataRelations(eventRelations,
-				attributeTypes, selectedAttributes, executor);
-		dataRelations.setDataDiscoveryConfig(discoveryConfig);
 
 		HeuristicsCausalGraphMiner miner = new HeuristicsCausalGraphMiner(eventRelations);
 		miner.setHeuristicsConfig(heuristicConfig);
 		DependencyAwareCausalGraph dependencyGraph = miner.mineCausalGraph();
 
-		DataAwareCausalGraphBuilder dataBuilder = new DataAwareCausalGraphBuilder(eventRelations, dataRelations, dataConfig);
-		DataAwareCausalGraph dataAwareGraph = dataBuilder.build(dependencyGraph, executor);
+		if (getParameterAsBoolean(PARAMETER_USE_DATA)) {
+			DataRelationStorage dataRelations = DataRelationStorage.Factory.createDataRelations(eventRelations,
+					attributeTypes, selectedAttributes, executor);
+			dataRelations.setDataDiscoveryConfig(discoveryConfig);
+			DataAwareCausalGraphBuilder dataBuilder = new DataAwareCausalGraphBuilder(eventRelations, dataRelations,
+					dataConfig);
+			dependencyGraph = dataBuilder.build(dependencyGraph, executor);
+		}
 
 		HeuristicCausalNetMiner causalNetMiner = new HeuristicCausalNetMiner(eventRelations);
 		causalNetMiner.setConfig(netConfig);
-		FrequencyAwareCausalNet causalNet = causalNetMiner.mineCausalNet(dataAwareGraph, executor);
+		FrequencyAwareCausalNet causalNet = causalNetMiner.mineCausalNet(dependencyGraph, executor);
 
 		return causalNet.getCNet();
 	}
@@ -256,10 +258,6 @@ public class DataAwareHeuristicMinerOperator extends AbstractRapidProMDiscoveryO
 		ParameterTypeDouble parameter2 = new ParameterTypeDouble(PARAMETER_DEPENDENCY_THRESHOLD,
 				PARAMETER_DEPENDENCY_THRESHOLD_DESCR, 0, 1, 0.9);
 		parameterTypes.add(parameter2);
-
-		ParameterTypeDouble parameterCond = new ParameterTypeDouble(PARAMETER_CONDITION_THRESHOLD,
-				PARAMETER_CONDITION_THRESHOLD_DESCR, 0, 1, 0.5);
-		parameterTypes.add(parameterCond);
 
 		ParameterTypeDouble parameterBind = new ParameterTypeDouble(PARAMETER_BINDINGS_THRESHOLD,
 				PARAMETER_BINDINGS_THRESHOLD_DESCR, 0, 1, 0.1);
@@ -288,6 +286,14 @@ public class DataAwareHeuristicMinerOperator extends AbstractRapidProMDiscoveryO
 		ParameterTypeBoolean parameter8 = new ParameterTypeBoolean(PARAMETER_ACCEPTED_CONNECTED,
 				PARAMETER_ACCEPTED_CONNECTED_DESCR, true);
 		parameterTypes.add(parameter8);
+
+		ParameterTypeBoolean parameterData = new ParameterTypeBoolean(PARAMETER_USE_DATA, PARAMETER_USE_DATA_DESCR,
+				true);
+		parameterTypes.add(parameterData);
+
+		ParameterTypeDouble parameterCond = new ParameterTypeDouble(PARAMETER_CONDITION_THRESHOLD,
+				PARAMETER_CONDITION_THRESHOLD_DESCR, 0, 1, 0.5);
+		parameterTypes.add(parameterCond);
 
 		ParameterTypeDouble parameter13 = new ParameterTypeDouble(PARAMETER_MIN_PERCENTAGE_LEAF,
 				PARAMETER_MIN_PERCENTAGE_LEAF_DESCR, 0, 1, 0.1);

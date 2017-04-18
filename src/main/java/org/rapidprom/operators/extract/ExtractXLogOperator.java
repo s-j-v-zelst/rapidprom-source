@@ -15,6 +15,7 @@ import org.processmining.xeslite.plugin.OpenLogFileDiskImplPlugin;
 import org.processmining.xeslite.plugin.OpenLogFileDiskImplWithoutCachePlugin;
 import org.processmining.xeslite.plugin.OpenLogFileDiskMemoryStoreImpl;
 import org.processmining.xeslite.plugin.OpenLogFileDiskSequentialAccessImplPlugin;
+import org.processmining.xeslite.plugin.OpenLogFileDiskSequentialAccessImplWithoutCachePlugin;
 import org.processmining.xeslite.plugin.OpenLogFileLiteImplPlugin;
 import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.XLogIOObject;
@@ -148,7 +149,7 @@ public class ExtractXLogOperator extends AbstractRapidProMExtractorOperator<XLog
 	
 	private static XLog importXESLiteMapDBSequential(File file) throws Exception {
 		XLog result = null;
-		AbstractOpenXESFilePlugin plugin = new OpenLogFileDiskSequentialAccessImplPlugin();
+		AbstractOpenXESFilePlugin plugin = new OpenLogFileDiskSequentialAccessImplWithoutCachePlugin();
 		result = (XLog) plugin.importFile(
 				RapidProMGlobalContext.instance().getFutureResultAwarePluginContext(OpenLogFileDiskImplPlugin.class),
 				file);

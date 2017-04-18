@@ -12,6 +12,16 @@
             	<icon>magnifying_glass.png</icon>
             </operator>
             <operator>
+            	<key>ged_causal_net</key>
+            	<class>org.rapidprom.operators.analysis.GEDCausalNetsOperator</class>
+            	<icon>magnifying_glass.png</icon>
+            </operator>
+            <operator>
+            	<key>ged_petri_net</key>
+            	<class>org.rapidprom.operators.analysis.GEDPetriNetsOperator</class>
+            	<icon>magnifying_glass.png</icon>
+            </operator>
+            <operator>
                 <key>show_pompom_view</key>
                 <class>org.rapidprom.operators.analysis.ShowPomPomViewOperator</class>
                 <icon>magnifying_glass.png</icon>
@@ -146,6 +156,11 @@
                 <icon>objects_transform.png</icon>
             </operator> 
             <operator>
+                <key>convert_causal_net_into_petri_net</key>
+                <class>org.rapidprom.operators.conversion.CausalNetToPetriNetConversionOperator</class>
+                <icon>objects_transform.png</icon>
+            </operator> 
+            <operator>
                 <key>convert_process_tree_to_petri_net</key>
                 <class>org.rapidprom.operators.conversion.ProcessTreeToPetriNetConversionOperator</class>
                 <icon>objects_transform.png</icon>
@@ -230,6 +245,11 @@
                 <icon>inbox_out.png</icon>
             </operator>
             <operator>
+                <key>export_causal_net</key>
+                <class>org.rapidprom.operators.io.ExportCausalNetOperator</class>
+                <icon>inbox_out.png</icon>
+            </operator>
+            <operator>
                 <key>export_log</key>
                 <class>org.rapidprom.operators.io.ExportXLogOperator</class>
                 <icon>inbox_out.png</icon>
@@ -264,6 +284,11 @@
             <operator>
                 <key>import_data_petri_net</key>
                 <class>org.rapidprom.operators.io.ImportDataPetriNetOperator</class>
+                <icon>inbox_into.png</icon>
+            </operator>
+            <operator>
+                <key>import_causal_net</key>
+                <class>org.rapidprom.operators.io.ImportCausalNetOperator</class>
                 <icon>inbox_into.png</icon>
             </operator>
             <operator>
@@ -441,6 +466,11 @@
             <operator>
                 <key>rprom_free_memory</key>
                 <class>org.rapidprom.operators.util.RapidProMMemoryCleanUpOperator</class>
+                <icon>wrench.png</icon>
+            </operator>
+            <operator>
+                <key>select_xlog_factory</key>
+                <class>org.rapidprom.operators.util.XLogFactorySelectionOperator</class>
                 <icon>wrench.png</icon>
             </operator>
         </group>

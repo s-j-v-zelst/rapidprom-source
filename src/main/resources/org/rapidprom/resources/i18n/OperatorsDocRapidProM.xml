@@ -278,7 +278,14 @@
     <synopsis>This operator discovers a causal graph, based on the Flexible Heuristics Miner.</synopsis>
     <help>This operator discovers a causal graph, based on the Flexible Heuristics Miner as described in:  Weijters, A. J. M. M., and J. T. S. Ribeiro. "Flexible heuristics miner (FHM)." Computational Intelligence and Data Mining (CIDM), 2011 IEEE Symposium on. IEEE, 2011. </help>
     <key>discover_causal_graph_fhm</key>
-  </operator> 	
+  </operator>
+
+  <operator>
+    <name>Data-aware Heuristic Miner (Causal net)</name>
+    <synopsis>This operator discovers a causal net (C-net), based on the Data-aware Heuristic Miner.</synopsis>
+    <help>This operator discovers a causal net (C-net), based on the Data-aware Heuristic Miner as described in: TODO </help>
+    <key>dataaware_heuristic_miner</key>
+  </operator>  
   
   <operator>
         <name>ILP Miner (Petri Net)</name>
