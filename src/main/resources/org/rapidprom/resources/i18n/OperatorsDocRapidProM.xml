@@ -413,6 +413,13 @@
   		<key>complexity_metrics_petri_net</key>
   	</operator>
   	
+  	<operator>
+  		<name>Compute Prefix Alignments (Incremental)</name>
+  		<synopsis>Computes all prefix alignments of all traces in an incremental fashion</synopsis>
+  		<help>...</help>
+  		<key>incremental_prefix_alignments</key>
+  	</operator>
+  	
   	<!-- STREAMS -->
     <operator>
         <name>Generate Event Stream from CPN</name>

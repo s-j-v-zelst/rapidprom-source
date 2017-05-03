@@ -105,6 +105,7 @@ dependencies {
 	compile "org.rapidprom:LogProjection:6.5.38"
 	compile "org.rapidprom:ModelRepair:6.5.12"
 	compile "org.rapidprom:Murata:6.5.54"
+	compile "org.rapidprom:OnlineConformance:6.7.99"
 	compile "org.rapidprom:PetriNets:6.7.136"
 	compile "org.rapidprom:PetriNetSimulator:6.7.19"
 	compile "org.rapidprom:PNetAlignmentAnalysis:6.5.35"

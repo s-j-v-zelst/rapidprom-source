@@ -78,6 +78,11 @@
             	<class>org.rapidprom.operators.conformance.ETCPrecisionOperator</class>
             	<icon>checks.png</icon>
             </operator>
+            <operator>
+            	<key>incremental_prefix_alignments</key>
+            	<class>org.rapidprom.operators.conformance.IncrementalAlignmentOperator</class>
+            	<icon>checks.png</icon>
+            </operator>
         </group>
         <group key="conversion">
             <operator>
