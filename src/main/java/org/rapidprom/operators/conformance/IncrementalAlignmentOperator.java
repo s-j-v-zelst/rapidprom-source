@@ -59,9 +59,9 @@ public class IncrementalAlignmentOperator extends AbstractRapidProMEventLogBased
 
 	private ExampleSetMetaData alignmentsMetaData = null;
 
+	// some columns not used for paper experiment efficiency!
 	private final String COLUMN_NAME_AVG_QUEUE_SIZE = "average_queue_size";
 	private final String COLUMN_NAME_COST = "cost";
-
 	private final String COLUMN_NAME_COST_DELTA = "cost_delta";
 	private final String COLUMN_NAME_ENQUEUED_NODES = "enqueued_nodes";
 	private final String COLUMN_NAME_PREFIX = "prefix";
@@ -71,23 +71,22 @@ public class IncrementalAlignmentOperator extends AbstractRapidProMEventLogBased
 	private final String COLUMN_NAME_TRACE = "trace";
 	private final String COLUMN_NAME_TRACE_FREQ = "trace_freq";
 	private final String COLUMN_NAME_VISITED_NODES = "visited_nodes";
-	private final MDInteger[] COLUMNS_MISSING_ALIGNMENT_TABLE = new MDInteger[] { new MDInteger(0), new MDInteger(0),
-			new MDInteger(0), new MDInteger(0), new MDInteger(0), new MDInteger(0), new MDInteger(0), new MDInteger(0),
-			new MDInteger(0), new MDInteger(0), new MDInteger(0) };
+	private final String COLUMN_NAME_TRAVERSED_EDGES = "traversed_edges";
 
-	private final String[] COLUMNS_NAMES_ALIGNMENT_TABLE = new String[] { COLUMN_NAME_TRACE, COLUMN_NAME_TRACE_FREQ,
-			COLUMN_NAME_PREFIX, COLUMN_NAME_PREFIX_LENGTH, COLUMN_NAME_PREFIX_ALIGNMENT, COLUMN_NAME_COST,
-			COLUMN_NAME_COST_DELTA, COLUMN_NAME_ENQUEUED_NODES, COLUMN_NAME_VISITED_NODES, COLUMN_NAME_AVG_QUEUE_SIZE,
-			COLUMN_NAME_SEARCH_TIME };
+	private final MDInteger[] COLUMNS_MISSING_ALIGNMENT_TABLE = new MDInteger[] { new MDInteger(0), new MDInteger(0),
+			new MDInteger(0), new MDInteger(0), new MDInteger(0), new MDInteger(0), new MDInteger(0),
+			new MDInteger(0) };
+
+	private final String[] COLUMNS_NAMES_ALIGNMENT_TABLE = new String[] { COLUMN_NAME_PREFIX_LENGTH, COLUMN_NAME_COST,
+			COLUMN_NAME_COST_DELTA, COLUMN_NAME_ENQUEUED_NODES, COLUMN_NAME_VISITED_NODES, COLUMN_NAME_TRAVERSED_EDGES,
+			COLUMN_NAME_AVG_QUEUE_SIZE, COLUMN_NAME_SEARCH_TIME };
 
 	private final String[] COLUMNS_ROLES_ALIGNMENT_TABLE = new String[] { AttributeColumn.REGULAR,
 			AttributeColumn.REGULAR, AttributeColumn.REGULAR, AttributeColumn.REGULAR, AttributeColumn.REGULAR,
-			AttributeColumn.REGULAR, AttributeColumn.REGULAR, AttributeColumn.REGULAR, AttributeColumn.REGULAR,
-			AttributeColumn.REGULAR, AttributeColumn.REGULAR };
+			AttributeColumn.REGULAR, AttributeColumn.REGULAR, AttributeColumn.REGULAR };
 
-	private final int[] COLUMNS_TYPES_ALIGNMENT_TABLE = new int[] { Ontology.STRING, Ontology.INTEGER, Ontology.STRING,
-			Ontology.INTEGER, Ontology.STRING, Ontology.REAL, Ontology.REAL, Ontology.INTEGER, Ontology.INTEGER,
-			Ontology.REAL, Ontology.INTEGER };
+	private final int[] COLUMNS_TYPES_ALIGNMENT_TABLE = new int[] { Ontology.INTEGER, Ontology.REAL, Ontology.REAL,
+			Ontology.INTEGER, Ontology.INTEGER, Ontology.INTEGER, Ontology.REAL, Ontology.INTEGER };
 
 	private final DataRowFactory dataRowFactory = new DataRowFactory(DataRowFactory.TYPE_DOUBLE_ARRAY, '.');
 
@@ -123,14 +122,18 @@ public class IncrementalAlignmentOperator extends AbstractRapidProMEventLogBased
 		for (String trace : replayResult.keySet()) {
 			for (MeasurementAwarePartialAlignment<String, Transition, Marking> alignment : replayResult.get(trace)) {
 				Object[] row = new Object[attributes.length];
-				row[ArrayUtils.indexOf(COLUMNS_NAMES_ALIGNMENT_TABLE, COLUMN_NAME_TRACE)] = trace;
-				row[ArrayUtils.indexOf(COLUMNS_NAMES_ALIGNMENT_TABLE, COLUMN_NAME_TRACE_FREQ)] = traceCount.get(trace);
-				row[ArrayUtils.indexOf(COLUMNS_NAMES_ALIGNMENT_TABLE, COLUMN_NAME_PREFIX)] = StringUtils
-						.join(alignment.projectOnLabels(), ",");
+				// row[ArrayUtils.indexOf(COLUMNS_NAMES_ALIGNMENT_TABLE,
+				// COLUMN_NAME_TRACE)] = trace;
+				// row[ArrayUtils.indexOf(COLUMNS_NAMES_ALIGNMENT_TABLE,
+				// COLUMN_NAME_TRACE_FREQ)] = traceCount.get(trace);
+				// row[ArrayUtils.indexOf(COLUMNS_NAMES_ALIGNMENT_TABLE,
+				// COLUMN_NAME_PREFIX)] = StringUtils
+				// .join(alignment.projectOnLabels(), ",");
 				row[ArrayUtils.indexOf(COLUMNS_NAMES_ALIGNMENT_TABLE, COLUMN_NAME_PREFIX_LENGTH)] = alignment
 						.projectOnLabels().size();
-				row[ArrayUtils.indexOf(COLUMNS_NAMES_ALIGNMENT_TABLE, COLUMN_NAME_PREFIX_ALIGNMENT)] = alignment
-						.toString();
+				// row[ArrayUtils.indexOf(COLUMNS_NAMES_ALIGNMENT_TABLE,
+				// COLUMN_NAME_PREFIX_ALIGNMENT)] = alignment
+				// .toString();
 				row[ArrayUtils.indexOf(COLUMNS_NAMES_ALIGNMENT_TABLE, COLUMN_NAME_COST)] = alignment.getCost();
 				row[ArrayUtils.indexOf(COLUMNS_NAMES_ALIGNMENT_TABLE, COLUMN_NAME_COST_DELTA)] = alignment
 						.getDistanceToOptimum();
@@ -138,11 +141,12 @@ public class IncrementalAlignmentOperator extends AbstractRapidProMEventLogBased
 						.getTotalEnqueuedNodes();
 				row[ArrayUtils.indexOf(COLUMNS_NAMES_ALIGNMENT_TABLE, COLUMN_NAME_VISITED_NODES)] = alignment
 						.getNumberOfIterations();
+				row[ArrayUtils.indexOf(COLUMNS_NAMES_ALIGNMENT_TABLE, COLUMN_NAME_TRAVERSED_EDGES)] = alignment
+						.getTraversedEdges();
 				row[ArrayUtils.indexOf(COLUMNS_NAMES_ALIGNMENT_TABLE, COLUMN_NAME_AVG_QUEUE_SIZE)] = alignment
 						.getAverageQueueSize();
 				row[ArrayUtils.indexOf(COLUMNS_NAMES_ALIGNMENT_TABLE, COLUMN_NAME_SEARCH_TIME)] = alignment
 						.getComputationTime();
-
 				tableBuilder.addDataRow(getDataRowFactory().create(row, attributes));
 			}
 		}
@@ -226,22 +230,24 @@ public class IncrementalAlignmentOperator extends AbstractRapidProMEventLogBased
 		IncrementalReplayResult<String, String, Transition, Marking, MeasurementAwarePartialAlignment<String, Transition, Marking>> replayResult = IncrementalReplayResult.Factory
 				.construct(IncrementalReplayResult.Impl.HASH_MAP);
 		for (XTrace t : log) {
-			List<String> traceStrLst = toStringList(t, classes);
-			String traceStr = StringUtils.join(traceStrLst, ",");
-			String caseId = XConceptExtension.instance().extractName(t);
-			if (!costPerTrace.containsKey(traceStr)) {
-				replayResult.put(traceStr,
-						new ArrayList<MeasurementAwarePartialAlignment<String, Transition, Marking>>());
-				PartialAlignment<String, Transition, Marking> partialAlignment = null;
-				for (String e : traceStrLst) {
-					partialAlignment = replayer.processEvent(caseId, e.toString());
-					replayResult.get(traceStr)
-							.add((MeasurementAwarePartialAlignment<String, Transition, Marking>) partialAlignment);
+			if (!t.isEmpty()) {
+				List<String> traceStrLst = toStringList(t, classes);
+				String traceStr = StringUtils.join(traceStrLst, ",");
+				String caseId = XConceptExtension.instance().extractName(t);
+				if (!costPerTrace.containsKey(traceStr)) {
+					replayResult.put(traceStr,
+							new ArrayList<MeasurementAwarePartialAlignment<String, Transition, Marking>>());
+					PartialAlignment<String, Transition, Marking> partialAlignment = null;
+					for (String e : traceStrLst) {
+						partialAlignment = replayer.processEvent(caseId, e.toString());
+						replayResult.get(traceStr)
+								.add((MeasurementAwarePartialAlignment<String, Transition, Marking>) partialAlignment);
+					}
+					costPerTrace.put(traceStr, partialAlignment.getCost());
+					traceCount.put(traceStr, 1);
+				} else {
+					traceCount.adjustOrPutValue(traceStr, 1, 1);
 				}
-				costPerTrace.put(traceStr, partialAlignment.getCost());
-				traceCount.put(traceStr, 1);
-			} else {
-				traceCount.adjustOrPutValue(traceStr, 1, 1);
 			}
 		}
 		return constructExampleSet(replayResult, traceCount);
