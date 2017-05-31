@@ -1,6 +1,7 @@
 package org.rapidprom.operators.conformance;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,6 +26,9 @@ import org.processmining.onlineconformance.models.MeasurementAwarePartialAlignme
 import org.processmining.onlineconformance.models.ModelSemanticsPetrinet;
 import org.processmining.onlineconformance.models.PartialAlignment;
 import org.processmining.onlineconformance.parameters.IncrementalRevBasedReplayerParametersImpl;
+import org.processmining.plugins.petrinet.replayresult.PNRepResult;
+import org.processmining.plugins.replayer.replayresult.SyncReplayResult;
+import org.rapidprom.ioobjects.PNRepResultIOObject;
 import org.rapidprom.ioobjects.PetriNetIOObject;
 import org.rapidprom.operators.abstr.AbstractRapidProMEventLogBasedOperator;
 import org.rapidprom.util.ExampleSetUtils;
@@ -37,6 +41,7 @@ import com.rapidminer.example.utils.ExampleSetBuilder;
 import com.rapidminer.example.utils.ExampleSets;
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
+import com.rapidminer.operator.UserError;
 import com.rapidminer.operator.io.AbstractDataReader.AttributeColumn;
 import com.rapidminer.operator.ports.InputPort;
 import com.rapidminer.operator.ports.OutputPort;
@@ -63,6 +68,7 @@ public class IncrementalAlignmentOperator extends AbstractRapidProMEventLogBased
 	private final String COLUMN_NAME_AVG_QUEUE_SIZE = "average_queue_size";
 	private final String COLUMN_NAME_COST = "cost";
 	private final String COLUMN_NAME_COST_DELTA = "cost_delta";
+	private final String COLUMN_NAME_COST_DELTA_FULL_ALIGNMENT = "cost_delta_full_alignment";
 	private final String COLUMN_NAME_ENQUEUED_NODES = "enqueued_nodes";
 	private final String COLUMN_NAME_PREFIX = "prefix";
 	private final String COLUMN_NAME_PREFIX_LENGTH = "prefix_length";
@@ -74,23 +80,26 @@ public class IncrementalAlignmentOperator extends AbstractRapidProMEventLogBased
 	private final String COLUMN_NAME_TRAVERSED_EDGES = "traversed_edges";
 
 	private final MDInteger[] COLUMNS_MISSING_ALIGNMENT_TABLE = new MDInteger[] { new MDInteger(0), new MDInteger(0),
-			new MDInteger(0), new MDInteger(0), new MDInteger(0), new MDInteger(0), new MDInteger(0),
+			new MDInteger(0), new MDInteger(0), new MDInteger(0), new MDInteger(0), new MDInteger(0), new MDInteger(0),
 			new MDInteger(0) };
 
 	private final String[] COLUMNS_NAMES_ALIGNMENT_TABLE = new String[] { COLUMN_NAME_PREFIX_LENGTH, COLUMN_NAME_COST,
-			COLUMN_NAME_COST_DELTA, COLUMN_NAME_ENQUEUED_NODES, COLUMN_NAME_VISITED_NODES, COLUMN_NAME_TRAVERSED_EDGES,
-			COLUMN_NAME_AVG_QUEUE_SIZE, COLUMN_NAME_SEARCH_TIME };
+			COLUMN_NAME_COST_DELTA, COLUMN_NAME_COST_DELTA_FULL_ALIGNMENT, COLUMN_NAME_ENQUEUED_NODES,
+			COLUMN_NAME_VISITED_NODES, COLUMN_NAME_TRAVERSED_EDGES, COLUMN_NAME_AVG_QUEUE_SIZE,
+			COLUMN_NAME_SEARCH_TIME };
 
 	private final String[] COLUMNS_ROLES_ALIGNMENT_TABLE = new String[] { AttributeColumn.REGULAR,
 			AttributeColumn.REGULAR, AttributeColumn.REGULAR, AttributeColumn.REGULAR, AttributeColumn.REGULAR,
-			AttributeColumn.REGULAR, AttributeColumn.REGULAR, AttributeColumn.REGULAR };
+			AttributeColumn.REGULAR, AttributeColumn.REGULAR, AttributeColumn.REGULAR, AttributeColumn.REGULAR };
 
 	private final int[] COLUMNS_TYPES_ALIGNMENT_TABLE = new int[] { Ontology.INTEGER, Ontology.REAL, Ontology.REAL,
-			Ontology.INTEGER, Ontology.INTEGER, Ontology.INTEGER, Ontology.REAL, Ontology.INTEGER };
+			Ontology.REAL, Ontology.INTEGER, Ontology.INTEGER, Ontology.INTEGER, Ontology.REAL, Ontology.INTEGER };
 
 	private final DataRowFactory dataRowFactory = new DataRowFactory(DataRowFactory.TYPE_DOUBLE_ARRAY, '.');
 
 	private InputPort inputPN = getInputPorts().createPort("model (Petri Net)", PetriNetIOObject.class);
+
+	private InputPort inputPNRepRes = getInputPorts().createPort("pnrepres", PNRepResultIOObject.class);
 
 	private OutputPort outputAlignments = getOutputPorts().createPort("example set with alignments");
 	private final String PARAMETER_DESC_MAX_LOOKBACK = "Indicates the maximum amount of alignment moves that are allowed to be reverted.";
@@ -110,7 +119,7 @@ public class IncrementalAlignmentOperator extends AbstractRapidProMEventLogBased
 
 	private ExampleSet constructExampleSet(
 			final IncrementalReplayResult<String, String, Transition, Marking, MeasurementAwarePartialAlignment<String, Transition, Marking>> replayResult,
-			final TObjectIntMap<String> traceCount) {
+			final TObjectIntMap<String> traceCount, Map<String, Double> fullAlignmentsCosts) {
 
 		Attribute[] attributes = new Attribute[COLUMNS_NAMES_ALIGNMENT_TABLE.length];
 		for (int i = 0; i < attributes.length; i++) {
@@ -120,6 +129,7 @@ public class IncrementalAlignmentOperator extends AbstractRapidProMEventLogBased
 		ExampleSetBuilder tableBuilder = ExampleSets.from(attributes);
 
 		for (String trace : replayResult.keySet()) {
+			double fullAlignmentCost = fullAlignmentsCosts.get(trace);
 			for (MeasurementAwarePartialAlignment<String, Transition, Marking> alignment : replayResult.get(trace)) {
 				Object[] row = new Object[attributes.length];
 				// row[ArrayUtils.indexOf(COLUMNS_NAMES_ALIGNMENT_TABLE,
@@ -137,6 +147,7 @@ public class IncrementalAlignmentOperator extends AbstractRapidProMEventLogBased
 				row[ArrayUtils.indexOf(COLUMNS_NAMES_ALIGNMENT_TABLE, COLUMN_NAME_COST)] = alignment.getCost();
 				row[ArrayUtils.indexOf(COLUMNS_NAMES_ALIGNMENT_TABLE, COLUMN_NAME_COST_DELTA)] = alignment
 						.getDistanceToOptimum();
+				row[ArrayUtils.indexOf(COLUMNS_NAMES_ALIGNMENT_TABLE, COLUMN_NAME_COST_DELTA_FULL_ALIGNMENT)] = alignment.getCost() - fullAlignmentCost;
 				row[ArrayUtils.indexOf(COLUMNS_NAMES_ALIGNMENT_TABLE, COLUMN_NAME_ENQUEUED_NODES)] = (int) alignment
 						.getTotalEnqueuedNodes();
 				row[ArrayUtils.indexOf(COLUMNS_NAMES_ALIGNMENT_TABLE, COLUMN_NAME_VISITED_NODES)] = alignment
@@ -153,11 +164,42 @@ public class IncrementalAlignmentOperator extends AbstractRapidProMEventLogBased
 		return tableBuilder.build();
 	}
 
+	private List<Integer> convertIntListToArray(String s) {
+		List<Integer> result = new ArrayList<Integer>();
+		s = s.replace("[", "");
+		s = s.replace("]", "");
+		String[] split = s.split(",");
+		for (int i = 0; i < split.length; i++) {
+			String string = split[i];
+			String trim = string.trim();
+			Integer in = Integer.parseInt(trim);
+			result.add(in);
+		}
+		return result;
+	}
+
+	private Map<String, Double> constructFullAlignmentsReference(PNRepResult repRes) throws UserError {
+		Map<String, Double> reference = new HashMap<>();
+		for (SyncReplayResult res : repRes) {
+			List<Integer> listArray = convertIntListToArray(res.getTraceIndex().toString());
+			double alignmentCosts = res.getInfo().get(PNRepResult.RAWFITNESSCOST);
+			for (Integer index : listArray) {
+				// get the right trace
+				String name = XConceptExtension.instance().extractName(getXLog().get(index));
+				reference.put(name, alignmentCosts);
+			}
+		}
+		return reference;
+	}
+
 	@Override
 	public void doWork() throws OperatorException {
 		Logger logger = LogService.getRoot();
 		logger.log(Level.INFO, "Start: replay log on petri net using incremental prefix alignments");
 		long startTime = System.currentTimeMillis();
+
+		Map<String, Double> fullAlignmentCosts = constructFullAlignmentsReference(
+				inputPNRepRes.getData(PNRepResultIOObject.class).getArtifact());
 
 		PetriNetIOObject netIOObj = inputPN.getData(PetriNetIOObject.class);
 		Petrinet net = netIOObj.getArtifact();
@@ -189,7 +231,7 @@ public class IncrementalAlignmentOperator extends AbstractRapidProMEventLogBased
 		parameters.setLookBackWindow(lookBacks);
 
 		outputAlignments
-				.deliver(replay(net, initialMarking, finalMarking, getXLog(), getXEventClassifier(), parameters));
+				.deliver(replay(net, initialMarking, finalMarking, getXLog(), getXEventClassifier(), parameters, fullAlignmentCosts));
 
 		logger.log(Level.INFO, "End: replay log on petri net for conformance checking ("
 				+ (System.currentTimeMillis() - startTime) / 1000 + " sec)");
@@ -212,7 +254,8 @@ public class IncrementalAlignmentOperator extends AbstractRapidProMEventLogBased
 
 	private ExampleSet replay(final Petrinet net, final Marking initialMarking, final Marking finalMarking,
 			final XLog log, final XEventClassifier classifier,
-			final IncrementalRevBasedReplayerParametersImpl<Petrinet, String, Transition> parameters) {
+			final IncrementalRevBasedReplayerParametersImpl<Petrinet, String, Transition> parameters,
+			Map<String, Double> fullAlignmentCosts) {
 		ModelSemanticsPetrinet<Marking> modelSemantics = ModelSemanticsPetrinet.Factory.construct(net);
 		Map<Transition, String> labelsInPN = new HashMap<Transition, String>();
 		for (Transition t : net.getTransitions()) {
@@ -235,12 +278,12 @@ public class IncrementalAlignmentOperator extends AbstractRapidProMEventLogBased
 				String traceStr = StringUtils.join(traceStrLst, ",");
 				String caseId = XConceptExtension.instance().extractName(t);
 				if (!costPerTrace.containsKey(traceStr)) {
-					replayResult.put(traceStr,
+					replayResult.put(caseId,
 							new ArrayList<MeasurementAwarePartialAlignment<String, Transition, Marking>>());
 					PartialAlignment<String, Transition, Marking> partialAlignment = null;
 					for (String e : traceStrLst) {
 						partialAlignment = replayer.processEvent(caseId, e.toString());
-						replayResult.get(traceStr)
+						replayResult.get(caseId)
 								.add((MeasurementAwarePartialAlignment<String, Transition, Marking>) partialAlignment);
 					}
 					costPerTrace.put(traceStr, partialAlignment.getCost());
@@ -250,7 +293,7 @@ public class IncrementalAlignmentOperator extends AbstractRapidProMEventLogBased
 				}
 			}
 		}
-		return constructExampleSet(replayResult, traceCount);
+		return constructExampleSet(replayResult, traceCount, fullAlignmentCosts);
 	}
 
 	private void setupModelBasedLabelMaps(final Petrinet net, Map<Transition, String> modelElementsToLabelMap,
