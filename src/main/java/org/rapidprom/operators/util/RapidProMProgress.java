@@ -5,6 +5,13 @@ import org.processmining.framework.plugin.Progress;
 import com.rapidminer.operator.OperatorProgress;
 import com.rapidminer.operator.ProcessStoppedException;
 
+/**
+ * Implements the ProM {@link Progress} interface using the RapidMiner
+ * {@link OperatorProgress}.
+ * 
+ * @author F. Mannhardt
+ *
+ */
 public class RapidProMProgress implements Progress {
 
 	private final OperatorProgress progress;

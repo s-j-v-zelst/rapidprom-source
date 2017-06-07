@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.deckfour.xes.classification.XEventClassifier;
 import org.deckfour.xes.model.XLog;
@@ -30,6 +31,7 @@ import org.rapidprom.exceptions.ExampleSetReaderException;
 import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.CausalNetIOObject;
 import org.rapidprom.operators.abstr.AbstractRapidProMDiscoveryOperator;
+import org.rapidprom.operators.util.RapidProMProgress;
 
 import com.google.common.collect.ImmutableSet;
 import com.rapidminer.example.Attribute;
@@ -136,43 +138,51 @@ public class DataAwareHeuristicMinerOperator extends AbstractRapidProMDiscoveryO
 			}
 		}
 
+		MinerContext minerContext = createMinerContext();
+		try {
+			ConditionalDependencyHeuristicConfig graphConfig = getDataHeuristicMinerConfig();
+			DecisionTreeConfig discoveryConfig = getDataDiscoveryConfig();
+			graphConfig.setDataDiscoveryConfig(discoveryConfig);
+			HeuristicsCausalNetMiner.CausalNetConfig netConfig = getCausalNetConfig();
+
+			CausalNet causalNet;
+			try {
+				causalNet = mineCausalNet(log, classifier, selectedAttributes, graphConfig, netConfig, heuristicConfig,
+						minerContext);
+			} catch (RuleDiscoveryException | MiningException e) {
+				throw new OperatorException("Failed discovering Causal Net: " + e.getMessage(), e);
+			}
+
+			CausalNetIOObject causalNetIOObject = new CausalNetIOObject(causalNet,
+					RapidProMGlobalContext.instance().getPluginContext());
+			outputCausalNet.deliver(causalNetIOObject);
+		} finally {
+			minerContext.getExecutor().shutdown();
+		}
+	}
+
+	private MinerContext createMinerContext() {
+		final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+		final Progress progress = new RapidProMProgress(getProgress());
+		final PluginContext pluginContext = RapidProMGlobalContext.instance().getPluginContext();
 		MinerContext minerContext = new MinerContext() {
 
 			@Override
 			public Progress getProgress() {
-				// TODO Auto-generated method stub
-				return null;
+				return progress;
 			}
 
 			@Override
 			public PluginContext getPluginContext() {
-				// TODO Auto-generated method stub
-				return null;
+				return pluginContext;
 			}
 
 			@Override
 			public ExecutorService getExecutor() {
-				// TODO Auto-generated method stub
-				return null;
+				return executor;
 			}
 		};
-
-		ConditionalDependencyHeuristicConfig graphConfig = getDataHeuristicMinerConfig();
-		DecisionTreeConfig discoveryConfig = getDataDiscoveryConfig();
-		graphConfig.setDataDiscoveryConfig(discoveryConfig);
-		HeuristicsCausalNetMiner.CausalNetConfig netConfig = getCausalNetConfig();
-
-		CausalNet causalNet;
-		try {
-			causalNet = mineCausalNet(log, classifier, selectedAttributes, graphConfig, netConfig, heuristicConfig,
-					minerContext);
-		} catch (RuleDiscoveryException | MiningException e) {
-			throw new OperatorException("Failed discovering Causal Net: " + e.getMessage(), e);
-		}
-
-		CausalNetIOObject causalNetIOObject = new CausalNetIOObject(causalNet,
-				RapidProMGlobalContext.instance().getPluginContext());
-		outputCausalNet.deliver(causalNetIOObject);
+		return minerContext;
 	}
 
 	private Set<String> readSelectedAttributes(ExampleSet data) throws ExampleSetReaderException {
