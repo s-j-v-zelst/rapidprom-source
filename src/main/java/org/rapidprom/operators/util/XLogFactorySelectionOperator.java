@@ -51,8 +51,7 @@ public class XLogFactorySelectionOperator extends Operator {
 			XFactoryRegistry.instance().setCurrentDefault(new XFactoryExternalStore.MapDBDiskWithoutCacheImpl());
 			break;
 		case XESLITE_MAP_DB_SEQUENTIAL:
-			XFactoryRegistry.instance()
-					.setCurrentDefault(new XFactoryExternalStore.MapDBDiskSequentialAccessWithoutCacheImpl());
+			XFactoryRegistry.instance().setCurrentDefault(new XFactoryExternalStore.MapDBDiskSequentialAccessImpl());
 			break;
 		case XESLITE_IN_MEMORY:
 			XFactoryRegistry.instance().setCurrentDefault(new XFactoryExternalStore.InMemoryStoreImpl());

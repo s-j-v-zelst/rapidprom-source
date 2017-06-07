@@ -1,20 +1,11 @@
 package org.rapidprom.operators.logmanipulation;
 
 import java.util.List;
-import java.util.Set;
 
-import org.deckfour.xes.classification.XEventClass;
-import org.deckfour.xes.classification.XEventClasses;
-import org.deckfour.xes.factory.XFactory;
 import org.deckfour.xes.model.XLog;
 import org.deckfour.xes.model.impl.XAttributeContinuousImpl;
-import org.deckfour.xes.util.XAttributeUtils;
-import org.processmining.log.utils.XUtils;
 import org.processmining.logenhancement.enriching.AddElapsedTimePlugin;
 import org.processmining.logenhancement.enriching.TimeResolution;
-import org.processmining.logenhancement.transforming.MergeSubsequentEvents;
-import org.processmining.logenhancement.transforming.MergeSubsequentEvents.MergeFilter;
-import org.processmining.logenhancement.transforming.MergeSubsequentEvents.MergeType;
 import org.rapidprom.ioobjects.XLogIOObject;
 import org.rapidprom.operators.abstr.AbstractRapidProMLogManipulationOperator;
 import org.rapidprom.operators.util.RapidProMProgress;

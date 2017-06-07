@@ -5,16 +5,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.deckfour.xes.classification.XEventClassifier;
 import org.deckfour.xes.model.XLog;
-import org.processmining.dataawarecnetminer.mining.data.DataAwareCausalGraphBuilder;
-import org.processmining.dataawarecnetminer.mining.data.DataAwareCausalGraphBuilder.DataAwareCausalGraphConfig;
-import org.processmining.dataawarecnetminer.mining.classic.HeuristicCausalNetMiner;
-import org.processmining.dataawarecnetminer.mining.classic.HeuristicsCausalGraphMiner;
-import org.processmining.dataawarecnetminer.mining.classic.HeuristicCausalNetMiner.CausalNetConfig;
+import org.processmining.dataawarecnetminer.common.MinerContext;
+import org.processmining.dataawarecnetminer.exception.MiningException;
+import org.processmining.dataawarecnetminer.extension.bindings.BindingsNearestActivityImpl;
+import org.processmining.dataawarecnetminer.extension.conditionaldependencies.ConditionalDependencyHeuristicConfig;
 import org.processmining.dataawarecnetminer.mining.classic.HeuristicsCausalGraphBuilder.HeuristicsConfig;
+import org.processmining.dataawarecnetminer.mining.classic.HeuristicsCausalGraphMiner;
+import org.processmining.dataawarecnetminer.mining.classic.HeuristicsCausalNetMiner;
+import org.processmining.dataawarecnetminer.mining.data.DataAwareCausalGraphBuilder;
 import org.processmining.dataawarecnetminer.model.DataRelationStorage;
 import org.processmining.dataawarecnetminer.model.DependencyAwareCausalGraph;
 import org.processmining.dataawarecnetminer.model.EventRelationStorage;
@@ -22,6 +23,8 @@ import org.processmining.dataawarecnetminer.model.FrequencyAwareCausalNet;
 import org.processmining.dataawarecnetminer.util.DataDiscoveryUtil;
 import org.processmining.datadiscovery.DecisionTreeConfig;
 import org.processmining.datadiscovery.RuleDiscoveryException;
+import org.processmining.framework.plugin.PluginContext;
+import org.processmining.framework.plugin.Progress;
 import org.processmining.models.cnet.CausalNet;
 import org.rapidprom.exceptions.ExampleSetReaderException;
 import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
@@ -122,7 +125,7 @@ public class DataAwareHeuristicMinerOperator extends AbstractRapidProMDiscoveryO
 
 		HeuristicsConfig heuristicConfig = getHeuristicsMinerConfig();
 
-		Set<String> selectedAttributes = ImmutableSet.<String> of();
+		Set<String> selectedAttributes = ImmutableSet.<String>of();
 		if (inputAttributeSelection.isConnected()) {
 			try {
 				ExampleSet attributeSelection = inputAttributeSelection.getData(ExampleSet.class);
@@ -133,15 +136,37 @@ public class DataAwareHeuristicMinerOperator extends AbstractRapidProMDiscoveryO
 			}
 		}
 
-		DataAwareCausalGraphConfig graphConfig = getDataHeuristicMinerConfig();
+		MinerContext minerContext = new MinerContext() {
+
+			@Override
+			public Progress getProgress() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public PluginContext getPluginContext() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public ExecutorService getExecutor() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+		};
+
+		ConditionalDependencyHeuristicConfig graphConfig = getDataHeuristicMinerConfig();
 		DecisionTreeConfig discoveryConfig = getDataDiscoveryConfig();
-		CausalNetConfig netConfig = getCausalNetConfig();
+		graphConfig.setDataDiscoveryConfig(discoveryConfig);
+		HeuristicsCausalNetMiner.CausalNetConfig netConfig = getCausalNetConfig();
 
 		CausalNet causalNet;
 		try {
 			causalNet = mineCausalNet(log, classifier, selectedAttributes, graphConfig, netConfig, heuristicConfig,
-					discoveryConfig);
-		} catch (RuleDiscoveryException e) {
+					minerContext);
+		} catch (RuleDiscoveryException | MiningException e) {
 			throw new OperatorException("Failed discovering Causal Net: " + e.getMessage(), e);
 		}
 
@@ -172,8 +197,8 @@ public class DataAwareHeuristicMinerOperator extends AbstractRapidProMDiscoveryO
 		return attributes;
 	}
 
-	private CausalNetConfig getCausalNetConfig() throws UndefinedParameterError {
-		CausalNetConfig config = new CausalNetConfig();
+	private HeuristicsCausalNetMiner.CausalNetConfig getCausalNetConfig() throws UndefinedParameterError {
+		HeuristicsCausalNetMiner.CausalNetConfig config = new HeuristicsCausalNetMiner.CausalNetConfig();
 		config.setConsiderLongDistanceRelations(getParameterAsBoolean(PARAMETER_LONG_DISTANCE));
 		config.setBindingsThreshold(getParameterAsDouble(PARAMETER_BINDINGS_THRESHOLD));
 		return config;
@@ -190,8 +215,8 @@ public class DataAwareHeuristicMinerOperator extends AbstractRapidProMDiscoveryO
 		return config;
 	}
 
-	private DataAwareCausalGraphConfig getDataHeuristicMinerConfig() throws UndefinedParameterError {
-		DataAwareCausalGraphConfig config = new DataAwareCausalGraphConfig();
+	private ConditionalDependencyHeuristicConfig getDataHeuristicMinerConfig() throws UndefinedParameterError {
+		ConditionalDependencyHeuristicConfig config = new ConditionalDependencyHeuristicConfig();
 		config.setAcceptedTasksConnected(getParameterAsBoolean(PARAMETER_ACCEPTED_CONNECTED));
 		config.setAllTasksConnected(getParameterAsBoolean(PARAMETER_ALL_TASK_CONNECTED));
 		config.setDependencyThreshold(getParameterAsDouble(PARAMETER_DEPENDENCY_THRESHOLD));
@@ -214,10 +239,9 @@ public class DataAwareHeuristicMinerOperator extends AbstractRapidProMDiscoveryO
 	}
 
 	protected CausalNet mineCausalNet(XLog log, XEventClassifier classifier, Set<String> selectedAttributes,
-			DataAwareCausalGraphConfig dataConfig, CausalNetConfig netConfig, HeuristicsConfig heuristicConfig,
-			DecisionTreeConfig discoveryConfig) throws RuleDiscoveryException, OperatorException {
-
-		ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+			ConditionalDependencyHeuristicConfig dataConfig, HeuristicsCausalNetMiner.CausalNetConfig netConfig,
+			HeuristicsConfig heuristicConfig, MinerContext minerContext)
+			throws RuleDiscoveryException, OperatorException, MiningException {
 
 		Map<String, Class<?>> attributeTypes = DataDiscoveryUtil.getRelevantAttributeTypes(log);
 		if (!attributeTypes.keySet().containsAll(selectedAttributes)) {
@@ -226,7 +250,7 @@ public class DataAwareHeuristicMinerOperator extends AbstractRapidProMDiscoveryO
 		}
 
 		EventRelationStorage eventRelations = EventRelationStorage.Factory.createEventRelations(log, classifier,
-				executor);
+				minerContext.getExecutor());
 
 		HeuristicsCausalGraphMiner miner = new HeuristicsCausalGraphMiner(eventRelations);
 		miner.setHeuristicsConfig(heuristicConfig);
@@ -234,16 +258,18 @@ public class DataAwareHeuristicMinerOperator extends AbstractRapidProMDiscoveryO
 
 		if (getParameterAsBoolean(PARAMETER_USE_DATA)) {
 			DataRelationStorage dataRelations = DataRelationStorage.Factory.createDataRelations(eventRelations,
-					attributeTypes, selectedAttributes, executor);
-			dataRelations.setDataDiscoveryConfig(discoveryConfig);
+					attributeTypes, selectedAttributes, minerContext.getExecutor());
+
 			DataAwareCausalGraphBuilder dataBuilder = new DataAwareCausalGraphBuilder(eventRelations, dataRelations,
 					dataConfig);
-			dependencyGraph = dataBuilder.build(dependencyGraph, executor);
+			dependencyGraph = dataBuilder.build(minerContext, dependencyGraph);
 		}
 
-		HeuristicCausalNetMiner causalNetMiner = new HeuristicCausalNetMiner(eventRelations);
+		HeuristicsCausalNetMiner causalNetMiner = new HeuristicsCausalNetMiner(eventRelations);
 		causalNetMiner.setConfig(netConfig);
-		FrequencyAwareCausalNet causalNet = causalNetMiner.mineCausalNet(dependencyGraph, executor);
+		// TODO make bindings heuristic configurable
+		FrequencyAwareCausalNet causalNet = causalNetMiner.mineCausalNet(minerContext, dependencyGraph,
+				new BindingsNearestActivityImpl(eventRelations));
 
 		return causalNet.getCNet();
 	}
