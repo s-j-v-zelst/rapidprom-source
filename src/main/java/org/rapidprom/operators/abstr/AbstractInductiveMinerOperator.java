@@ -13,7 +13,7 @@ import com.rapidminer.parameter.ParameterTypeCategory;
 import com.rapidminer.parameter.ParameterTypeDouble;
 import com.rapidminer.parameter.UndefinedParameterError;
 
-public abstract class AbstractInductiveMinerOperator extends AbstractRapidProMDiscoveryOperator {
+public abstract class AbstractInductiveMinerOperator extends AbstractLabelAwareRapidProMDiscoveryOperator {
 
 	public AbstractInductiveMinerOperator(OperatorDescription description) {
 		super(description);
@@ -36,8 +36,10 @@ public abstract class AbstractInductiveMinerOperator extends AbstractRapidProMDi
 			PARAMETER_2_DESCR = "This threshold represents the percentage of infrequent (noisy) "
 					+ "traces that are filtered out. The remaining traces are used to discover a model. ";
 
-	private static final String IM = "Inductive Miner", IMi = "Inductive Miner - Infrequent",
-			IMin = "Inductive Miner - Incompleteness", IMeks = "Inductive Miner - exhaustive K-successor",
+	private static final String IM = "Inductive Miner", //  
+			IMi = "Inductive Miner - Infrequent", // 
+			IMin = "Inductive Miner - Incompleteness", //
+			IMeks = "Inductive Miner - exhaustive K-successor", //
 			IMflc = "Inductive Miner - Life cycle";
 
 	@Override

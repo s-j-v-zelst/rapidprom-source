@@ -16,7 +16,6 @@ import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.UserError;
 import com.rapidminer.operator.ports.InputPort;
 import com.rapidminer.parameter.ParameterType;
-import com.rapidminer.parameter.ParameterTypeString;
 import com.rapidminer.parameter.UndefinedParameterError;
 
 public class AbstractRapidProMDiscoveryOperator extends Operator {
@@ -30,9 +29,6 @@ public class AbstractRapidProMDiscoveryOperator extends Operator {
 			new XEventAndClassifier(new XEventNameClassifier(), new XEventLifeTransClassifier()),
 			new XEventNameClassifier()};
 	
-	private static final String PARAMETER_LABEL_KEY = "Model label";
-	private static final String PARAMETER_LABEL_DESC = "The label assigned to the discovered model.";
-
 	public AbstractRapidProMDiscoveryOperator(OperatorDescription description) {
 		super(description);
 		// TODO: make the precondition give a more meaningful warning if the
@@ -48,7 +44,6 @@ public class AbstractRapidProMDiscoveryOperator extends Operator {
 				PARAMETER_KEY_EVENT_CLASSIFIER, PARAMETER_DESC_EVENT_CLASSIFIER,
 				ObjectUtils.toString(PARAMETER_DEFAULT_CLASSIFIERS),
 				PARAMETER_DEFAULT_CLASSIFIERS, 0, false, inputXLog));
-		params.add(new ParameterTypeString(PARAMETER_LABEL_KEY, PARAMETER_LABEL_DESC, true, true));
 		return params;
 	}
 
@@ -71,8 +66,4 @@ public class AbstractRapidProMDiscoveryOperator extends Operator {
 				.getArtifact();
 	}
 	
-	protected String getLabel() throws UndefinedParameterError {
-		return getParameterAsString(PARAMETER_LABEL_KEY);
-	}
-
 }

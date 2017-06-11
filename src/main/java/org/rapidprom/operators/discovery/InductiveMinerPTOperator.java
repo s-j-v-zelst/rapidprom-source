@@ -22,7 +22,7 @@ public class InductiveMinerPTOperator extends AbstractInductiveMinerOperator {
 
 	public InductiveMinerPTOperator(OperatorDescription description) {
 		super(description);
-		getTransformer().addRule(new GenerateNewMDRule(output, ProcessTreeIOObject.class));
+		getTransformer().addRule(new GenerateNewMDRule(output, ProcessTreeIOObject.class));			
 	}
 
 	public void doWork() throws OperatorException {
@@ -39,4 +39,5 @@ public class InductiveMinerPTOperator extends AbstractInductiveMinerOperator {
 		output.deliver(result);
 		logger.log(Level.INFO, "End: inductive miner - pt (" + (System.currentTimeMillis() - time) / 1000 + " sec)");
 	}
+	
 }

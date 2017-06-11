@@ -14,7 +14,7 @@ import org.processmining.models.graphbased.AttributeMap;
 import org.processmining.models.graphbased.directed.petrinet.Petrinet;
 import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.LocalProcessModelRankingIOObject;
-import org.rapidprom.operators.abstr.AbstractRapidProMDiscoveryOperator;
+import org.rapidprom.operators.abstr.AbstractLabelAwareRapidProMDiscoveryOperator;
 
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
@@ -28,7 +28,8 @@ import com.rapidminer.parameter.ParameterTypeInt;
 import com.rapidminer.parameter.UndefinedParameterError;
 import com.rapidminer.tools.LogService;
 
-public class LocalProcessModelDiscoveryOperator extends AbstractRapidProMDiscoveryOperator{
+public class LocalProcessModelDiscoveryOperator extends AbstractLabelAwareRapidProMDiscoveryOperator {
+	
 	OutputPort output = getOutputPorts().createPort("model (ProM ProcessTree)");
 	LocalProcessModelParameters lpmp;
 	

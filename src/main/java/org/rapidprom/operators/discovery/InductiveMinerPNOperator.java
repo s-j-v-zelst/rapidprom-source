@@ -1,5 +1,6 @@
 package org.rapidprom.operators.discovery;
 
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,10 +18,13 @@ import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
 import com.rapidminer.operator.ports.OutputPort;
 import com.rapidminer.operator.ports.metadata.GenerateNewMDRule;
+import com.rapidminer.parameter.ParameterType;
+import com.rapidminer.parameter.ParameterTypeString;
+import com.rapidminer.parameter.UndefinedParameterError;
 import com.rapidminer.tools.LogService;
 
 public class InductiveMinerPNOperator extends AbstractInductiveMinerOperator {
-
+	
 	OutputPort output = getOutputPorts().createPort("model (ProM Petri Net)");
 
 	public InductiveMinerPNOperator(OperatorDescription description) {
@@ -50,4 +54,6 @@ public class InductiveMinerPNOperator extends AbstractInductiveMinerOperator {
 
 		logger.log(Level.INFO, "End: inductive miner - pn (" + (System.currentTimeMillis() - time) / 1000 + " sec)");
 	}
+
+	
 }
