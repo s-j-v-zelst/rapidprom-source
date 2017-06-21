@@ -14,6 +14,7 @@ import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
 import com.rapidminer.parameter.ParameterType;
 import com.rapidminer.parameter.ParameterTypeDouble;
+import com.rapidminer.parameter.ParameterTypeInt;
 
 public class MatrixFilterOperatorImpl extends AbstractFilteringOperator {
 
@@ -33,7 +34,7 @@ public class MatrixFilterOperatorImpl extends AbstractFilteringOperator {
 		MatrixFilterParameter parameters = new MatrixFilterParameter(
 				getXEventClassifier());
 		parameters.setProbabilityOfRemoval(getParameterAsDouble(PARAMETER_KEY_FILTER_THRESHOLD));
-		//parameters.setsetSubsequenceLength(getParameterAsInt(PARAMETER_KEY_FILTER_THRESHOLD));
+		parameters.setsetSubsequenceLength(getParameterAsInt(PARAMETER_KEY_SUBSEQUENT_LENGTH));
 		PluginContext context = RapidProMGlobalContext.instance().getPluginContext();
 		getOutputLogPort().deliver(new XLogIOObject(MatrixFilterPlugin.run(context, noisyLog, parameters), context));
 	}
@@ -42,6 +43,8 @@ public class MatrixFilterOperatorImpl extends AbstractFilteringOperator {
 	public List<ParameterType> getParameterTypes() {
 		List<ParameterType> params = super.getParameterTypes();
 		params.add(new ParameterTypeDouble(PARAMETER_KEY_FILTER_THRESHOLD, PARAMETER_DESC_FILTER_THRESHOLD, 0, 1, 0.1,
+				false));
+		params.add(new ParameterTypeInt(PARAMETER_KEY_SUBSEQUENT_LENGTH, PARAMETER_DESC_SUBSEQUENT_LENGTH, 0, 1, 10,
 				false));
 		return params;
 	}
