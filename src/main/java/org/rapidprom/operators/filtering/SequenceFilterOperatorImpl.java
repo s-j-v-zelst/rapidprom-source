@@ -63,15 +63,15 @@ public class SequenceFilterOperatorImpl extends AbstractFilteringOperator {
 	@Override
 	public List<ParameterType> getParameterTypes() {
 		List<ParameterType> params = super.getParameterTypes();
-		params.add(new ParameterTypeDouble(Minimum_HighFrequentPatterns, PARAMETER_DESC_Minimum_HighFrequentPatterns, 0, 1, 0.9,
+		params.add(new ParameterTypeDouble(Minimum_HighFrequentPatterns, PARAMETER_DESC_Minimum_HighFrequentPatterns, 0, 1, 0.95,
 				false));
-		params.add(new ParameterTypeDouble(Minimum_Confidence_HighFrequentRules, PARAMETER_DESC_Minimum_Confidence_HighFrequentRules, 0, 1, 0.8,
+		params.add(new ParameterTypeDouble(Minimum_Confidence_HighFrequentRules, PARAMETER_DESC_Minimum_Confidence_HighFrequentRules, 0, 1, 0.95,
 				false));
 		params.add(new ParameterTypeDouble(Minimum_Support_HighFrequentRules, PARAMETER_DESC_Support_Minimum_HighFrequentRules, 0, 1, 0.2,
 				false));
-		params.add(new ParameterTypeDouble(Minimum_Support_OrdinaryRules, PARAMETER_DESC_Minimum_Support_OrdinaryRules, 0, 1, 0.15,
+		params.add(new ParameterTypeDouble(Minimum_Support_OrdinaryRules, PARAMETER_DESC_Minimum_Support_OrdinaryRules, 0, 1, 0.05,
 				false));
-		params.add(new ParameterTypeDouble(Minimum_Confidance_OrdinaryRules, PARAMETER_DESC_Minimum_Confidance_OrdinaryRules, 0, 1, 0.2,
+		params.add(new ParameterTypeDouble(Minimum_Confidance_OrdinaryRules, PARAMETER_DESC_Minimum_Confidance_OrdinaryRules, 0, 1, 0,
 				false));
 		return params;
 	}
