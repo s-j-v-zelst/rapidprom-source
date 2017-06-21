@@ -34,7 +34,7 @@ public class MatrixFilterOperatorImpl extends AbstractFilteringOperator {
 		MatrixFilterParameter parameters = new MatrixFilterParameter(
 				getXEventClassifier());
 		parameters.setProbabilityOfRemoval(getParameterAsDouble(PARAMETER_KEY_FILTER_THRESHOLD));
-		parameters.setsetSubsequenceLength(getParameterAsInt(PARAMETER_KEY_SUBSEQUENT_LENGTH));
+		parameters.setSubsequenceLength(getParameterAsInt(PARAMETER_KEY_SUBSEQUENT_LENGTH));
 		PluginContext context = RapidProMGlobalContext.instance().getPluginContext();
 		getOutputLogPort().deliver(new XLogIOObject(MatrixFilterPlugin.run(context, noisyLog, parameters), context));
 	}
