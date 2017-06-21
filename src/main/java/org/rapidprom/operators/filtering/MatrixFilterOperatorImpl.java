@@ -21,7 +21,7 @@ public class MatrixFilterOperatorImpl extends AbstractFilteringOperator {
 	private static final String PARAMETER_KEY_FILTER_THRESHOLD = "Threshold";
 	private static final String PARAMETER_DESC_FILTER_THRESHOLD = "Set the filtering threshold which is used for outlier detection";
 	private static final String PARAMETER_KEY_SUBSEQUENT_LENGTH = "Subsequent Length";
-	private static final String PARAMETER_DESC_SUBSEQUENT_LENGTH = "Set the subsequent lngth which is used for outlier detection";
+	private static final String PARAMETER_DESC_SUBSEQUENT_LENGTH = "Set the subsequent length which is used for outlier detection";
 
 	public MatrixFilterOperatorImpl(OperatorDescription description) {
 		super(description);
@@ -44,7 +44,7 @@ public class MatrixFilterOperatorImpl extends AbstractFilteringOperator {
 		List<ParameterType> params = super.getParameterTypes();
 		params.add(new ParameterTypeDouble(PARAMETER_KEY_FILTER_THRESHOLD, PARAMETER_DESC_FILTER_THRESHOLD, 0, 1, 0.1,
 				false));
-		params.add(new ParameterTypeInt(PARAMETER_KEY_SUBSEQUENT_LENGTH, PARAMETER_DESC_SUBSEQUENT_LENGTH, 0, 1, 10,
+		params.add(new ParameterTypeInt(PARAMETER_KEY_SUBSEQUENT_LENGTH, PARAMETER_DESC_SUBSEQUENT_LENGTH, 0, 100, 2,
 				false));
 		return params;
 	}

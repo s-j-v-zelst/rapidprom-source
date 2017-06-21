@@ -16,6 +16,7 @@ import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
 import com.rapidminer.parameter.ParameterType;
 import com.rapidminer.parameter.ParameterTypeDouble;
+import com.rapidminer.parameter.ParameterTypeInt;
 
 public class SequenceFilterOperatorImpl extends AbstractFilteringOperator {
 
@@ -33,7 +34,10 @@ public class SequenceFilterOperatorImpl extends AbstractFilteringOperator {
 
 	private static final String Minimum_Confidance_OrdinaryRules = "Minimum Confidence For Ordinary Rules";
 	private static final String PARAMETER_DESC_Minimum_Confidance_OrdinaryRules= "Set the Minimum Confidence For Ordinary Rules which is used in find high frequency patterns";
-
+	
+	private static final String PARAMETER_KEY_ODD_RULES_LENGTH = "Odd Rules Length";
+	private static final String PARAMETER_DESC_ODD_RULES_LENGTH = "Set the Odd Rules length which is used for outlier detection";
+	
 	public SequenceFilterOperatorImpl(OperatorDescription description) {
 		super(description);
 	}
@@ -49,6 +53,7 @@ public class SequenceFilterOperatorImpl extends AbstractFilteringOperator {
 		parameters.setSuppHighConfRules(getParameterAsDouble(Minimum_Support_HighFrequentRules));
 		parameters.setSuppOrdinaryRules(getParameterAsDouble(Minimum_Support_OrdinaryRules));		
 		parameters.setConfOridnaryRules(getParameterAsDouble(Minimum_Confidance_OrdinaryRules));
+		parameters.setOddDistance(getParameterAsInt(PARAMETER_KEY_ODD_RULES_LENGTH));
 			
 				
 
@@ -73,6 +78,7 @@ public class SequenceFilterOperatorImpl extends AbstractFilteringOperator {
 				false));
 		params.add(new ParameterTypeDouble(Minimum_Confidance_OrdinaryRules, PARAMETER_DESC_Minimum_Confidance_OrdinaryRules, 0, 1, 0,
 				false));
+		params.add(new ParameterTypeInt(PARAMETER_KEY_ODD_RULES_LENGTH, PARAMETER_DESC_ODD_RULES_LENGTH, 0,100,2,false ));
 		return params;
 	}
 
