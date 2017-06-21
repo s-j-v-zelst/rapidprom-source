@@ -18,7 +18,9 @@ import com.rapidminer.parameter.ParameterTypeDouble;
 public class MatrixFilterOperatorImpl extends AbstractFilteringOperator {
 
 	private static final String PARAMETER_KEY_FILTER_THRESHOLD = "Threshold";
-	private static final String PARAMETER_DESC_FILTER_THRESHOLD = "Set the filtering threshold which is used in pruning the Anomaly-Free Automaton";
+	private static final String PARAMETER_DESC_FILTER_THRESHOLD = "Set the filtering threshold which is used for outlier detection";
+	private static final String PARAMETER_KEY_SUBSEQUENT_LENGTH = "Subsequent Length";
+	private static final String PARAMETER_DESC_SUBSEQUENT_LENGTH = "Set the subsequent lngth which is used for outlier detection";
 
 	public MatrixFilterOperatorImpl(OperatorDescription description) {
 		super(description);
@@ -31,7 +33,7 @@ public class MatrixFilterOperatorImpl extends AbstractFilteringOperator {
 		MatrixFilterParameter parameters = new MatrixFilterParameter(
 				getXEventClassifier());
 		parameters.setProbabilityOfRemoval(getParameterAsDouble(PARAMETER_KEY_FILTER_THRESHOLD));
-
+		//parameters.setsetSubsequenceLength(getParameterAsInt(PARAMETER_KEY_FILTER_THRESHOLD));
 		PluginContext context = RapidProMGlobalContext.instance().getPluginContext();
 		getOutputLogPort().deliver(new XLogIOObject(MatrixFilterPlugin.run(context, noisyLog, parameters), context));
 	}
