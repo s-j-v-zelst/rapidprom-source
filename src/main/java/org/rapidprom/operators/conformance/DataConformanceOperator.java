@@ -238,7 +238,8 @@ public class DataConformanceOperator extends Operator {
 				finalMarkings, log, transitionMapping.getEventClassifier(), getDefaultCostLogMove(),
 				getDefaultCostModelMove(), getDefaultCostMissingWrite(), getDefaultCostWrongWrite());
 
-		config.setConcurrentThreads(Math.min(Runtime.getRuntime().availableProcessors(), getParameterAsInt(CONCURRENT_THREADS_KEY)));
+		config.setConcurrentThreads(
+				Math.min(Runtime.getRuntime().availableProcessors(), getParameterAsInt(CONCURRENT_THREADS_KEY)));
 		config.setSearchMethod(getSearchMethod());
 		config.setIlpSolver(getMILPSolver());
 		config.setActivateDataViewCache(isMILPCache());
@@ -247,13 +248,16 @@ public class DataConformanceOperator extends Operator {
 		config.setMaxQueuedStates(getMaxQueuedStates());
 		config.setTimeLimitPerTrace(getMaxTimePerTrace());
 		config.setVariablesUnassignedMode(UnassignedMode.NULL);
-		
+
+		config.setKeepControlFlowSearchSpace(getKeepControlFlowSearchSpace());
+		config.setKeepDataFlowSearchSpace(getKeepDataFlowSearchSpace());
+
 		if (config.getConcurrentThreads() == 1) {
 			config.setControlFlowStorageHandler(ControlFlowStorageHandlerType.MEMORY_EFFICIENT);
 			config.setDataStateStorageHandler(DataStateStorageHandlerType.PRIMITIVE_NOLOCK);
 			config.setKeepDataFlowSearchSpace(false);
 			config.setKeepControlFlowSearchSpace(false);
-		}	
+		}
 
 		applyUserDefinedTransitionMapping(transitionMapping, config);
 
@@ -313,7 +317,7 @@ public class DataConformanceOperator extends Operator {
 				table.addDataRow(
 						factory.create(new Object[] { name, lengthData[i], timeData[i], queueData[i], fitnessData[i] },
 								new Attribute[] { traceAttr, lengthAttr, timeAttr, queuedAttr, fitnessAttr }));
-			} 
+			}
 		}
 
 		return table.createExampleSet();
@@ -330,24 +334,24 @@ public class DataConformanceOperator extends Operator {
 				new Attribute[] { nameAttr, valueAttr }));
 		table.addDataRow(factory.create(new Object[] { "averagePrecision", precisionResult.getPrecision() },
 				new Attribute[] { nameAttr, valueAttr }));
-		
+
 		if (alignedLog.size() > 0) {
-			table.addDataRow(
-					factory.create(new Object[] { "averageQueuedStates", DoubleMath.mean(observer.getQueuedStatesArray()) },
-							new Attribute[] { nameAttr, valueAttr }));
-	
+			table.addDataRow(factory.create(
+					new Object[] { "averageQueuedStates", DoubleMath.mean(observer.getQueuedStatesArray()) },
+					new Attribute[] { nameAttr, valueAttr }));
+
 			double cpuTime = 0.0;
 			for (double timeForTrace : observer.getStatisticResults().get(StatisticResult.TIME_PER_TRACE).getData()) {
 				cpuTime += timeForTrace;
 			}
-			
+
 			table.addDataRow(
 					factory.create(new Object[] { "totalWallTime", cpuTime }, new Attribute[] { nameAttr, valueAttr }));
 		}
-		
+
 		table.addDataRow(
 				factory.create(new Object[] { "totalRunTime", runTime }, new Attribute[] { nameAttr, valueAttr }));
-		
+
 		return table.createExampleSet();
 	}
 
@@ -404,6 +408,9 @@ public class DataConformanceOperator extends Operator {
 	private static final String MAX_QUEUE = "Maximum queue size";
 	private static final String MAX_TIME = "Maximum time per trace";
 
+	private static final String KEEP_DATA_SEARCH_SPACE = "Share data search space";
+	private static final String KEEP_CONTROL_FLOW_SEARCH_SPACE = "Share control-flow search space";
+
 	@Override
 	public List<ParameterType> getParameterTypes() {
 		List<ParameterType> params = super.getParameterTypes();
@@ -425,9 +432,17 @@ public class DataConformanceOperator extends Operator {
 		params.add(new ParameterTypeBoolean(MILP_CACHE, "Use LRU cache for MILP results.", true, true));
 
 		params.add(new ParameterTypeBoolean(STAGED_METHOD, "Use old staged method (BPM'13).", false, true));
-		
+
+		params.add(new ParameterTypeBoolean(KEEP_DATA_SEARCH_SPACE,
+				"Share the explored data search space (i.e., values of variables) between traces. This may speed up the computation but uses more memory.",
+				true, true));
+		params.add(new ParameterTypeBoolean(KEEP_CONTROL_FLOW_SEARCH_SPACE,
+				"Share the explored control-flow search space (i.e., marking and parikh vector) between traces. This may speed up the computation but uses more memory.",
+				true, true));
+
 		params.add(new ParameterTypeInt(MAX_QUEUE, "Maximum queue size", 1, Integer.MAX_VALUE, Integer.MAX_VALUE));
-		params.add(new ParameterTypeLong(MAX_TIME, "Maximum time per trace (seconds)", 1, Long.MAX_VALUE, Long.MAX_VALUE));
+		params.add(
+				new ParameterTypeLong(MAX_TIME, "Maximum time per trace (seconds)", 1, Long.MAX_VALUE, Long.MAX_VALUE));
 
 		return params;
 	}
@@ -451,11 +466,11 @@ public class DataConformanceOperator extends Operator {
 	private int getMaxQueuedStates() throws UndefinedParameterError {
 		return getParameterAsInt(MAX_QUEUE);
 	}
-	
+
 	private long getMaxTimePerTrace() throws UndefinedParameterError {
 		return getParameterAsLong(MAX_TIME);
-	}	
-	
+	}
+
 	private SearchMethod getSearchMethod() throws UndefinedParameterError {
 		for (SearchMethod method : SearchMethod.values()) {
 			if (method.toString().equals(getParameterAsString(SEARCH_METHOD))) {
@@ -484,6 +499,14 @@ public class DataConformanceOperator extends Operator {
 
 	private boolean isStagedMethod() throws UndefinedParameterError {
 		return getParameterAsBoolean(STAGED_METHOD);
+	}
+
+	private boolean getKeepDataFlowSearchSpace() {
+		return getParameterAsBoolean(KEEP_DATA_SEARCH_SPACE);
+	}
+
+	private boolean getKeepControlFlowSearchSpace() {
+		return getParameterAsBoolean(KEEP_CONTROL_FLOW_SEARCH_SPACE);
 	}
 
 	private ExampleSet getCostsControlFlow() throws UserError {

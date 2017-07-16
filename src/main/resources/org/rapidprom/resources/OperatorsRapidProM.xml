@@ -106,6 +106,11 @@
         </group>
         <group key="conversion">
         	<operator>
+	       		<key>convert_petri_net_to_rpst</key>
+	       		<class>org.rapidprom.operators.decomposition.PetriNetToRPSTOperator</class>
+	       		<icon>objects_transform.png</icon>
+	       	</operator>
+        	<operator>
         		<key>extract_petrinets_from_lpm</key>
         		<class>org.rapidprom.operators.conversion.ExtractLocalProcessModelsFromRankingOperator</class>
         		<icon>objects_transform.png</icon>
@@ -171,6 +176,18 @@
                 <icon>objects_transform.png</icon>
             </operator>
         </group>
+	    <group key="decomposition">
+	       	<operator>
+	       		<key>filter_rpst</key>
+	       		<class>org.rapidprom.operators.decomposition.FilterRPSTOperator</class>
+	       		<icon>objects_transform.png</icon>
+	       	</operator>
+	       	<operator>
+	       		<key>extract_leafs_from_rpst</key>
+	       		<class>org.rapidprom.operators.decomposition.ExtractRPSTLeafsAsPetriNetsOperator</class>
+	       		<icon>objects_transform.png</icon>
+	       	</operator>
+		</group> 
         <group key="discovery">
             <operator>
                 <key>alpha_miner</key>
@@ -473,5 +490,5 @@
                 <class>org.rapidprom.operators.util.XLogFactorySelectionOperator</class>
                 <icon>wrench.png</icon>
             </operator>
-        </group>
+        </group>               
 </operators>

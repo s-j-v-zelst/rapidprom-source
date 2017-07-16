@@ -52,7 +52,11 @@
         <key>utility</key>
         <name>Utility</name>
     </group>
-    
+
+    <group>
+        <key>decomposition</key>
+        <name>Decomposition</name>
+    </group>    
     
    <operator>
         <name>Petri net Complexity Metrics</name>
