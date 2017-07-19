@@ -1,7 +1,9 @@
 package org.rapidprom.operators.niek;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -49,7 +51,7 @@ public class OnlyContainCompleteEventsOperator extends Operator {
 		XLog log = logWrapper.getArtifact();
 		XLog clone = (XLog) log.clone();
 		for(XTrace trace : clone){
-			List<XEvent> newTrace = new LinkedList<XEvent>();
+			Set<XEvent> eventRemoveSet = new HashSet<XEvent>();
 			if(trace==null)
 				continue;
 			for(XEvent event : trace){
@@ -59,14 +61,14 @@ public class OnlyContainCompleteEventsOperator extends Operator {
 				if(xam==null)
 					continue;
 				
-				if(!xam.containsKey("lifecycle:transition") || event.getAttributes().get("lifecycle:transition").toString().equals("complete"))
-					newTrace.add(event);
+				if(xam.containsKey("lifecycle:transition") && !event.getAttributes().get("lifecycle:transition").toString().toLowerCase().equals("complete"))
+					eventRemoveSet.add(event);
 				if(!xam.containsKey("lifecycle:transition"))
 					xam.put("lifecycle:transition", new XAttributeLiteralImpl("lifecycle:transition", "complete"));
 			}
-			trace = new XTraceImpl(trace.getAttributes());
-			for(XEvent newEvent : newTrace)
-				trace.add(newEvent);
+			for(XEvent toRemoveEvent : eventRemoveSet){
+				trace.remove(toRemoveEvent);
+			}
 		}
 		List<XEventClassifier> classifiers = log.getClassifiers();
 		classifiers.clear();

@@ -19,14 +19,14 @@ import com.rapidminer.operator.ports.OutputPort;
 import com.rapidminer.operator.ports.metadata.GenerateNewMDRule;
 import com.rapidminer.tools.LogService;
 
-public class RandomLogFilterOperator extends Operator {
+public class BeamEntropyBasedLogFilterOperator3 extends Operator {
 
 	private InputPort inputXLog = getInputPorts()
 			.createPort("event log (ProM Event Log)", XLogIOObject.class);
 	private OutputPort outputEventLog = getOutputPorts()
 			.createPort("event log collection (ProM Event Log)");
 
-	public RandomLogFilterOperator(OperatorDescription description) {
+	public BeamEntropyBasedLogFilterOperator3(OperatorDescription description) {
 		super(description);
 		getTransformer().addRule(new GenerateNewMDRule(outputEventLog,
 				IOObjectCollection.class));
@@ -34,26 +34,24 @@ public class RandomLogFilterOperator extends Operator {
 
 	public void doWork() throws OperatorException {
 		Logger logger = LogService.getRoot();
-		logger.log(Level.INFO, "Start: Filter Log using Randomness");
+		logger.log(Level.INFO, "Start: Filter Log using Entropy (Greedy)");
 		long time = System.currentTimeMillis();
 
 		IOObjectCollection<SetStringIOObject> result = new IOObjectCollection<SetStringIOObject>();
 
-		RandomLogFilter filterer = new RandomLogFilter();
+		BeamEntropyBasedLogFilter3 filterer = new BeamEntropyBasedLogFilter3();
 
 		XLogIOObject logWrapper = inputXLog.getData(XLogIOObject.class);
 
 		PluginContext pluginContext = RapidProMGlobalContext.instance().getPluginContext();
-	
+
 		for (Set<String> log : filterer.getProjections(pluginContext, logWrapper.getArtifact())) {
 			result.add(new SetStringIOObject(log, pluginContext));
 		}
 		
 		outputEventLog.deliver(result);
-		
-		outputEventLog.deliver(result);
 
-		logger.log(Level.INFO, "End: Filter Log using Randomness ("
+		logger.log(Level.INFO, "End: Filter Log using Entropy (Greedy) ("
 				+ (System.currentTimeMillis() - time) / 1000 + " sec)");
 	}
 

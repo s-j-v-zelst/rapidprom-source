@@ -63,6 +63,11 @@
             	<class>org.rapidprom.operators.conformance.ETCPrecisionOperator</class>
             	<icon>checks.png</icon>
             </operator>
+            <operator>
+            	<key>ne_precision</key>
+            	<class>org.rapidprom.operators.conformance.NEPrecisionOperator</class>
+            	<icon>checks.png</icon>
+            </operator>
         </group>
         <group key="conversion">
             <operator>
@@ -235,6 +240,26 @@
 			 		<class>org.rapidprom.operators.niek.GreedyEntropyBasedLogFilterOperator</class>
 			   	</operator>
 			   	<operator>
+			 		<key>entopy_projections_direct</key>
+			 		<class>org.rapidprom.operators.niek.DirectEntropyBasedLogFilterOperator</class>
+			   	</operator>
+			   	<operator>
+			 		<key>entopy_projections_direct2</key>
+			 		<class>org.rapidprom.operators.niek.DirectEntropyBasedLogFilterOperator2</class>
+			   	</operator>
+			   	<operator>
+			 		<key>entopy_projections_beam</key>
+			 		<class>org.rapidprom.operators.niek.BeamEntropyBasedLogFilterOperator3</class>
+			   	</operator>
+			   	<operator>
+			 		<key>entopy_projections_greedy3</key>
+			 		<class>org.rapidprom.operators.niek.GreedyEntropyBasedLogFilterOperator3</class>
+			   	</operator>
+			   	<operator>
+			 		<key>entopy_projections_greedy2</key>
+			 		<class>org.rapidprom.operators.niek.GreedyEntropyBasedLogFilterOperator2</class>
+			   	</operator>
+			   	<operator>
 			 		<key>entopy_projections_global</key>
 			 		<class>org.rapidprom.operators.niek.EntropyBasedLogFilterOperator</class>
 			   	</operator>
@@ -261,6 +286,10 @@
 			   	<operator>
 			 		<key>apply_log_projection</key>
 			 		<class>org.rapidprom.operators.niek.ApplyProjectionOperator</class>
+			   	</operator>
+				<operator>
+			 		<key>calculate_determinism</key>
+			 		<class>org.rapidprom.operators.niek.DeterminismCalculatorOperator</class>
 			   	</operator>
             </group>
         </group> 

@@ -75,6 +75,36 @@
  		<key>entopy_projections_greedy</key>
    </operator>
    <operator>
+        <name>Apply entropy-based projections to log (direct, alpha=1/d)</name>
+        <Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
+        <help></help>
+ 		<key>entopy_projections_direct</key>
+   </operator>
+   <operator>
+        <name>Apply entropy-based projections to log (direct)</name>
+        <Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
+        <help></help>
+		<key>entopy_projections_direct2</key>
+   </operator>
+   <operator>
+        <name>Apply entropy-based projections to log (beam)</name>
+        <Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
+        <help></help>
+ 		<key>entopy_projections_beam</key>
+   </operator>
+   <operator>
+        <name>Apply entropy-based projections to log (greedy3)</name>
+        <Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
+        <help></help>
+ 		<key>entopy_projections_greedy3</key>
+   </operator>
+   <operator>
+        <name>Apply entropy-based projections to log (greedy2)</name>
+        <Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
+        <help></help>
+ 		<key>entopy_projections_greedy2</key>
+   </operator>
+   <operator>
         <name>Apply entropy-based projections to log (global)</name>
         <Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
         <help></help>
@@ -109,13 +139,25 @@
  		<Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
         <help></help>
         <key>entropy_adjusted_projections</key>
-  	</operator>
+   </operator>
+   <operator>
+   		<name>Calculate determinism</name>
+   		<Synopyis>Calculates determinism</Synopyis>
+   		<help></help>
+   		<key>calculate_determinism</key>
+   </operator> 
     
    <operator>
         <name>Calculate ETC 1-align precision</name>
         <Synopyis>Calculate precision using 1-align ETC conformance</Synopyis>
         <help></help>
  		<key>etc_1_align_precision</key>
+   </operator>
+   <operator>
+   	    <name>Calculate negative event precision</name>
+        <Synopyis>Calculate precision using weighted negative events</Synopyis>
+        <help></help>
+ 		<key>ne_precision</key>
    </operator>
    <operator>
         <name>Measure Model Precision based on alignments</name>

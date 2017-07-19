@@ -434,12 +434,30 @@ public class ConformanceAnalysisOperator extends AbstractRapidProMDiscoveryOpera
 		attributes.add(AttributeFactory.createAttribute(this.VALUECOL, Ontology.NUMERICAL));
 		table = new MemoryExampleTable(attributes);
 		if (unreliable || repResult == null) {
-			fillTableWithRow(table, PNRepResult.TRACEFITNESS, Double.NaN, attributes);
-			fillTableWithRow(table, PNRepResult.MOVELOGFITNESS, Double.NaN, attributes);
-			fillTableWithRow(table, PNRepResult.MOVEMODELFITNESS, Double.NaN, attributes);
-			fillTableWithRow(table, PNRepResult.RAWFITNESSCOST, Double.NaN, attributes);
-			fillTableWithRow(table, PNRepResult.NUMSTATEGENERATED, Double.NaN, attributes);
-
+			if(unreliable){
+				Map<String, Object> info = repResult.getInfo();
+				double trace_fitness = 0;
+				try {
+					trace_fitness = Double.parseDouble((String) info.get(PNRepResult.TRACEFITNESS));
+				} catch (Exception e) {
+					trace_fitness = (Double) info.get(PNRepResult.TRACEFITNESS);
+				}
+				double move_log_fitness = (Double) info.get(PNRepResult.MOVELOGFITNESS);
+				double move_model_fitness = (Double) info.get(PNRepResult.MOVEMODELFITNESS);
+				double raw_fitness_costs = (Double) info.get(PNRepResult.RAWFITNESSCOST);
+				double num_state_gen = (Double) info.get(PNRepResult.NUMSTATEGENERATED);
+				fillTableWithRow(table, PNRepResult.TRACEFITNESS, -trace_fitness, attributes);
+				fillTableWithRow(table, PNRepResult.MOVELOGFITNESS, -move_log_fitness, attributes);
+				fillTableWithRow(table, PNRepResult.MOVEMODELFITNESS, -move_model_fitness, attributes);
+				fillTableWithRow(table, PNRepResult.RAWFITNESSCOST, -raw_fitness_costs, attributes);
+				fillTableWithRow(table, PNRepResult.NUMSTATEGENERATED, -num_state_gen, attributes);
+			}else{
+				fillTableWithRow(table, PNRepResult.TRACEFITNESS, Double.NaN, attributes);
+				fillTableWithRow(table, PNRepResult.MOVELOGFITNESS, Double.NaN, attributes);
+				fillTableWithRow(table, PNRepResult.MOVEMODELFITNESS, Double.NaN, attributes);
+				fillTableWithRow(table, PNRepResult.RAWFITNESSCOST, Double.NaN, attributes);
+				fillTableWithRow(table, PNRepResult.NUMSTATEGENERATED, Double.NaN, attributes);
+			}
 		} else {
 
 			Map<String, Object> info = repResult.getInfo();
