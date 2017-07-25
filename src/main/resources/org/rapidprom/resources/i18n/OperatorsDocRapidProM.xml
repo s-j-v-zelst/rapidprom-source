@@ -371,6 +371,13 @@
     	<key>add_events_to_log</key>
   	</operator>
   	
+    <operator>
+        <name>Create Prefix Closure</name>
+        <synopsis>This operator creates a prefix-closure of the event log. For each trace, each prefix, excluding the empty prefix, is added.</synopsis>
+        <help>This operator creates a prefix-closure of the event log. For each trace, each prefix, excluding the empty prefix, is added.</help>
+        <key>create_prefix_closure</key>
+    </operator>
+  	
   	 <operator>
         <name>Merge Event Logs</name>
         <synopsis>This operator merges two event logs.</synopsis>
@@ -418,6 +425,13 @@
   		<synopsis>Computes all prefix alignments of all traces in an incremental fashion</synopsis>
   		<help>...</help>
   		<key>incremental_prefix_alignments</key>
+  	</operator>
+  	
+  	<operator>
+  		<name>Compute Prefix Alignments (Incremental / Prefix Aware)</name>
+  		<synopsis>Computes all prefix alignments of all traces in an incremental fashion</synopsis>
+  		<help>...</help>
+  		<key>incremental_prefix_alignments_prefix_aware</key>
   	</operator>
   	
   	<!-- STREAMS -->

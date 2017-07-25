@@ -83,6 +83,11 @@
             	<class>org.rapidprom.operators.conformance.IncrementalAlignmentOperator</class>
             	<icon>checks.png</icon>
             </operator>
+            <operator>
+            	<key>incremental_prefix_alignments_prefix_aware</key>
+            	<class>org.rapidprom.operators.conformance.IncrementalPrefixClosureAwareAlignmentOperatorImpl</class>
+            	<icon>checks.png</icon>
+            </operator>
         </group>
         <group key="conversion">
             <operator>
@@ -251,6 +256,10 @@
             <operator>
                 <key>add_trace_attributes_to_log</key>
                 <class>org.rapidprom.operators.logmanipulation.AddTraceAttributesToLogOperator</class>
+            </operator>
+            <operator>
+                <key>create_prefix_closure</key>
+                <class>org.rapidprom.operators.logmanipulation.PrefixClosureOperatorImpl</class>
             </operator>
             <operator>
                 <key>merge_two_event_logs</key>
