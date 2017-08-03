@@ -9,6 +9,11 @@
     </group>
     
     <group>
+    <key>concept_drift</key>
+    <name>Concept Drift</name>
+    </group>
+    
+    <group>
       <key>conformance</key>
       <name>Conformance</name>
     </group>
@@ -77,7 +82,7 @@
  		<key>petrinet_complexity_metrics</key>
    </operator>      
     
-   <operator>
+  <operator>
         <name>Filter Unmapped Events</name>
         <Synopyis>Removes events that are not mapped to any transition in the supplied mapping.</Synopyis>
         <help>
@@ -94,6 +99,11 @@
         </help>
  		<key>filter_low_frequency_traces</key>
    </operator>    
+
+    <group>
+    	<key>generation</key>
+    	<name>Generation</name>
+    </group>
     
    <operator>
         <name>Filter In High-Frequency Traces</name>
@@ -363,9 +373,8 @@
    <operator>
         <name>Import Event Log</name>
         <synopsis>This operator can be used to import a ProM XES event log from a file.</synopsis>
-        <help>This operator can be used to import a ProM XES event log file. 
-        Note that only .xes files can be read.</help>
-    <key>import_xlog</key>
+        <help>This operator can be used to import a ProM XES event log file. Note that only .xes files can be read.</help>
+    	<key>import_xlog</key>
   </operator>
   
   <operator>
@@ -374,6 +383,13 @@
         <help>This operator can be used to read a ProM XES log file</help>
     <key>extract_log_from_file</key>
   </operator>
+  <operator>
+        <name>Extract Petri Net</name>
+        <synopsis>This operator can be used to read a ProM Pnml petrinet file from a file object (useful for loops over file collections)</synopsis>
+        <help>This operator can be used to read a ProM  Pnml petrinet file</help>
+    <key>extract_petrinet_from_file</key>
+  </operator>
+  
   <operator>
         <name>Sort chronologically</name>
         <synopsis>This operator sorts traces and events within traces by timestamp (increasing).</synopsis>
@@ -639,6 +655,13 @@
     	<key>add_events_to_log</key>
   	</operator>
   	
+    <operator>
+        <name>Create Prefix Closure</name>
+        <synopsis>This operator creates a prefix-closure of the event log. For each trace, each prefix, excluding the empty prefix, is added.</synopsis>
+        <help>This operator creates a prefix-closure of the event log. For each trace, each prefix, excluding the empty prefix, is added.</help>
+        <key>create_prefix_closure</key>
+    </operator>
+  	
   	 <operator>
         <name>Merge Event Logs</name>
         <synopsis>This operator merges two event logs.</synopsis>
@@ -730,6 +753,20 @@
   		<synopsis>This operator computes Petri net (Workflow net) complexity metrics mainly based on: K.B. Lassen and W.M.P. van der Aalst; Complexity Metrics for Workflow Nets; Information and Software Technology, 51(3):610-626, 2009.</synopsis>
   		<help>This operator computes Petri net (Workflow net) complexity metrics mainly based on: K.B. Lassen and W.M.P. van der Aalst; Complexity Metrics for Workflow Nets; Information and Software Technology, 51(3):610-626, 2009. It contains the following metrics: Cardoso Metric, Cyclomatic Metric, Density Metric, Number of Arcs, Number of Places, Number of Transitions and Structuredness.</help>
   		<key>complexity_metrics_petri_net</key>
+  	</operator>
+  	
+  	<operator>
+  		<name>Compute Prefix Alignments (Incremental)</name>
+  		<synopsis>Computes all prefix alignments of all traces in an incremental fashion</synopsis>
+  		<help>...</help>
+  		<key>incremental_prefix_alignments</key>
+  	</operator>
+  	
+  	<operator>
+  		<name>Compute Prefix Alignments (Incremental / Prefix Aware)</name>
+  		<synopsis>Computes all prefix alignments of all traces in an incremental fashion</synopsis>
+  		<help>...</help>
+  		<key>incremental_prefix_alignments_prefix_aware</key>
   	</operator>
   	
   	<!-- STREAMS -->
@@ -913,6 +950,124 @@
         <synopsis>Imports a Causal net from a file.</synopsis>
         <help>Imports a Causal net from a file.</help>
         <key>import_causal_net</key>
+    </operator>
+
+    <operator>
+		<name>Generate Newick Tree Collection </name>
+		<synopsis>  </synopsis>
+		<help> </help>
+		<key>generate_process_tree</key>
+	</operator>
+	
+	 <operator>
+		<name>Detect Concept Drift (Decision Point Analysis) </name>
+		<synopsis>This is a synopsis  </synopsis>
+		<help> help is coming!</help>
+		<key>concept_drift_1</key>
+	</operator>
+	
+	 <operator>
+		<name>Detect Concept Drift (QUT) </name>
+		<synopsis> this is a synopsis </synopsis>
+		<help> help is coming!</help>
+		<key>concept_drift_qut</key>
+	</operator>
+	
+	 <operator>
+		<name>Measure Concept Drift</name>
+		<synopsis> this is a synopsis </synopsis>
+		<help> help is coming!</help>
+		<key>measure_concept_drift</key>
+	</operator>
+	
+	<operator>
+		<name>Generate Event Log from Newick Tree</name>
+		<synopsis>  </synopsis>
+		<help> </help>
+		<key>generate_log</key>
+	</operator>
+	
+	<operator>
+		<name>Generate Event Log from Petri Net</name>
+		<synopsis> this is a synopsis </synopsis>
+		<help> help is coming!</help>
+		<key>generate_log_from_petrinet</key>
+    </operator>
+    <operator>
+		<name>Generate Event Log With Concept Drift</name>
+		<synopsis>  </synopsis>
+		<help> </help>
+		<key>generate_log_with_conceptdrift</key>
+    </operator>
+
+	<operator>
+		<name>Convert Newick Tree to Process Tree</name>
+		<synopsis>  </synopsis>
+		<help> </help>
+        <key>convert_newickTree_to_processTree</key>
+    </operator>
+    
+    <operator>
+    	<name>Generate Noisy Log (Event Level)</name>
+		<synopsis>This operator creates a log with noise: each trace of the original log is modified until it no longer fits the given petri net.</synopsis>
+		<help> </help>
+        <key>generate_noisy_log_event</key>      
+    </operator>
+    
+     <operator>
+    	<name>Generate Noisy Log (Trace Level)</name>
+		<synopsis>This operator creates a log with noise: each trace of the original log is modified until it no longer fits the given petri net.</synopsis>
+		<help> </help>
+        <key>generate_noisy_log_trace</key>      
+    </operator>
+    
+    <operator>
+	    <name>Case Data Extractor </name>
+		<synopsis> This extracts data from the traces contained in an event log, such as relative occurrence, etc... </synopsis>
+		<help> An Event log is required as input </help>		
+        <key>case_data_extractor</key>                
+    </operator>
+	
+	
+	<operator>
+	    <name>Log Cross Validation </name>
+		<synopsis> This operator splits an event log and does k-fold cross validation </synopsis>
+		<help> An Event log is required as input </help>
+        <key>log_cross_validation</key>
+    </operator>
+    <operator>
+        <name>Split Log</name>
+		<synopsis> This operator splits an event log in two sublogs according to the split ratio </synopsis>
+		<help> An Event log is required as input </help>
+        <key>log_split</key>                    
+    </operator>
+    
+    <operator>
+        <name>Number of Unique Paths</name>
+		<synopsis>This operator calculate the number of unique paths within a process tree</synopsis>
+		<help>The output is an exampleset with a single cell containing the number of unique paths of the process tree given as input, and the parameter value.</help>
+        <key>unique_paths_calculator</key>
+    </operator>
+    
+    <operator>
+        <name>Boolean Conformance checker</name>
+		<synopsis>This operator replays an event log into a Petri net, and it decides whether traces perfectly fit the model (1) or not (0).</synopsis>
+		<help>The output is an exampleset with a row for each trace, indicating if it fits the  petri net or not.</help>
+        <key>boolean_conformance_checker</key>   
+    </operator>
+    
+    <operator>
+        <name>Count Unique Traces</name>
+		<synopsis>This operator counts the unique traces in a log according to the specified classifier.</synopsis>
+		<help>The output is an exampleset with the number of unique traces in the input log.</help>
+        <key>unique_traces_calculator</key>
+    </operator>
+    
+    <operator>
+        <name>Plugin Context Size</name>
+		<synopsis>This operator measures the size of the connection manager and provided object manager</synopsis>
+		<help>The output is an exampleset with the size of both.</help>
+        <key>rprom_count_pc_size</key>
     </operator>
 
 </operatorHelp>

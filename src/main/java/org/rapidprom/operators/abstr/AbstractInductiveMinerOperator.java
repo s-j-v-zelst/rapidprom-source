@@ -6,14 +6,14 @@ import org.processmining.plugins.InductiveMiner.mining.MiningParameters;
 import org.processmining.plugins.InductiveMiner.mining.MiningParametersEKS;
 import org.processmining.plugins.InductiveMiner.mining.MiningParametersIM;
 import org.processmining.plugins.InductiveMiner.mining.MiningParametersIMf;
-import org.processmining.plugins.InductiveMiner.mining.MiningParametersIMflc;
+
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.parameter.ParameterType;
 import com.rapidminer.parameter.ParameterTypeCategory;
 import com.rapidminer.parameter.ParameterTypeDouble;
 import com.rapidminer.parameter.UndefinedParameterError;
 
-public abstract class AbstractInductiveMinerOperator extends AbstractLabelAwareRapidProMDiscoveryOperator {
+public abstract class AbstractInductiveMinerOperator extends AbstractRapidProMEventLogBasedOperator {
 
 	public AbstractInductiveMinerOperator(OperatorDescription description) {
 		super(description);

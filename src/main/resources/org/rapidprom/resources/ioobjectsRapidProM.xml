@@ -245,7 +245,6 @@
 		class="org.rapidprom.ioobjects.streams.XSRunnableIOObject"
 		reportable="false">
 	</ioobject>
-	<!-- PADAS -->
 	<ioobject name="SLEXMMIOObject"
 		class="org.rapidprom.ioobjects.padas.SLEXMMIOObject"
 		reportable="false">
@@ -262,4 +261,9 @@
 		reportable="true">
 		<renderer>org.rapidprom.ioobjectrenderers.PetriNetRPSTIOObjectRenderer</renderer>
 	</ioobject>	
+	<ioobject name="NewickTreeIOObject"
+		class="org.rapidprom.ioobjects.NewickTreeIOObject"
+		reportable="true">
+		<renderer>org.rapidprom.ioobjectrenderers.NewickTreeIOObjectRenderer</renderer>
+	</ioobject>
 </ioobjects>

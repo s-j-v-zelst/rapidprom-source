@@ -11,7 +11,7 @@ import org.processmining.models.graphbased.directed.petrinet.Petrinet;
 import org.processmining.models.semantics.petrinet.Marking;
 import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.PetriNetIOObject;
-import org.rapidprom.operators.abstr.AbstractLabelAwareRapidProMDiscoveryOperator;
+import org.rapidprom.operators.abstr.AbstractRapidProMEventLogBasedOperator;
 
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
@@ -31,7 +31,7 @@ import com.rapidminer.tools.LogService;
  * @author abolt
  *
  */
-public class AlphaMinerOperator extends AbstractLabelAwareRapidProMDiscoveryOperator {
+public class AlphaMinerOperator extends AbstractRapidProMEventLogBasedOperator {
 
 	private static final String PARAMETER_1_KEY = "Variant",
 			PARAMETER_1_DESCR = "Defines which version of the AlphaMiner will be used: "
