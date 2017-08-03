@@ -10,7 +10,12 @@ import org.deckfour.xes.classification.XEventClassifier;
 import org.deckfour.xes.model.XLog;
 import org.processmining.log.plugins.ImportXEventClassifierListPlugin;
 import org.processmining.plugins.log.OpenNaiveLogFilePlugin;
+import org.processmining.xeslite.plugin.AbstractOpenXESFilePlugin;
 import org.processmining.xeslite.plugin.OpenLogFileDiskImplPlugin;
+import org.processmining.xeslite.plugin.OpenLogFileDiskImplWithoutCachePlugin;
+import org.processmining.xeslite.plugin.OpenLogFileDiskMemoryStoreImpl;
+import org.processmining.xeslite.plugin.OpenLogFileDiskSequentialAccessImplPlugin;
+import org.processmining.xeslite.plugin.OpenLogFileDiskSequentialAccessImplWithoutCachePlugin;
 import org.processmining.xeslite.plugin.OpenLogFileLiteImplPlugin;
 import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.XLogIOObject;
@@ -35,7 +40,8 @@ import com.rapidminer.tools.LogService;
 public class ExtractXLogOperator extends AbstractRapidProMExtractorOperator<XLogIOObject> {
 
 	public static enum ImplementingPlugin {
-		NAIVE("Naive"), LIGHT_WEIGHT_SEQ_ID("Lightweight & Sequential IDs"), MAP_DB("Buffered by MAPDB");
+		NAIVE("Naive"), LIGHT_WEIGHT_SEQ_ID("Lightweight & Sequential IDs"), XESLITE_MAP_DB("XESLite (MapDB)"), 
+		XESLITE_MAP_DB_SEQUENTIAL("XESLite (MapDB Sequential)"), XESLITE_IN_MEMORY("XESLite (In-memory)");
 
 		private final String name;
 
@@ -106,8 +112,14 @@ public class ExtractXLogOperator extends AbstractRapidProMExtractorOperator<XLog
 		case LIGHT_WEIGHT_SEQ_ID:
 			result = importLeightWeight(file);
 			break;
-		case MAP_DB:
-			result = importMapDb(file);
+		case XESLITE_MAP_DB:
+			result = importXESLiteMapDB(file);
+			break;
+		case XESLITE_MAP_DB_SEQUENTIAL:
+			result = importXESLiteMapDBSequential(file);
+			break;
+		case XESLITE_IN_MEMORY:
+			result = importXESLiteInMemory(file);
 			break;
 		case NAIVE:
 		default:
@@ -119,22 +131,40 @@ public class ExtractXLogOperator extends AbstractRapidProMExtractorOperator<XLog
 
 	private static XLog importLeightWeight(File file) throws Exception {
 		XLog result = null;
-		OpenLogFileLiteImplPlugin plugin = new OpenLogFileLiteImplPlugin();
+		AbstractOpenXESFilePlugin plugin = new OpenLogFileLiteImplPlugin();
 		result = (XLog) plugin.importFile(
 				RapidProMGlobalContext.instance().getFutureResultAwarePluginContext(OpenLogFileLiteImplPlugin.class),
 				file);
 		return result;
 	}
 
-	private static XLog importMapDb(File file) throws Exception {
+	private static XLog importXESLiteMapDB(File file) throws Exception {
 		XLog result = null;
-		OpenLogFileDiskImplPlugin plugin = new OpenLogFileDiskImplPlugin();
+		AbstractOpenXESFilePlugin plugin = new OpenLogFileDiskImplWithoutCachePlugin();
+		result = (XLog) plugin.importFile(
+				RapidProMGlobalContext.instance().getFutureResultAwarePluginContext(OpenLogFileDiskImplPlugin.class),
+				file);
+		return result;
+	}
+	
+	private static XLog importXESLiteMapDBSequential(File file) throws Exception {
+		XLog result = null;
+		AbstractOpenXESFilePlugin plugin = new OpenLogFileDiskSequentialAccessImplWithoutCachePlugin();
 		result = (XLog) plugin.importFile(
 				RapidProMGlobalContext.instance().getFutureResultAwarePluginContext(OpenLogFileDiskImplPlugin.class),
 				file);
 		return result;
 	}
 
+	private static XLog importXESLiteInMemory(File file) throws Exception {
+		XLog result = null;
+		AbstractOpenXESFilePlugin plugin = new OpenLogFileDiskMemoryStoreImpl();
+		result = (XLog) plugin.importFile(
+				RapidProMGlobalContext.instance().getFutureResultAwarePluginContext(OpenLogFileDiskImplPlugin.class),
+				file);
+		return result;
+	}	
+	
 	private static XLog importLogNaive(File file) throws Exception {
 		XLog result = null;
 		OpenNaiveLogFilePlugin plugin = new OpenNaiveLogFilePlugin();

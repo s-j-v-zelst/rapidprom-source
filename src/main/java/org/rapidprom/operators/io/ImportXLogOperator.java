@@ -17,6 +17,7 @@ import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
 import com.rapidminer.operator.ports.metadata.MetaData;
 import com.rapidminer.parameter.ParameterType;
+import com.rapidminer.parameter.ParameterTypeBoolean;
 import com.rapidminer.parameter.ParameterTypeCategory;
 import com.rapidminer.parameter.ParameterTypeFile;
 
@@ -28,6 +29,8 @@ import com.rapidminer.parameter.ParameterTypeFile;
  */
 public class ImportXLogOperator extends AbstractRapidProMImportOperator<XLogIOObject> {
 
+	private static final String PARAMETER_LOAD_CLASSIFIER_DESC = "Load the list of classifiers specified by this event log.";
+	private static final String PARAMETER_LOAD_CLASSIFIER_KEY = "Load classifier";
 	private final static String PARAMETER_KEY_IMPORTER = "importer";
 	private final static String PARAMETER_DESC_IMPORTER = "Select the implementing importer, importers differ in terms of performance: "
 			+ "The \"Naive\" importer loads the Log completely in memory (faster, but more memory usage). "
@@ -48,20 +51,24 @@ public class ImportXLogOperator extends AbstractRapidProMImportOperator<XLogIOOb
 	@SuppressWarnings("unchecked")
 	@Override
 	public MetaData getGeneratedMetaData() throws OperatorException {
-		getLogger().fine("Generating meta data for " + this.getName());
-		ImportXEventClassifierListPlugin plugin = new ImportXEventClassifierListPlugin();
-		List<XEventClassifier> classifiers;
-		try {
-			classifiers = (List<XEventClassifier>) plugin.importFile(RapidProMGlobalContext.instance()
-					.getFutureResultAwarePluginContext(ImportXEventClassifierListPlugin.class),
-					getParameterAsFile(PARAMETER_KEY_FILE));
-		} catch (Exception e) {
-			return new XLogIOObjectMetaData();
+		if (getParameterAsBoolean(PARAMETER_LOAD_CLASSIFIER_KEY)) {
+			getLogger().fine("Generating meta data for " + this.getName());
+			ImportXEventClassifierListPlugin plugin = new ImportXEventClassifierListPlugin();
+			List<XEventClassifier> classifiers;
+			try {
+				classifiers = (List<XEventClassifier>) plugin.importFile(RapidProMGlobalContext.instance()
+						.getFutureResultAwarePluginContext(ImportXEventClassifierListPlugin.class),
+						getParameterAsFile(PARAMETER_KEY_FILE));
+			} catch (Exception e) {
+				return new XLogIOObjectMetaData();
+			}
+			if (classifiers != null)
+				return new XLogIOObjectMetaData(classifiers);
+			else
+				return new XLogIOObjectMetaData();			
+		} else {			
+			return new XLogIOObjectMetaData();			
 		}
-		if (classifiers != null)
-			return new XLogIOObjectMetaData(classifiers);
-		else
-			return new XLogIOObjectMetaData();
 	}
 
 	protected XLogIOObject read(File file) throws Exception {
@@ -78,6 +85,7 @@ public class ImportXLogOperator extends AbstractRapidProMImportOperator<XLogIOOb
 		types.add(new ParameterTypeFile(PARAMETER_KEY_FILE, PARAMETER_DESC_FILE, false, SUPPORTED_FILE_FORMATS));
 		types.add(createImporterParameterTypeCategory(PARAMETER_KEY_IMPORTER, PARAMETER_DESC_IMPORTER,
 				PARAMETER_OPTIONS_IMPORTER));
+		types.add(new ParameterTypeBoolean(PARAMETER_LOAD_CLASSIFIER_KEY, PARAMETER_LOAD_CLASSIFIER_DESC, true, true));		
 		return types;
 	}
 

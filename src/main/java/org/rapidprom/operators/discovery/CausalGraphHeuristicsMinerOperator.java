@@ -4,8 +4,10 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.deckfour.xes.classification.XEventClassifier;
+import org.deckfour.xes.model.XLog;
 import org.processmining.dataawarecnetminer.mining.classic.HeuristicsCausalGraphBuilder.HeuristicsConfig;
-import org.processmining.dataawarecnetminer.plugins.CausalGraphMinerPlugin;
+import org.processmining.dataawarecnetminer.mining.classic.HeuristicsCausalGraphMiner;
 import org.processmining.models.causalgraph.SimpleCausalGraph;
 import org.processmining.models.causalgraph.XEventClassifierAwareSimpleCausalGraph;
 import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
@@ -71,8 +73,7 @@ public class CausalGraphHeuristicsMinerOperator extends AbstractRapidProMDiscove
 		heuristicsConfig.setAllTasksConnected(getParameterAsBoolean(PARAM_KEY_ALL_CONN));
 		heuristicsConfig.setAcceptedTasksConnected(getParameterAsBoolean(PARAM_KEY_ACC_CONN));
 
-		SimpleCausalGraph scag = CausalGraphMinerPlugin.doMineCausalGraph(getXLog(), getXEventClassifier(),
-				heuristicsConfig);
+		SimpleCausalGraph scag = doMineCausalGraph(getXLog(), getXEventClassifier(), heuristicsConfig);
 
 		XEventClassifierAwareSimpleCausalGraph xescag = XEventClassifierAwareSimpleCausalGraph.Factory
 				.construct(getXEventClassifier(), scag.getSetActivities(), scag.getCausalRelations());
@@ -84,6 +85,13 @@ public class CausalGraphHeuristicsMinerOperator extends AbstractRapidProMDiscove
 
 		logger.log(Level.INFO, "end: discover causal graph (" + (System.currentTimeMillis() - time) / 1000 + " sec)");
 
+	}
+
+	private static SimpleCausalGraph doMineCausalGraph(XLog log, XEventClassifier classifier,
+			HeuristicsConfig heuristicsConfig) {
+		HeuristicsCausalGraphMiner miner = new HeuristicsCausalGraphMiner(log, classifier);
+		miner.setHeuristicsConfig(heuristicsConfig);
+		return miner.mineCausalGraph();
 	}
 
 	@Override

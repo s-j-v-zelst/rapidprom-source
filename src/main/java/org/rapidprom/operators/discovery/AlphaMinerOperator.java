@@ -6,11 +6,12 @@ import java.util.logging.Logger;
 
 import org.processmining.alphaminer.plugins.AlphaMinerPlugin;
 import org.processmining.framework.plugin.PluginContext;
+import org.processmining.models.graphbased.AttributeMap;
 import org.processmining.models.graphbased.directed.petrinet.Petrinet;
 import org.processmining.models.semantics.petrinet.Marking;
 import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.PetriNetIOObject;
-import org.rapidprom.operators.abstr.AbstractRapidProMDiscoveryOperator;
+import org.rapidprom.operators.abstr.AbstractLabelAwareRapidProMDiscoveryOperator;
 
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
@@ -30,7 +31,7 @@ import com.rapidminer.tools.LogService;
  * @author abolt
  *
  */
-public class AlphaMinerOperator extends AbstractRapidProMDiscoveryOperator {
+public class AlphaMinerOperator extends AbstractLabelAwareRapidProMDiscoveryOperator {
 
 	private static final String PARAMETER_1_KEY = "Variant",
 			PARAMETER_1_DESCR = "Defines which version of the AlphaMiner will be used: "
@@ -80,7 +81,12 @@ public class AlphaMinerOperator extends AbstractRapidProMDiscoveryOperator {
 			break;
 		}
 
-		PetriNetIOObject petriNetIOObject = new PetriNetIOObject((Petrinet) result[0], (Marking) result[1], null,
+		Petrinet net = (Petrinet) result[0];
+		if (getLabel() != null && !getLabel().isEmpty()) {
+			net.getAttributeMap().put(AttributeMap.LABEL, getLabel());
+		}
+		
+		PetriNetIOObject petriNetIOObject = new PetriNetIOObject(net, (Marking) result[1], null,
 				pluginContext);
 
 		output.deliver(petriNetIOObject);

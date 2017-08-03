@@ -22,8 +22,8 @@ public class PetriNetIOObjectRenderer
 	protected JComponent runVisualization(PetriNetIOObject artifact) {
 		PetriNetVisualization visualizer = new PetriNetVisualization();
 		if (artifact.getArtifact() instanceof Petrinet)
-			return visualizer.visualize(artifact.getPluginContext(),
-					(Petrinet) artifact.getArtifact());
+			return opaqueBg(visualizer.visualize(artifact.getPluginContext(),
+					(Petrinet) artifact.getArtifact()));
 		if (artifact.getArtifact() instanceof ResetInhibitorNet)
 			return visualizer.visualize(artifact.getPluginContext(),
 					(ResetInhibitorNet) artifact.getArtifact());
@@ -35,6 +35,11 @@ public class PetriNetIOObjectRenderer
 					(InhibitorNet) artifact.getArtifact());
 		else
 			return null;
+	}
+
+	private JComponent opaqueBg(JComponent c) {
+		c.setOpaque(true);
+		return c;
 	}
 
 }

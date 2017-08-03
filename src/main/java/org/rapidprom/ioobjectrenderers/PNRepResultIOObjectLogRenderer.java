@@ -1,6 +1,7 @@
 package org.rapidprom.ioobjectrenderers;
 
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 
 import org.processmining.plugins.petrinet.replayresult.visualization.PNLogReplayResultVisPanel;
 import org.rapidprom.ioobjectrenderers.abstr.AbstractRapidProMIOObjectRenderer;
@@ -15,7 +16,10 @@ public class PNRepResultIOObjectLogRenderer extends AbstractRapidProMIOObjectRen
 
 	@Override
 	protected JComponent runVisualization(PNRepResultIOObject ioObject) {
-		return new PNLogReplayResultVisPanel(ioObject.getPn().getArtifact(), ioObject.getXLog(), ioObject.getArtifact(),
+		if (ioObject.getArtifact() == null) {
+			return new JLabel("No alignment could be computed");
+		}		
+		return new PNLogReplayResultVisPanel(ioObject.getXLog(), ioObject.getArtifact(),
 				ioObject.getPluginContext().getProgress());
 	}
 
