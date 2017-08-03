@@ -7,6 +7,11 @@
                 <icon>magnifying_glass.png</icon>
             </operator>
             <operator>
+            	<key>complexity_metrics_petri_net</key>
+            	<class>org.rapidprom.operators.analysis.PetriNetMetricsOperatorImpl</class>
+            	<icon>magnifying_glass.png</icon>
+            </operator>
+            <operator>
                 <key>show_pompom_view</key>
                 <class>org.rapidprom.operators.analysis.ShowPomPomViewOperator</class>
                 <icon>magnifying_glass.png</icon>
@@ -30,7 +35,7 @@
                 <key>reduce_petrinet</key>
                 <class>org.rapidprom.operators.analysis.MurataReductionOperator</class>
                 <icon>magnifying_glass.png</icon>
-            </operator>    
+            </operator>
             <operator>
                 <key>perform_predictions_of_business_process_features</key>
                 <class>org.rapidprom.operators.analysis.FeaturePredictionAnalysisOperator</class>
@@ -113,6 +118,11 @@
                 <icon>hardhat.png</icon>
             </operator>
             <operator>
+                <key>discover_causal_graph_fhm</key>
+                <class>org.rapidprom.operators.discovery.CausalGraphHeuristicsMinerOperator</class>
+                <icon>hardhat.png</icon>
+            </operator>
+            <operator>
                 <key>ilp_miner</key>
                 <class>org.rapidprom.operators.discovery.ILPMinerOperator</class>
                 <icon>hardhat.png</icon>
@@ -164,6 +174,23 @@
                 <key>export_log</key>
                 <class>org.rapidprom.operators.io.ExportXLogOperator</class>
                 <icon>inbox_out.png</icon>
+            </operator>
+        </group>
+        <group key="filtering">
+            <operator>
+                <key>filter_log_automaton</key>
+                <class>org.rapidprom.operators.filtering.FilterOutInfrequentBehaviorLogAutomatonOperatorImpl</class>
+                <icon>funnel.png</icon>
+            </operator>
+            <operator>
+            	<key>matrix_filter</key>
+            	<class>org.rapidprom.operators.filtering.MatrixFilterOperatorImpl</class>
+            	<icon>funnel.png</icon>
+            </operator>
+            <operator>
+            	<key>sequence_filter</key>
+            	<class>org.rapidprom.operators.filtering.SequenceFilterOperatorImpl</class>
+            	<icon>funnel.png</icon>
             </operator>
         </group>
         <group key="import">

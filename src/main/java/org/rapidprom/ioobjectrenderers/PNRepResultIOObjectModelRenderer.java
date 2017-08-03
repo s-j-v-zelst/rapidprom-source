@@ -1,7 +1,9 @@
 package org.rapidprom.ioobjectrenderers;
 
 import javax.swing.JComponent;
+import javax.swing.JPanel;
 
+import org.processmining.framework.connections.ConnectionCannotBeObtained;
 import org.processmining.plugins.pnalignanalysis.visualization.projection.PNLogReplayProjectedVisPanel;
 import org.rapidprom.ioobjectrenderers.abstr.AbstractRapidProMIOObjectRenderer;
 import org.rapidprom.ioobjects.PNRepResultIOObject;
@@ -21,10 +23,10 @@ public class PNRepResultIOObjectModelRenderer extends AbstractRapidProMIOObjectR
 			return new PNLogReplayProjectedVisPanel(ioObject.getPluginContext(), ioObject.getPn().getArtifact(),
 					ioObject.getPn().getInitialMarking(), ioObject.getXLog(), ioObject.getMapping(),
 					ioObject.getArtifact());
-		} catch (ObjectNotFoundException e) {
+		} catch (ObjectNotFoundException | ConnectionCannotBeObtained e) {
 			e.printStackTrace();
 		}
-		return null;
+		return new JPanel();
 	}
 
 }

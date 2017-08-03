@@ -24,6 +24,12 @@
 		<renderer>org.rapidprom.ioobjectrenderers.BPMNIOObjectRenderer</renderer>
 	</ioobject>
 	<ioobject
+		name="Causal Graph"
+		class="org.rapidprom.ioobjects.XEventClassifierAwareSimpleCausalGraphIOObject"
+		reportable="false">
+		<renderer>org.rapidprom.ioobjectrenderers.XEventClassifierAwareSimpleCausalGraphIOObjectRenderer</renderer>
+	</ioobject>
+	<ioobject
 		name="PredictorProM"
 		class="org.rapidprom.ioobjects.PredictorIOObject"
 		reportable="true">
