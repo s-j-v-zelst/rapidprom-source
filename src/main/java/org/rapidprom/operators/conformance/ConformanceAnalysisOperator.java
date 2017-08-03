@@ -25,9 +25,6 @@ import org.processmining.models.graphbased.directed.petrinet.PetrinetGraph;
 import org.processmining.models.graphbased.directed.petrinet.elements.Place;
 import org.processmining.models.graphbased.directed.petrinet.elements.Transition;
 import org.processmining.models.semantics.petrinet.Marking;
-import org.processmining.plugins.astar.petrinet.AbstractPetrinetReplayer;
-import org.processmining.plugins.astar.petrinet.PetrinetReplayerWithILP;
-import org.processmining.plugins.astar.petrinet.PetrinetReplayerWithoutILP;
 import org.processmining.plugins.connectionfactories.logpetrinet.TransEvClassMapping;
 import org.processmining.plugins.petrinet.replayer.PNLogReplayer;
 import org.processmining.plugins.petrinet.replayer.algorithms.IPNReplayParameter;
@@ -209,8 +206,7 @@ public class ConformanceAnalysisOperator extends AbstractRapidProMDiscoveryOpera
 		PNRepResult repResult = null;
 
 		try {
-			alignments = limiter.callWithTimeout(new ALIGNMENT_CALCULATOR(pluginContext),
-					getParameterAsInt(PARAMETER_2_KEY), TimeUnit.SECONDS, true);
+			alignments = new ALIGNMENT_CALCULATOR(pluginContext).call();
 			repResult = alignments.getArtifact();
 
 			output.deliver(alignments);
@@ -226,7 +222,7 @@ public class ConformanceAnalysisOperator extends AbstractRapidProMDiscoveryOpera
 				+ (System.currentTimeMillis() - time) / 1000 + " sec)");
 	}
 
-	class ALIGNMENT_CALCULATOR implements Callable<PNRepResultIOObject> {
+	class ALIGNMENT_CALCULATOR {
 
 		PluginContext pluginContext;
 
@@ -234,7 +230,6 @@ public class ConformanceAnalysisOperator extends AbstractRapidProMDiscoveryOpera
 			pluginContext = input;
 		}
 
-		@Override
 		public PNRepResultIOObject call() throws Exception {
 
 			XLogIOObject xLog = new XLogIOObject(getXLog(), pluginContext);
@@ -453,12 +448,30 @@ public class ConformanceAnalysisOperator extends AbstractRapidProMDiscoveryOpera
 		attributes.add(AttributeFactory.createAttribute(this.VALUECOL, Ontology.NUMERICAL));
 		table = new MemoryExampleTable(attributes);
 		if (unreliable || repResult == null) {
-			fillTableWithRow(table, PNRepResult.TRACEFITNESS, Double.NaN, attributes);
-			fillTableWithRow(table, PNRepResult.MOVELOGFITNESS, Double.NaN, attributes);
-			fillTableWithRow(table, PNRepResult.MOVEMODELFITNESS, Double.NaN, attributes);
-			fillTableWithRow(table, PNRepResult.RAWFITNESSCOST, Double.NaN, attributes);
-			fillTableWithRow(table, PNRepResult.NUMSTATEGENERATED, Double.NaN, attributes);
-
+			if(unreliable){
+				Map<String, Object> info = repResult.getInfo();
+				double trace_fitness = 0;
+				try {
+					trace_fitness = Double.parseDouble((String) info.get(PNRepResult.TRACEFITNESS));
+				} catch (Exception e) {
+					trace_fitness = (Double) info.get(PNRepResult.TRACEFITNESS);
+				}
+				double move_log_fitness = (Double) info.get(PNRepResult.MOVELOGFITNESS);
+				double move_model_fitness = (Double) info.get(PNRepResult.MOVEMODELFITNESS);
+				double raw_fitness_costs = (Double) info.get(PNRepResult.RAWFITNESSCOST);
+				double num_state_gen = (Double) info.get(PNRepResult.NUMSTATEGENERATED);
+				fillTableWithRow(table, PNRepResult.TRACEFITNESS, -trace_fitness, attributes);
+				fillTableWithRow(table, PNRepResult.MOVELOGFITNESS, -move_log_fitness, attributes);
+				fillTableWithRow(table, PNRepResult.MOVEMODELFITNESS, -move_model_fitness, attributes);
+				fillTableWithRow(table, PNRepResult.RAWFITNESSCOST, -raw_fitness_costs, attributes);
+				fillTableWithRow(table, PNRepResult.NUMSTATEGENERATED, -num_state_gen, attributes);
+			}else{
+				fillTableWithRow(table, PNRepResult.TRACEFITNESS, Double.NaN, attributes);
+				fillTableWithRow(table, PNRepResult.MOVELOGFITNESS, Double.NaN, attributes);
+				fillTableWithRow(table, PNRepResult.MOVEMODELFITNESS, Double.NaN, attributes);
+				fillTableWithRow(table, PNRepResult.RAWFITNESSCOST, Double.NaN, attributes);
+				fillTableWithRow(table, PNRepResult.NUMSTATEGENERATED, Double.NaN, attributes);
+			}
 		} else {
 
 			Map<String, Object> info = repResult.getInfo();

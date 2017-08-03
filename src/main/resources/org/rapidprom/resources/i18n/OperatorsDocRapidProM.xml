@@ -112,6 +112,102 @@
         <help>Projects an aligned log on a Data Petri net.</help>
  		<key>project_alignment_on_dpn</key>
    </operator>
+   <operator>
+        <name>Only contain lifecycle 'complete' events</name>
+        <Synopyis>Removes all events with another lifecycle than 'complete'</Synopyis>
+        <help></help>
+ 		<key>contain_only_complete_log</key>
+   </operator>
+   <operator>
+        <name>Add noisy activities to event log</name>
+        <Synopyis>Adds noisy activities to log</Synopyis>
+        <help></help>
+        <key>add_noisy_activities_log</key>
+   </operator>
+   <operator>
+   		<name>Apply projection set to log</name>
+   		<Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
+        <help></help>
+   		<key>apply_log_projection</key>
+   </operator>
+   <operator>
+        <name>Apply entropy-based projections to log (greedy)</name>
+        <Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
+        <help></help>
+ 		<key>entopy_projections_greedy</key>
+   </operator>
+   <operator>
+        <name>Apply entropy-based projections to log (direct, alpha=1/d)</name>
+        <Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
+        <help></help>
+ 		<key>entopy_projections_direct</key>
+   </operator>
+   <operator>
+        <name>Apply entropy-based projections to log (direct)</name>
+        <Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
+        <help></help>
+		<key>entopy_projections_direct2</key>
+   </operator>
+   <operator>
+        <name>Apply entropy-based projections to log (beam)</name>
+        <Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
+        <help></help>
+ 		<key>entopy_projections_beam</key>
+   </operator>
+   <operator>
+        <name>Apply entropy-based projections to log (greedy3)</name>
+        <Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
+        <help></help>
+ 		<key>entopy_projections_greedy3</key>
+   </operator>
+   <operator>
+        <name>Apply entropy-based projections to log (greedy2)</name>
+        <Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
+        <help></help>
+ 		<key>entopy_projections_greedy2</key>
+   </operator>
+   <operator>
+        <name>Apply entropy-based projections to log (global)</name>
+        <Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
+        <help></help>
+ 		<key>entopy_projections_global</key>
+   </operator>
+   <operator>
+        <name>Apply KL-divergence-based projections to log (greedy)</name>
+        <Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
+        <help></help>
+ 		<key>kl_projections_greedy</key>
+   </operator>
+   <operator>
+        <name>Apply frequency-based projections to log (ascendingly)</name>
+        <Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
+        <help></help>
+ 		<key>frequency_projections_1</key>
+   </operator>
+   <operator>
+        <name>Apply frequency-based projections to log (descendingly)</name>
+        <Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
+        <help></help>
+ 		<key>frequency_projections_2</key>
+   </operator>
+   <operator>
+        <name>Apply random projections to log</name>
+        <Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
+        <help></help>
+ 		<key>random_projections</key>
+   </operator>
+   <operator>
+   		<name>Apply adjusted entropy-based projections to log (greedy)</name>
+ 		<Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
+        <help></help>
+        <key>entropy_adjusted_projections</key>
+   </operator>
+   <operator>
+   		<name>Calculate determinism</name>
+   		<Synopyis>Calculates determinism</Synopyis>
+   		<help></help>
+   		<key>calculate_determinism</key>
+   </operator> 
    
     <!-- IMPORTERS -->
    <operator>
@@ -119,6 +215,12 @@
         <Synopyis>Calculate precision using 1-align ETC conformance</Synopyis>
         <help>This technique uses the Align-ETC precision measurement plugin from ProM. The underlying technique is explained &lt;a href="http://dx.doi.org/10.1007/s10257-014-0234-7"&gt;here&lt;/a&gt;</help>
  		<key>etc_1_align_precision</key>
+   </operator>
+   <operator>
+   	    <name>Calculate negative event precision</name>
+        <Synopyis>Calculate precision using weighted negative events</Synopyis>
+        <help></help>
+ 		<key>ne_precision</key>
    </operator>
    <operator>
         <name>Measure Model Precision based on alignments</name>
@@ -791,6 +893,12 @@
         <synopsis>Converts a Causal net into a Petri net representation.</synopsis>
         <help>Converts a Causal net into a Petri net representation.</help>
         <key>convert_causal_net_into_petri_net</key>
+    </operator>
+    <operator>
+    	<name>Clean up Threads (RapidProM)</name>
+        <synopsis>This operator kills all threads which seems to be spawned by RapidProM operators that were not killed properly. WARNING: might kill too much leading to unexpected behavior.</synopsis>
+		<help>This operator kills all threads which seems to be spawned by RapidProM operators that were not killed properly. WARNING: might kill too much leading to unexpected behavior.</help>
+		<key>rprom_clear_threads</key>
     </operator>
 
     <operator>

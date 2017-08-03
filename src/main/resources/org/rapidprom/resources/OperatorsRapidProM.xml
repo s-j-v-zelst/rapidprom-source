@@ -103,6 +103,11 @@
                 <class>org.rapidprom.operators.conformance.DataConformanceOperator</class>
                 <icon>checks.png</icon>
             </operator>
+            <operator>
+            	<key>ne_precision</key>
+            	<class>org.rapidprom.operators.conformance.NEPrecisionOperator</class>
+            	<icon>checks.png</icon>
+            </operator>
         </group>
         <group key="conversion">
         	<operator>
@@ -383,10 +388,72 @@
                 <class>org.rapidprom.operators.logmanipulation.TimestampSortOperator</class>
             </operator>
             <operator>
-                <key>merge_subsequent_events</key>
-                <class>org.rapidprom.operators.logmanipulation.MergeSubsequentEventsOperator</class>
+            	<key>contain_only_complete_log</key>
+            	<class>org.rapidprom.operators.niek.OnlyContainCompleteEventsOperator</class>
             </operator>
             <operator>
+                <key>merge_subsequent_events</key>
+                <class>org.rapidprom.operators.logmanipulation.MergeSubsequentEventsOperator</class>
+   			</operator>
+            <group key="log_projections">
+            	<operator>
+			 		<key>entopy_projections_greedy</key>
+			 		<class>org.rapidprom.operators.niek.GreedyEntropyBasedLogFilterOperator</class>
+			   	</operator>
+			   	<operator>
+			 		<key>entopy_projections_direct</key>
+			 		<class>org.rapidprom.operators.niek.DirectEntropyBasedLogFilterOperator</class>
+			   	</operator>
+			   	<operator>
+			 		<key>entopy_projections_direct2</key>
+			 		<class>org.rapidprom.operators.niek.DirectEntropyBasedLogFilterOperator2</class>
+			   	</operator>
+			   	<operator>
+			 		<key>entopy_projections_beam</key>
+			 		<class>org.rapidprom.operators.niek.BeamEntropyBasedLogFilterOperator3</class>
+			   	</operator>
+			   	<operator>
+			 		<key>entopy_projections_greedy3</key>
+			 		<class>org.rapidprom.operators.niek.GreedyEntropyBasedLogFilterOperator3</class>
+			   	</operator>
+			   	<operator>
+			 		<key>entopy_projections_greedy2</key>
+			 		<class>org.rapidprom.operators.niek.GreedyEntropyBasedLogFilterOperator2</class>
+			   	</operator>
+			   	<operator>
+			 		<key>entopy_projections_global</key>
+			 		<class>org.rapidprom.operators.niek.EntropyBasedLogFilterOperator</class>
+			   	</operator>
+			   	<operator>
+			 		<key>kl_projections_greedy</key>
+			 		<class>org.rapidprom.operators.niek.GreedyKLBasedLogFilterOperator</class>
+			   	</operator>
+            
+			   	<operator>
+			 		<key>frequency_projections_1</key>
+			 		<class>org.rapidprom.operators.niek.FrequencyBasedLogFilter1Operator</class>
+			   	</operator>
+			   	<operator>
+			 		<key>frequency_projections_2</key>
+			 		<class>org.rapidprom.operators.niek.FrequencyBasedLogFilter2Operator</class>
+			   	</operator>
+			   	<operator>
+			 		<key>random_projections</key>
+			 		<class>org.rapidprom.operators.niek.RandomLogFilterOperator</class>
+			   	</operator>
+ 			   	<operator>
+			 		<key>entropy_adjusted_projections</key>
+			 		<class>org.rapidprom.operators.niek.GreedyAdjustedEntropyBasedLogFilterOperator</class>
+			   	</operator>
+			   	<operator>
+			 		<key>apply_log_projection</key>
+			 		<class>org.rapidprom.operators.niek.ApplyProjectionOperator</class>
+			   	</operator>
+				<operator>
+			 		<key>calculate_determinism</key>
+			 		<class>org.rapidprom.operators.niek.DeterminismCalculatorOperator</class>
+			   	</operator>
+			<operator>
                 <key>move_common_attributes_to_trace</key>
                 <class>org.rapidprom.operators.logmanipulation.MoveCommonAttributeToTraceOperator</class>
             </operator>
@@ -426,7 +493,7 @@
             <operator>
                 <key>add_elapsed_time</key>
                 <class>org.rapidprom.operators.logmanipulation.AddElapsedTimeInTraceOperator</class>
-            </operator>                 
+            </operator>   
         </group> 
         <group key="streams">
             <group key="analysis">
@@ -505,6 +572,11 @@
             <operator>
                 <key>select_xlog_factory</key>
                 <class>org.rapidprom.operators.util.XLogFactorySelectionOperator</class>
+                <icon>wrench.png</icon>
+            </operator>
+            <operator>
+                <key>rprom_clear_threads</key>
+                <class>org.rapidprom.operators.niek.RapidProMThreadCleanUpOperator</class>
                 <icon>wrench.png</icon>
             </operator>
         </group>

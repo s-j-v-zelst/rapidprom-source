@@ -33,6 +33,15 @@ public class RapidProMPluginContext extends AbstractPluginContext {
 		}
 	}
 
+	public void renewExecutor(){
+		executor.shutdownNow();
+		executor = Executors.newCachedThreadPool();
+	}
+	
+	public void closeExecutor(){
+		executor.shutdownNow();
+	}
+	
 	@Override
 	public Executor getExecutor() {
 		return executor;
