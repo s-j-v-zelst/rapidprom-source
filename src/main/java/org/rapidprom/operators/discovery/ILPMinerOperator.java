@@ -4,20 +4,22 @@ import java.util.List;
 
 import org.deckfour.xes.classification.XEventClassifier;
 import org.deckfour.xes.model.XLog;
+import org.processmining.dataawarecnetminer.mining.classic.HeuristicsCausalGraphBuilder.HeuristicsConfig;
+import org.processmining.dataawarecnetminer.plugins.CausalGraphMinerPlugin;
 import org.processmining.framework.plugin.PluginContext;
 import org.processmining.hybridilpminer.parameters.LPFilter;
 import org.processmining.hybridilpminer.parameters.LPFilterType;
 import org.processmining.hybridilpminer.parameters.XLogHybridILPMinerParametersImpl;
 import org.processmining.hybridilpminer.plugins.HybridILPMinerPlugin;
+import org.processmining.models.causalgraph.SimpleCausalGraph;
 import org.processmining.models.causalgraph.XEventClassifierAwareSimpleCausalGraph;
 import org.processmining.models.graphbased.directed.petrinet.Petrinet;
 import org.processmining.models.semantics.petrinet.Marking;
 import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.PetriNetIOObject;
 import org.rapidprom.ioobjects.XEventClassifierAwareSimpleCausalGraphIOObject;
-import org.rapidprom.ioobjects.XLogIOObject;
+import org.rapidprom.operators.abstr.AbstractRapidProMDiscoveryOperator;
 
-import com.rapidminer.operator.Operator;
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
 import com.rapidminer.operator.UserError;
@@ -30,14 +32,11 @@ import com.rapidminer.parameter.ParameterTypeDouble;
 import com.rapidminer.parameter.UndefinedParameterError;
 import com.rapidminer.parameter.conditions.EqualStringCondition;
 
-public class ILPMinerOperator extends Operator {
+public class ILPMinerOperator extends AbstractRapidProMDiscoveryOperator {
 
 	private OutputPort outputPetrinet = getOutputPorts().createPort("model (ProM Petri Net)");
 
-	private InputPort inputXLog = getInputPorts().createPort("event log ", XLogIOObject.class);
-
-	private InputPort inputCausalGraph = getInputPorts().createPort("causal graph",
-			XEventClassifierAwareSimpleCausalGraphIOObject.class);
+	private InputPort inputCausalGraph = getInputPorts().createPort("causal graph");
 
 	// private static final String PARAMETER_KEY_EAC =
 	// "enforce_emptiness_after_completion";
@@ -61,14 +60,13 @@ public class ILPMinerOperator extends Operator {
 
 	public ILPMinerOperator(OperatorDescription description) {
 		super(description);
-
 		getTransformer().addRule(new GenerateNewMDRule(outputPetrinet, PetriNetIOObject.class));
 	}
 
 	public void doWork() throws OperatorException {
 		PluginContext context = RapidProMGlobalContext.instance().getPluginContext();
 		XLog log = getXLog();
-		XEventClassifier classifier = getEventClassifier();
+		XEventClassifier classifier = getXEventClassifier();
 		XLogHybridILPMinerParametersImpl params = new XLogHybridILPMinerParametersImpl(context, log, classifier);
 
 		params.setFindSink(true);
@@ -144,16 +142,20 @@ public class ILPMinerOperator extends Operator {
 		return filter;
 	}
 
-	protected XLog getXLog() throws UserError {
-		return ((XLogIOObject) inputXLog.getData(XLogIOObject.class)).getArtifact();
-	}
-
-	protected XEventClassifier getEventClassifier() throws UserError {
-		return getCausalGraph().getEventClassifier();
-	}
-
 	protected XEventClassifierAwareSimpleCausalGraph getCausalGraph() throws UserError {
-		return ((XEventClassifierAwareSimpleCausalGraphIOObject) inputCausalGraph
-				.getData(XEventClassifierAwareSimpleCausalGraphIOObject.class)).getArtifact();
+		XEventClassifierAwareSimpleCausalGraphIOObject cagIoobj = inputCausalGraph
+				.getDataOrNull(XEventClassifierAwareSimpleCausalGraphIOObject.class);
+		XEventClassifierAwareSimpleCausalGraph cag = null;
+		if (cagIoobj == null) {
+			HeuristicsConfig heuristicsConfig = new HeuristicsConfig();
+			heuristicsConfig.setAllTasksConnected(true);
+			SimpleCausalGraph scag = CausalGraphMinerPlugin.doMineCausalGraph(getXLog(), getXEventClassifier(),
+					heuristicsConfig);
+			cag = XEventClassifierAwareSimpleCausalGraph.Factory.construct(getXEventClassifier(),
+					scag.getSetActivities(), scag.getCausalRelations());
+		} else {
+			cag = cagIoobj.getArtifact();
+		}
+		return cag;
 	}
 }
