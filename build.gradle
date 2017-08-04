@@ -41,13 +41,6 @@ repositories {
 			ivy "[organisation]/[module]/[revision]/[module]/ivy-[revision].xml"
 		}
 	}
-	ivy {
-		url "/home/eduardo/Code/workspace/DatabaseProcessMining-Repository/Releases/"
-		layout "pattern", {
-			artifact "[organisation]/[module]/[revision]/[module]-[revision].[ext]"
-			ivy "[organisation]/[module]/[revision]/[module]/ivy-[revision].xml"
-		}
-	}
 }
 
 extensionConfig {
@@ -92,17 +85,17 @@ extensionConfig {
 dependencies {
 	
 	compile group:"org.rapidprom", name:"ProM-Framework", version:"34109"
-	compile "org.rapidprom:AcceptingPetriNet:6.7.93"
+	compile "org.rapidprom:AcceptingPetriNet:6.7.125"
 	compile "org.rapidprom:AlphaMiner:6.5.47"
 	compile "org.rapidprom:Animation:6.5.50"
-	compile "org.rapidprom:ApacheUtils:6.7.88"
+	compile "org.rapidprom:ApacheUtils:6.7.107"
 	compile "org.rapidprom:BasicUtils:6.7.104"
 	compile "org.rapidprom:BPMN:6.5.56"
 	compile "org.rapidprom:BPMNConversions:6.5.48"
 	compile "org.rapidprom:CPNet:6.5.84"
-	compile "org.rapidprom:DataAwareReplayer:6.7.563"
-	compile "org.rapidprom:DataAwareCNetMiner:6.7.125"
-	compile "org.rapidprom:DataPetriNets:6.5.291"
+	compile "org.rapidprom:DataAwareReplayer:6.7.673"
+	compile "org.rapidprom:DataAwareCNetMiner:6.7.137"
+	compile "org.rapidprom:DataPetriNets:6.7.421"
 	compile "org.rapidprom:DottedChart:6.5.17"
 	compile "org.rapidprom:EvolutionaryTreeMiner:6.7.154"
 	compile "org.rapidprom:EventStream:6.5.72"
@@ -114,9 +107,9 @@ dependencies {
 	compile "org.rapidprom:HybridILPMiner:6.7.144"
 	compile "org.rapidprom:InductiveMiner:6.7.297"
 	compile "org.rapidprom:InductiveVisualMiner:6.7.413"
-	compile "org.rapidprom:Log:6.7.293"
+	compile "org.rapidprom:Log:6.7.315"
 	compile "org.rapidprom:LogDialog:6.5.42"
-	compile "org.rapidprom:LogFiltering:6.7.22"
+	compile "org.rapidprom:LogFiltering:6.7.16"
 	compile "org.rapidprom:LogProjection:6.5.38"
 	compile "org.rapidprom:ModelRepair:6.5.12"
 	compile "org.rapidprom:Murata:6.5.54"
@@ -124,7 +117,7 @@ dependencies {
 	compile "org.rapidprom:OnlineConformance:6.7.115"
 	compile "org.rapidprom:PetriNets:6.7.136"
 	compile "org.rapidprom:PetriNetSimulator:6.7.19"
-	compile "org.rapidprom:PNetAlignmentAnalysis:6.5.35"
+	compile "org.rapidprom:PNetAlignmentAnalysis:6.7.91"
 	compile "org.rapidprom:PNAnalysis:6.7.128"
 	compile "org.rapidprom:PNetReplayer:6.7.152"
 	compile "org.rapidprom:PTConversions:6.5.3"
@@ -140,22 +133,10 @@ dependencies {
 	compile "org.rapidprom:Uma:6.5.46"
 	compile "org.rapidprom:Woflan:6.7.59"
 	compile "org.rapidprom:VariantFinder:6.7.9"
-	compile "org.rapidprom:XESLite:6.7.217"
-	compile "org.rapidprom:Weka:6.7.3"
-	compile "org.processmining:OpenSLEX:0.9"
-	compile "org.processmining:DAPOQ-Lang:0.9"
+	compile "org.rapidprom:XESLite:6.7.319"
+	compile "org.rapidprom:Weka:6.7.25"
+	compile "org.processmining:OpenSLEX:0.8"
+	compile "org.processmining:DAPOQ-Lang:0.8"
 	compile 'com.github.fommil.netlib:all:1.1.2'
 	compile 'com.googlecode.matrix-toolkits-java:mtj:1.0.3'
-	compile files('src/main/java/org/processmining/plugins/neconformance/utils/kutoolbox-20150526.jar')
-}
-
-sourceSets {
-    main {
-    	sourceSets.main.java.srcDirs = ['src/main/java']
-		
-        resources {
-            srcDir 'src/main/resources'
-            include '**/*'
-        }
-    }
 }
