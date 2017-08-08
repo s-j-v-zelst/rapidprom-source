@@ -1,507 +1,506 @@
 <?xml version="1.0" encoding="windows-1252" standalone="no"?>
 <operatorHelp lang="en_EN">
-       
-   <!-- Groups -->
-    
-    <group>
-      <key>analysis</key>
-      <name>Analysis</name>
-    </group>
-    
-    <group>
-    <key>concept_drift</key>
-    <name>Concept Drift</name>
-    </group>
-    
-    <group>
-      <key>conformance</key>
-      <name>Conformance</name>
-    </group>
-    
-    <group>
-      <key>conversion</key>
-      <name>Conversion</name>
-    </group>
-    
-    <group>
-      <key>discovery</key>
-      <name>Discovery</name>
-    </group>
-    
-    <group>
-      <key>import</key>
-      <name>Import</name>
-    </group>
-    
-    <group>
-      <key>export</key>
-      <name>Export</name>
-    </group>
-    
-    <group>
-        <key>filtering</key>
-        <name>Filtering</name>
-    </group>
-    
-    <group>
-      <key>log_manipulation</key>
-      <name>Log Manipulation</name>
-    </group>
-    
-    <group>
-      <key>log_abstraction</key>
-      <name>Log Abstraction</name>
-    </group>
-    
-    <group>
-      <key>streams</key>
-      <name>Streams</name>
-    </group>
-    
-    <group>
-        <key>utility</key>
-        <name>Utility</name>
-    </group>
-        <group>
-        <key>padas</key>
-        <name>PADAS</name>
-    </group>
 
-    <group>
-        <key>decomposition</key>
-        <name>Decomposition</name>
-    </group>    
+	<!-- Groups -->
+	<group>
+		<key>analysis</key>
+		<name>Analysis</name>
+	</group>
 
-   <operator>
-        <name>Complexity Metrics (Petri Net)</name>
-        <Synopyis>Calculates complexity metrics for a Petri net.</Synopyis>
-        <help>
+	<group>
+		<key>concept_drift</key>
+		<name>Concept Drift</name>
+	</group>
+
+	<group>
+		<key>conformance</key>
+		<name>Conformance</name>
+	</group>
+
+	<group>
+		<key>conversion</key>
+		<name>Conversion</name>
+	</group>
+
+	<group>
+		<key>discovery</key>
+		<name>Discovery</name>
+	</group>
+
+	<group>
+		<key>import</key>
+		<name>Import</name>
+	</group>
+
+	<group>
+		<key>export</key>
+		<name>Export</name>
+	</group>
+
+	<group>
+		<key>filtering</key>
+		<name>Filtering</name>
+	</group>
+
+	<group>
+		<key>log_manipulation</key>
+		<name>Log Manipulation</name>
+	</group>
+
+	<group>
+		<key>log_abstraction</key>
+		<name>Log Abstraction</name>
+	</group>
+
+	<group>
+		<key>streams</key>
+		<name>Streams</name>
+	</group>
+
+	<group>
+		<key>utility</key>
+		<name>Utility</name>
+	</group>
+	<group>
+		<key>padas</key>
+		<name>PADAS</name>
+	</group>
+
+	<group>
+		<key>decomposition</key>
+		<name>Decomposition</name>
+	</group>    
+
+	<operator>
+		<name>Complexity Metrics (Petri Net)</name>
+		<Synopyis>Calculates complexity metrics for a Petri net.</Synopyis>
+		<help>
 	      Calculates complexity metrics for a Petri net. Implements metrics describe in the article: &lt;a href="https://doi.org/10.1016/j.infsof.2008.08.005"&gt;Complexity metrics for Workflow nets&lt;/a&gt; and some more.
 	      Implemented metrics are: 'Extended Cardoso metric', 'Extended Cyclomatic metric', 'Structuredness metric', 'Density metric', 'Number of arcs', 'Number of transitions' and 'Number of places'.
-        </help>
- 		<key>petrinet_complexity_metrics</key>
-   </operator>
+		</help>
+		<key>petrinet_complexity_metrics</key>
+	</operator>
 
-  <operator>
-        <name>Filter Unmapped Events</name>
-        <Synopyis>Removes events that are not mapped to any transition in the supplied mapping.</Synopyis>
-        <help>
+	<operator>
+		<name>Filter Unmapped Events</name>
+		<Synopyis>Removes events that are not mapped to any transition in the supplied mapping.</Synopyis>
+		<help>
 	      	Removes events that are not mapped to any transition in the supplied mapping.
-        </help>
- 		<key>filter_unmapped_events</key>
-   </operator>    
-        
-   <operator>
-        <name>Filter Out Low-Occurrence Traces</name>
-        <Synopyis> Filters a log using an absolute threshold. Traces that do not appear often enough, will be filtered out.</Synopyis>
-        <help>
-	        Filters a log using an absolute threshold. Traces that do not appear often enough, will be filtered out.
-        </help>
- 		<key>filter_low_frequency_traces</key>
-   </operator>    
+		</help>
+		<key>filter_unmapped_events</key>
+	</operator>    
 
-    <group>
-    	<key>generation</key>
-    	<name>Generation</name>
-    </group>
-    
-   <operator>
-        <name>Filter In High-Frequency Traces</name>
-        <Synopyis>Filters a log using a frequency threshold (a percentage) and a distance threshold (edit distance).</Synopyis>
-        <help>
+	<operator>
+		<name>Filter Out Low-Occurrence Traces</name>
+		<Synopyis> Filters a log using an absolute threshold. Traces that do not appear often enough, will be filtered out.</Synopyis>
+		<help>
+	        Filters a log using an absolute threshold. Traces that do not appear often enough, will be filtered out.
+		</help>
+		<key>filter_low_frequency_traces</key>
+	</operator>    
+
+	<group>
+		<key>generation</key>
+		<name>Generation</name>
+	</group>
+
+	<operator>
+		<name>Filter In High-Frequency Traces</name>
+		<Synopyis>Filters a log using a frequency threshold (a percentage) and a distance threshold (edit distance).</Synopyis>
+		<help>
 	        Filters a log using a frequency threshold (a percentage) and a distance threshold (edit distance). 
 	        Any trace that either, (1) has a high-enough frequency or, (2) is close enough to a trace with high-enough frequency will be filtered in. 
 	        A trace has high-enough frequency if its frequency is required to reach the overall frequency threshold.
-        </help>
- 		<key>filter_high_frequency_traces</key>
-   </operator>
-           
-   <operator>
-        <name>Project Alignment on DPN</name>
-        <Synopyis>Projects an aligned log on a Data Petri net.</Synopyis>
-        <help>Projects an aligned log on a Data Petri net.</help>
- 		<key>project_alignment_on_dpn</key>
-   </operator>
-   <operator>
-        <name>Only contain lifecycle 'complete' events</name>
-        <Synopyis>Removes all events with another lifecycle than 'complete'</Synopyis>
-        <help></help>
- 		<key>contain_only_complete_log</key>
-   </operator>
-   <operator>
-        <name>Add noisy activities to event log</name>
-        <Synopyis>Adds noisy activities to log</Synopyis>
-        <help></help>
-        <key>add_noisy_activities_log</key>
-   </operator>
-   <operator>
-   		<name>Apply projection set to log</name>
-   		<Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
-        <help></help>
-   		<key>apply_log_projection</key>
-   </operator>
-   <operator>
-        <name>Apply entropy-based projections to log (greedy)</name>
-        <Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
-        <help></help>
- 		<key>entopy_projections_greedy</key>
-   </operator>
-   <operator>
-        <name>Apply entropy-based projections to log (direct, alpha=1/d)</name>
-        <Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
-        <help></help>
- 		<key>entopy_projections_direct</key>
-   </operator>
-   <operator>
-        <name>Apply entropy-based projections to log (direct)</name>
-        <Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
-        <help></help>
+		</help>
+		<key>filter_high_frequency_traces</key>
+	</operator>
+
+	<operator>
+		<name>Project Alignment on DPN</name>
+		<Synopyis>Projects an aligned log on a Data Petri net.</Synopyis>
+		<help>Projects an aligned log on a Data Petri net.</help>
+		<key>project_alignment_on_dpn</key>
+	</operator>
+	<operator>
+		<name>Only contain lifecycle 'complete' events</name>
+		<Synopyis>Removes all events with another lifecycle than 'complete'</Synopyis>
+		<help></help>
+		<key>contain_only_complete_log</key>
+	</operator>
+	<operator>
+		<name>Add noisy activities to event log</name>
+		<Synopyis>Adds noisy activities to log</Synopyis>
+		<help></help>
+		<key>add_noisy_activities_log</key>
+	</operator>
+	<operator>
+		<name>Apply projection set to log</name>
+		<Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
+		<help></help>
+		<key>apply_log_projection</key>
+	</operator>
+	<operator>
+		<name>Apply entropy-based projections to log (greedy)</name>
+		<Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
+		<help></help>
+		<key>entopy_projections_greedy</key>
+	</operator>
+	<operator>
+		<name>Apply entropy-based projections to log (direct, alpha=1/d)</name>
+		<Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
+		<help></help>
+		<key>entopy_projections_direct</key>
+	</operator>
+	<operator>
+		<name>Apply entropy-based projections to log (direct)</name>
+		<Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
+		<help></help>
 		<key>entopy_projections_direct2</key>
-   </operator>
-   <operator>
-        <name>Apply entropy-based projections to log (beam)</name>
-        <Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
-        <help></help>
- 		<key>entopy_projections_beam</key>
-   </operator>
-   <operator>
-        <name>Apply entropy-based projections to log (greedy3)</name>
-        <Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
-        <help></help>
- 		<key>entopy_projections_greedy3</key>
-   </operator>
-   <operator>
-        <name>Apply entropy-based projections to log (greedy2)</name>
-        <Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
-        <help></help>
- 		<key>entopy_projections_greedy2</key>
-   </operator>
-   <operator>
-        <name>Apply entropy-based projections to log (global)</name>
-        <Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
-        <help></help>
- 		<key>entopy_projections_global</key>
-   </operator>
-   <operator>
-        <name>Apply KL-divergence-based projections to log (greedy)</name>
-        <Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
-        <help></help>
- 		<key>kl_projections_greedy</key>
-   </operator>
-   <operator>
-        <name>Apply frequency-based projections to log (ascendingly)</name>
-        <Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
-        <help></help>
- 		<key>frequency_projections_1</key>
-   </operator>
-   <operator>
-        <name>Apply frequency-based projections to log (descendingly)</name>
-        <Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
-        <help></help>
- 		<key>frequency_projections_2</key>
-   </operator>
-   <operator>
-        <name>Apply random projections to log</name>
-        <Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
-        <help></help>
- 		<key>random_projections</key>
-   </operator>
-   <operator>
-   		<name>Apply adjusted entropy-based projections to log (greedy)</name>
- 		<Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
-        <help></help>
-        <key>entropy_adjusted_projections</key>
-   </operator>
-   <operator>
-   		<name>Calculate determinism</name>
-   		<Synopyis>Calculates determinism</Synopyis>
-   		<help></help>
-   		<key>calculate_determinism</key>
-   </operator> 
-   
-    <!-- IMPORTERS -->
-   <operator>
-        <name>Calculate ETC 1-align precision</name>
-        <Synopyis>Calculate precision using 1-align ETC conformance</Synopyis>
-        <help>This technique uses the Align-ETC precision measurement plugin from ProM. The underlying technique is explained &lt;a href="http://dx.doi.org/10.1007/s10257-014-0234-7"&gt;here&lt;/a&gt;</help>
- 		<key>etc_1_align_precision</key>
-   </operator>
-   <operator>
-   	    <name>Calculate negative event precision</name>
-        <Synopyis>Calculate precision using weighted negative events</Synopyis>
-        <help></help>
- 		<key>ne_precision</key>
-   </operator>
-   <operator>
-        <name>Measure Model Precision based on alignments</name>
-        <synopsis>Measures model precision and generalization based on pre-calculated alignments</synopsis>
-        <help>This technique is defined in &lt;a href="http://dx.doi.org/10.6100/IR770080"&gt;here&lt;/a&gt;. For this operator, you need alignments (PNRepResult) as input.</help>
-        <key>measure_precision</key>
-   </operator>
-   <operator>
-   		<name>Mine a sequential model</name>
-        <synopsis>DO NOT USE THIS OPERATOR (Experimental)</synopsis>
-        <help> </help>
+	</operator>
+	<operator>
+		<name>Apply entropy-based projections to log (beam)</name>
+		<Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
+		<help></help>
+		<key>entopy_projections_beam</key>
+	</operator>
+	<operator>
+		<name>Apply entropy-based projections to log (greedy3)</name>
+		<Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
+		<help></help>
+		<key>entopy_projections_greedy3</key>
+	</operator>
+	<operator>
+		<name>Apply entropy-based projections to log (greedy2)</name>
+		<Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
+		<help></help>
+		<key>entopy_projections_greedy2</key>
+	</operator>
+	<operator>
+		<name>Apply entropy-based projections to log (global)</name>
+		<Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
+		<help></help>
+		<key>entopy_projections_global</key>
+	</operator>
+	<operator>
+		<name>Apply KL-divergence-based projections to log (greedy)</name>
+		<Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
+		<help></help>
+		<key>kl_projections_greedy</key>
+	</operator>
+	<operator>
+		<name>Apply frequency-based projections to log (ascendingly)</name>
+		<Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
+		<help></help>
+		<key>frequency_projections_1</key>
+	</operator>
+	<operator>
+		<name>Apply frequency-based projections to log (descendingly)</name>
+		<Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
+		<help></help>
+		<key>frequency_projections_2</key>
+	</operator>
+	<operator>
+		<name>Apply random projections to log</name>
+		<Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
+		<help></help>
+		<key>random_projections</key>
+	</operator>
+	<operator>
+		<name>Apply adjusted entropy-based projections to log (greedy)</name>
+		<Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
+		<help></help>
+		<key>entropy_adjusted_projections</key>
+	</operator>
+	<operator>
+		<name>Calculate determinism</name>
+		<Synopyis>Calculates determinism</Synopyis>
+		<help></help>
+		<key>calculate_determinism</key>
+	</operator> 
+
+	<!-- IMPORTERS -->
+	<operator>
+		<name>Calculate ETC 1-align precision</name>
+		<Synopyis>Calculate precision using 1-align ETC conformance</Synopyis>
+		<help>This technique uses the Align-ETC precision measurement plugin from ProM. The underlying technique is explained &lt;a href="http://dx.doi.org/10.1007/s10257-014-0234-7"&gt;here&lt;/a&gt;</help>
+		<key>etc_1_align_precision</key>
+	</operator>
+	<operator>
+		<name>Calculate negative event precision</name>
+		<Synopyis>Calculate precision using weighted negative events</Synopyis>
+		<help></help>
+		<key>ne_precision</key>
+	</operator>
+	<operator>
+		<name>Measure Model Precision based on alignments</name>
+		<synopsis>Measures model precision and generalization based on pre-calculated alignments</synopsis>
+		<help>This technique is defined in &lt;a href="http://dx.doi.org/10.6100/IR770080"&gt;here&lt;/a&gt;. For this operator, you need alignments (PNRepResult) as input.</help>
+		<key>measure_precision</key>
+	</operator>
+	<operator>
+		<name>Mine a sequential model</name>
+		<synopsis>DO NOT USE THIS OPERATOR (Experimental)</synopsis>
+		<help> </help>
 		<key>sequence_miner</key>		
 	</operator>
-	
+
 	<operator>
 		<name>Import CPN Model</name>
-        <synopsis>Import CPN Model</synopsis>
-        <help>This operator imports a coloured-Petri net. These can be obtained from other tools such as CPN tools. </help>
-        <key>import_cpn</key>
-    </operator>
-    <operator>
-    	<name>Import Static Event Stream</name>
-    	<synopsis>Import a static event stream</synopsis>
-    	<help>Allows for importing a static event stream. Static event streams allow us to do repeated experiments using the same event stream.</help>
-    	<key>import_static_event_stream</key>
-    </operator>
-   <operator>
-    	<name>Add Source and Sink to Petri net</name>
-        <synopsis>This operator creates an artificial and single source and sink places in a petri net</synopsis>
-        <help> </help>
+		<synopsis>Import CPN Model</synopsis>
+		<help>This operator imports a coloured-Petri net. These can be obtained from other tools such as CPN tools. </help>
+		<key>import_cpn</key>
+	</operator>
+	<operator>
+		<name>Import Static Event Stream</name>
+		<synopsis>Import a static event stream</synopsis>
+		<help>Allows for importing a static event stream. Static event streams allow us to do repeated experiments using the same event stream.</help>
+		<key>import_static_event_stream</key>
+	</operator>
+	<operator>
+		<name>Add Source and Sink to Petri net</name>
+		<synopsis>This operator creates an artificial and single source and sink places in a petri net</synopsis>
+		<help> </help>
 		<key>add_source_sink</key>
 	</operator>
-   <operator>
-   		<name>ActivityList to Petri net</name>
-        <synopsis>This operator creates a sequencial Petri net based on an activity name list extracted from a data table</synopsis>
-        <help> </help>
+	<operator>
+		<name>ActivityList to Petri net</name>
+		<synopsis>This operator creates a sequencial Petri net based on an activity name list extracted from a data table</synopsis>
+		<help> </help>
 		<key>name_to_petrinet</key>
 	</operator>
-  <operator>
-  		<name>Soundness analysis (WOFLAN)</name>
-        <synopsis>This operator analyzes the soundness of a Petri net using the Woflan workflow diagnosis tool, as defined in &lt;a href="http://dx.doi.org/10.1007/3-540-44988-4_28"&gt;here&lt;/a&gt;.</synopsis>
-        <help>For using this operator, you need a Petri net. </help>
+	<operator>
+		<name>Soundness analysis (WOFLAN)</name>
+		<synopsis>This operator analyzes the soundness of a Petri net using the Woflan workflow diagnosis tool, as defined in &lt;a href="http://dx.doi.org/10.1007/3-540-44988-4_28"&gt;here&lt;/a&gt;.</synopsis>
+		<help>For using this operator, you need a Petri net. </help>
 		<key>analyze_with_woflan</key>
 	</operator>
-  <operator>
-  		<name>Feature Prediction (Decision Trees)</name>
-        <synopsis>This operator performs Predictions of Business Process Features, as defined in &lt;a href="http://dx.doi.org/10.1007/978-3-319-10172-9_16"&gt;here&lt;/a&gt;. </synopsis>
-        <help>For using this operator, you need an event log. The actual tool will be launched when visualized.</help>
+	<operator>
+		<name>Feature Prediction (Decision Trees)</name>
+		<synopsis>This operator performs Predictions of Business Process Features, as defined in &lt;a href="http://dx.doi.org/10.1007/978-3-319-10172-9_16"&gt;here&lt;/a&gt;. </synopsis>
+		<help>For using this operator, you need an event log. The actual tool will be launched when visualized.</help>
 		<key>perform_predictions_of_business_process_features</key>
 	</operator>
-  <operator>
-  		<name>Conformance Checking</name>
-        <synopsis>This operator replays a log into a Petri net and show visual results, as described in &lt;a href="http://dx.doi.org/10.6100/IR770080"&gt;here&lt;/a&gt;.</synopsis>
-        <help>For using this operator, you need a Petri net and a log. </help>
+	<operator>
+		<name>Conformance Checking</name>
+		<synopsis>This operator replays a log into a Petri net and show visual results, as described in &lt;a href="http://dx.doi.org/10.6100/IR770080"&gt;here&lt;/a&gt;.</synopsis>
+		<help>For using this operator, you need a Petri net and a log. </help>
 		<key>replay_a_log_on_petri_net_for_conformance_analysis</key>
 	</operator>
-  <operator>
-  		<name>Inductive Visual Miner</name>
-        <synopsis>This operator creates a process model using the Inductive Visual Miner as described in: &lt;a href="http://repository.tue.nl/25a7fd81-8bf4-4606-a903-d9b78b95cdd3"&gt;here&lt;/a&gt;.</synopsis>
-        <help>For using this operator, you need an event log. </help>
+	<operator>
+		<name>Inductive Visual Miner</name>
+		<synopsis>This operator creates a process model using the Inductive Visual Miner as described in: &lt;a href="http://repository.tue.nl/25a7fd81-8bf4-4606-a903-d9b78b95cdd3"&gt;here&lt;/a&gt;.</synopsis>
+		<help>For using this operator, you need an event log. </help>
 		<key>mine_with_inductive_visual_miner</key>
 	</operator>
-  <operator>
-  		<name>Visualize Model using PomPom (visualization)</name>
-        <synopsis>This operator shows a PomPom view over a PetriNet. The PomPom operator visualizes a Petri-net/EPC that emphasizes those parts of the process that correspond to high-frequent events in a given log. The visualizer will attempt to reduce low-frequent transitions/functions as much as possible. </synopsis>
-        <help>For using this operator, you need a petri net and a log. </help>
+	<operator>
+		<name>Visualize Model using PomPom (visualization)</name>
+		<synopsis>This operator shows a PomPom view over a PetriNet. The PomPom operator visualizes a Petri-net/EPC that emphasizes those parts of the process that correspond to high-frequent events in a given log. The visualizer will attempt to reduce low-frequent transitions/functions as much as possible. </synopsis>
+		<help>For using this operator, you need a petri net and a log. </help>
 		<key>show_pompom_view</key>
 	</operator>
-  <operator>
-  		<name>Discover Process Data Flow (Decision Tree)</name>
-        <synopsis>This operator transforms a Petri net into a Desicion tree</synopsis>
-        <help>For using this operator, you need petri net and a log. </help>
+	<operator>
+		<name>Discover Process Data Flow (Decision Tree)</name>
+		<synopsis>This operator transforms a Petri net into a Desicion tree</synopsis>
+		<help>For using this operator, you need petri net and a log. </help>
 		<key>discovery_of_the_process_data-flow_(decision-tree_miner)</key>
 	</operator>
-  <operator>
-  		<name>Extract Petri Nets from LPM ranking</name>
-  		<synopsis>This operator extracts Petri nets objects from a ranking of Local Process Models.</synopsis>
-  		<help>To use this operator you need a Local Process Model ranking as input</help>
-  		<key>extract_petrinets_from_lpm</key>
-  </operator>
-  <operator>  
-  		<name>Data Conformance Checking</name>
-        <synopsis>This operator replays a log onto a Data Petri net.</synopsis>
-        <help>This operator replays a log onto a Data Petri net as described in &lt;a href="http://dx.doi.org/10.1007/s00607-015-0441-1"&gt;here&lt;/a&gt;.</help>
+	<operator>
+		<name>Extract Petri Nets from LPM ranking</name>
+		<synopsis>This operator extracts Petri nets objects from a ranking of Local Process Models.</synopsis>
+		<help>To use this operator you need a Local Process Model ranking as input</help>
+		<key>extract_petrinets_from_lpm</key>
+	</operator>
+	<operator>  
+		<name>Data Conformance Checking</name>
+		<synopsis>This operator replays a log onto a Data Petri net.</synopsis>
+		<help>This operator replays a log onto a Data Petri net as described in &lt;a href="http://dx.doi.org/10.1007/s00607-015-0441-1"&gt;here&lt;/a&gt;.</help>
 		<key>data_conformance</key>
-  </operator>
-  <operator>
-  		<name>Petri Net to BPMN</name>
-        <synopsis>This operator transforms a Petri net into a BPMN diagram. The conversion used is described in &lt;a href="http://dx.doi.org/10.1007/s10270-015-0502-0"&gt;here&lt;/a&gt;.</synopsis>
-        <help>For using this operator, you need a petri net as input.  </help>
+	</operator>
+	<operator>
+		<name>Petri Net to BPMN</name>
+		<synopsis>This operator transforms a Petri net into a BPMN diagram. The conversion used is described in &lt;a href="http://dx.doi.org/10.1007/s10270-015-0502-0"&gt;here&lt;/a&gt;.</synopsis>
+		<help>For using this operator, you need a petri net as input.  </help>
 		<key>convert_petrinet_to_bpmn</key>
-  </operator>
-  <operator>
-  		<name>Petri Net to Data Petri net</name>
-        <synopsis>This operator transforms a Petri net into a Data Petri net.</synopsis>
-        <help>This operator transforms a Petri net into a Data Petri net. The Data Petri net has the same structure as the Petri net, and, initially no variables and guards.</help>
+	</operator>
+	<operator>
+		<name>Petri Net to Data Petri net</name>
+		<synopsis>This operator transforms a Petri net into a Data Petri net.</synopsis>
+		<help>This operator transforms a Petri net into a Data Petri net. The Data Petri net has the same structure as the Petri net, and, initially no variables and guards.</help>
 		<key>convert_petrinet_to_datapetrinet</key>
-  </operator>  	
-  <operator>
-  		<name>Transition System to Petri Net </name>
-        <synopsis>This operator transforms a Transition System (Reachability Graph) into a petri net, using &lt;a href="http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.17.8484"&gt;Petrify&lt;/a&gt;.</synopsis>
-        <help>For using this operator, you need a transition system (reachability graph). </help>
+	</operator>  	
+	<operator>
+		<name>Transition System to Petri Net </name>
+		<synopsis>This operator transforms a Transition System (Reachability Graph) into a petri net, using &lt;a href="http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.17.8484"&gt;Petrify&lt;/a&gt;.</synopsis>
+		<help>For using this operator, you need a transition system (reachability graph). </help>
 		<key>transition_system_to_petrinet</key>
 	</operator>
-  <operator>
-  		<name>Petri Net to Reachability Graph</name>
-        <synopsis>This operator transforms a petri net into a Transition System (Reachability Graph), using &lt;a href="http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.17.8484"&gt;Petrify&lt;/a&gt;.</synopsis>
-        <help>For using this operator, you need a petri net. </help>
+	<operator>
+		<name>Petri Net to Reachability Graph</name>
+		<synopsis>This operator transforms a petri net into a Transition System (Reachability Graph), using &lt;a href="http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.17.8484"&gt;Petrify&lt;/a&gt;.</synopsis>
+		<help>For using this operator, you need a petri net. </help>
 		<key>construct_reachability_graph_of_a_petri_net</key>
 	</operator>
-    
-    <operator>
-        <name>Import Accepting Petri Net</name>
-        <synopsis>Import an Accepting Petri Net</synopsis>
-        <help>This operator imports an accepting Petri net (a Petri net with initial and final markings).</help>
-        <key>import_accepting_petri_net</key>
-    </operator>
-    
-  <operator>
-  		<name>Import Petri Net</name>
-        <synopsis>This operator is used to import a Petri net in a pnml format</synopsis>
-        <help>This operator can be used to read a PNML file. PNML files that are accepted are the ones that are produced by ProM itself or the ones that are produced by Yasper. As input a pnml file is needed.</help>
+
+	<operator>
+		<name>Import Accepting Petri Net</name>
+		<synopsis>Import an Accepting Petri Net</synopsis>
+		<help>This operator imports an accepting Petri net (a Petri net with initial and final markings).</help>
+		<key>import_accepting_petri_net</key>
+	</operator>
+
+	<operator>
+		<name>Import Petri Net</name>
+		<synopsis>This operator is used to import a Petri net in a pnml format</synopsis>
+		<help>This operator can be used to read a PNML file. PNML files that are accepted are the ones that are produced by ProM itself or the ones that are produced by Yasper. As input a pnml file is needed.</help>
 		<key>import_petri_net</key>
 	</operator>
 
 	<operator>
-  		<name>Import Data Petri Net</name>
-        <synopsis>This operator is used to import a Data Petri net from a PNML file</synopsis>
-        <help>This operator can be used to read a Data Petri net from a PNML file. Also normal Petri nets are accepted.</help>
+		<name>Import Data Petri Net</name>
+		<synopsis>This operator is used to import a Data Petri net from a PNML file</synopsis>
+		<help>This operator can be used to read a Data Petri net from a PNML file. Also normal Petri nets are accepted.</help>
 		<key>import_data_petri_net</key>
 	</operator>	
-	
-  <operator>
-  		<name>Animate Log in Fuzzy Graph</name>
-        <synopsis>This operator is used to animate (replay) an event log into a fuzzy graph as described in &lt;a href="http://dx.doi.org/10.6100/IR644335"&gt;here&lt;/a&gt;.</synopsis>
-        <help>For using this operator, an event log, and a Fuzzy Graph are necessary as inputs. </help>
+
+	<operator>
+		<name>Animate Log in Fuzzy Graph</name>
+		<synopsis>This operator is used to animate (replay) an event log into a fuzzy graph as described in &lt;a href="http://dx.doi.org/10.6100/IR644335"&gt;here&lt;/a&gt;.</synopsis>
+		<help>For using this operator, an event log, and a Fuzzy Graph are necessary as inputs. </help>
 		<key>animate_event_log_in_fuzzy_instance</key>
 	</operator>
-  
-   <operator>
-        <name>Import Event Log</name>
-        <synopsis>This operator can be used to import a ProM XES event log from a file.</synopsis>
-        <help>This operator can be used to import a ProM XES event log file. Note that only .xes files can be read.</help>
-    	<key>import_xlog</key>
-  </operator>
-  
-  <operator>
-        <name>Extract Event Log</name>
-        <synopsis>This operator can be used to read a ProM XES log file from a file object (useful for loops over file collections)</synopsis>
-        <help>This operator can be used to read a ProM XES log file</help>
-    <key>extract_log_from_file</key>
-  </operator>
-  <operator>
-        <name>Extract Petri Net</name>
-        <synopsis>This operator can be used to read a ProM Pnml petrinet file from a file object (useful for loops over file collections)</synopsis>
-        <help>This operator can be used to read a ProM  Pnml petrinet file</help>
-    <key>extract_petrinet_from_file</key>
-  </operator>
-  
-  <operator>
-        <name>Sort chronologically</name>
-        <synopsis>This operator sorts traces and events within traces by timestamp (increasing).</synopsis>
-        <help>This operator sorts traces and events within traces by timestamp.</help>
-    <key>timestamp_sort</key>
-  </operator>
-  
-  
-  <operator>
-      <name>Filter Infrequent Behavior (Log Automaton)</name>
-      <synopsis>Event log filter able to filter out infrequent behavior. Based on: Conforti, R., La Rosa, M., and, ter Hofstede, A.; Filtering Out Infrequent Behavior from Business Process Event Logs"; IEEE Transactions on Knowledge and Data Engineering, Vol 29., No 2.</synopsis> 
-      <help> Event log filter able to filter out infrequent behavior. The filter creates an automaton based on the event log and uses the threshold to filter out infrequent transitions within the automaton. Based on: Conforti, R., La Rosa, M., and, ter Hofstede, A.; Filtering Out Infrequent Behavior from Business Process Event Logs"; IEEE Transactions on Knowledge and Data Engineering, Vol 29., No 2.</help>
-      <key>filter_log_automaton</key> 
-  </operator>
-  <operator> 
-  	<name>Matrix Filter</name>
-  	<synopsis>...</synopsis>
-  	<help>LONGER HELP</help>
-  	<key>matrix_filter</key>
-  </operator>
-  <operator> 
-    <name>Sequence Filter</name>
-  	<synopsis>...</synopsis>
-  	<help>LONGER HELP</help>
-  	<key>sequence_filter</key>
-  </operator>
-  
-  
-   <operator>
-        <name>Alpha Miner (Petri Net)</name>
-        <synopsis>This operator can be used to execute the Alpha algorithm.</synopsis>
-        <help>This operator can be used to execute the Alpha algorithm which provides a Petri Net and a Marking. As input a log file is needed.</help>
-    <key>alpha_miner</key>
-  </operator>
-  
-  <operator>
-    <name>Causal Graph (Flexible Heuristics Miner)</name>
-    <synopsis>This operator discovers a causal graph, based on the Flexible Heuristics Miner.</synopsis>
-    <help>This operator discovers a causal graph, based on the Flexible Heuristics Miner as described in:  Weijters, A. J. M. M., and J. T. S. Ribeiro. "Flexible heuristics miner (FHM)." Computational Intelligence and Data Mining (CIDM), 2011 IEEE Symposium on. IEEE, 2011. </help>
-    <key>discover_causal_graph_fhm</key>
-  </operator>
 
-  <operator>
-    <name>Data-aware Heuristic Miner (Causal net)</name>
-    <synopsis>This operator discovers a causal net (C-net), based on the Data-aware Heuristic Miner.</synopsis>
-    <help>This operator discovers a causal net (C-net), based on the Data-aware Heuristic Miner as described in: TODO </help>
-    <key>dataaware_heuristic_miner</key>
-  </operator>  
-  
-  <operator>
-        <name>ILP Miner (Petri Net)</name>
-        <synopsis>This operator can be used to execute the ILP Miner discovery algorithm.</synopsis>
-        <help>This operator can be used to execute the ILP Miner algorithm which provides a Petri Net and a marking. As input a log file is needed.</help>
-    <key>ilp_miner</key>
-  </operator>
-  
-  <operator>
-  		<name>Local Process Model Discovery</name>
-  		<synopsis>This operator mines a collection of Petri Nets that describe local behavior in the process, using the algorithm described in: https://arxiv.org/abs/1606.06066.</synopsis>
-  		<help>This operator can be used to mine a collection of Petri Nets that describe local behavior in the process</help>
- 		<key>mine_lpms</key>
-  </operator>
-  <operator>
-  		<name>Diversify Local Process Model ranking by filtering</name>
-  		<synopsis>This operator filters out similar Local Process Models to diversity the obtained Local Process Model ranking</synopsis>
-  		<help>This operator filters out similar Local Process Models to diversity the obtained Local Process Model ranking</help>
-    	<key>filter_lpms_for_diversity</key>
-  </operator>
-  <operator>
-  		<name>Diversify Local Process Model ranking by re-ranking</name>
-  		<synopsis>This operator re-ranks out the Local Process Models by taking into account a new diversity score as well as the old LPM score</synopsis>
-  		<help>This operator re-ranks out the Local Process Models by taking into account a new diversity score as well as the old LPM score</help>
-    	<key>rerank_lpms_for_diversity</key>
-  </operator>
-  
-  <operator>
-        <name>Genetic Miner (Heuristics Net)</name>
-        <synopsis>This operator can be used to execute the Genetic Miner discovery algorithm.</synopsis>
-        <help>This operator can be used to execute the Genetic Miner algorithm which provides a Heuristics Net. As input a log file is needed.</help>
-    <key>genetic_miner</key>
-  </operator>
- 
 	<operator>
-        <name>Repair Model (Petri Net)</name>
-        <synopsis>This operator can be used to execute the repair model algorithm as defined in &lt;a href="http://dx.doi.org/10.1016/j.is.2013.12.007"&gt;here&lt;/a&gt;.  </synopsis>
-        <help>This operator can be used to execute the repair model algorithm which provides a repaired Petri net as result. As input an event log and a Petri Net are needed.</help>
-    <key>repair_model</key>
-  </operator>
-  
+		<name>Import Event Log</name>
+		<synopsis>This operator can be used to import a ProM XES event log from a file.</synopsis>
+		<help>This operator can be used to import a ProM XES event log file. Note that only .xes files can be read.</help>
+		<key>import_xlog</key>
+	</operator>
+
 	<operator>
-        <name>Reduce Silent Transitions (Petri Net)</name>
-        <synopsis>This operator can be used to reduce silent transitions using the Murata rules, as defined in &lt;a href="http://dx.doi.org/10.1109/5.24143"&gt;here&lt;/a&gt;. </synopsis>
-        <help>This operator can be used to execute the reduce silent transitions algorithm which returns a Petri net. As input a Petri Net is needed.</help>
-    <key>reduce_silent_transitions</key>
-  </operator>
-  
+		<name>Extract Event Log</name>
+		<synopsis>This operator can be used to read a ProM XES log file from a file object (useful for loops over file collections)</synopsis>
+		<help>This operator can be used to read a ProM XES log file</help>
+		<key>extract_log_from_file</key>
+	</operator>
 	<operator>
-        <name>Export Petri net</name>
-        <synopsis>This operator can be used to export a Petri Net to a (E)PNML file.</synopsis>
-        <help>This operator can be used to export a Petri Net to a (E)PNML file. As Petri Net is needed as an input.</help>
-    	<key>export_petri_net</key>
-  	</operator> 
+		<name>Extract Petri Net</name>
+		<synopsis>This operator can be used to read a ProM Pnml petrinet file from a file object (useful for loops over file collections)</synopsis>
+		<help>This operator can be used to read a ProM  Pnml petrinet file</help>
+		<key>extract_petrinet_from_file</key>
+	</operator>
+
 	<operator>
-        <name>Export Data Petri net</name>
-        <synopsis>This operator can be used to export a Data Petri Net to a PNML file.</synopsis>
-        <help>This operator can be used to export a Data Petri Net to a PNML file.</help>
-    	<key>export_data_petri_net</key>
-  	</operator> 
+		<name>Sort chronologically</name>
+		<synopsis>This operator sorts traces and events within traces by timestamp (increasing).</synopsis>
+		<help>This operator sorts traces and events within traces by timestamp.</help>
+		<key>timestamp_sort</key>
+	</operator>
+
+
+	<operator>
+		<name>Filter Infrequent Behavior (Log Automaton)</name>
+		<synopsis>Event log filter able to filter out infrequent behavior. Based on: Conforti, R., La Rosa, M., and, ter Hofstede, A.; Filtering Out Infrequent Behavior from Business Process Event Logs"; IEEE Transactions on Knowledge and Data Engineering, Vol 29., No 2.</synopsis> 
+		<help> Event log filter able to filter out infrequent behavior. The filter creates an automaton based on the event log and uses the threshold to filter out infrequent transitions within the automaton. Based on: Conforti, R., La Rosa, M., and, ter Hofstede, A.; Filtering Out Infrequent Behavior from Business Process Event Logs"; IEEE Transactions on Knowledge and Data Engineering, Vol 29., No 2.</help>
+		<key>filter_log_automaton</key> 
+	</operator>
+	<operator> 
+		<name>Matrix Filter</name>
+		<synopsis>...</synopsis>
+		<help>LONGER HELP</help>
+		<key>matrix_filter</key>
+	</operator>
+	<operator> 
+		<name>Sequence Filter</name>
+		<synopsis>...</synopsis>
+		<help>LONGER HELP</help>
+		<key>sequence_filter</key>
+	</operator>
+
+
+	<operator>
+		<name>Alpha Miner (Petri Net)</name>
+		<synopsis>This operator can be used to execute the Alpha algorithm.</synopsis>
+		<help>This operator can be used to execute the Alpha algorithm which provides a Petri Net and a Marking. As input a log file is needed.</help>
+		<key>alpha_miner</key>
+	</operator>
+
+	<operator>
+		<name>Causal Graph (Flexible Heuristics Miner)</name>
+		<synopsis>This operator discovers a causal graph, based on the Flexible Heuristics Miner.</synopsis>
+		<help>This operator discovers a causal graph, based on the Flexible Heuristics Miner as described in:  Weijters, A. J. M. M., and J. T. S. Ribeiro. "Flexible heuristics miner (FHM)." Computational Intelligence and Data Mining (CIDM), 2011 IEEE Symposium on. IEEE, 2011. </help>
+		<key>discover_causal_graph_fhm</key>
+	</operator>
+
+	<operator>
+		<name>Data-aware Heuristic Miner (Causal net)</name>
+		<synopsis>This operator discovers a causal net (C-net), based on the Data-aware Heuristic Miner.</synopsis>
+		<help>This operator discovers a causal net (C-net), based on the Data-aware Heuristic Miner as described in: TODO </help>
+		<key>dataaware_heuristic_miner</key>
+	</operator>  
+
+	<operator>
+		<name>ILP Miner (Petri Net)</name>
+		<synopsis>This operator can be used to execute the ILP Miner discovery algorithm.</synopsis>
+		<help>This operator can be used to execute the ILP Miner algorithm which provides a Petri Net and a marking. As input a log file is needed.</help>
+		<key>ilp_miner</key>
+	</operator>
+
+	<operator>
+		<name>Local Process Model Discovery</name>
+		<synopsis>This operator mines a collection of Petri Nets that describe local behavior in the process, using the algorithm described in: https://arxiv.org/abs/1606.06066.</synopsis>
+		<help>This operator can be used to mine a collection of Petri Nets that describe local behavior in the process</help>
+		<key>mine_lpms</key>
+	</operator>
+	<operator>
+		<name>Diversify Local Process Model ranking by filtering</name>
+		<synopsis>This operator filters out similar Local Process Models to diversity the obtained Local Process Model ranking</synopsis>
+		<help>This operator filters out similar Local Process Models to diversity the obtained Local Process Model ranking</help>
+		<key>filter_lpms_for_diversity</key>
+	</operator>
+	<operator>
+		<name>Diversify Local Process Model ranking by re-ranking</name>
+		<synopsis>This operator re-ranks out the Local Process Models by taking into account a new diversity score as well as the old LPM score</synopsis>
+		<help>This operator re-ranks out the Local Process Models by taking into account a new diversity score as well as the old LPM score</help>
+		<key>rerank_lpms_for_diversity</key>
+	</operator>
+
+	<operator>
+		<name>Genetic Miner (Heuristics Net)</name>
+		<synopsis>This operator can be used to execute the Genetic Miner discovery algorithm.</synopsis>
+		<help>This operator can be used to execute the Genetic Miner algorithm which provides a Heuristics Net. As input a log file is needed.</help>
+		<key>genetic_miner</key>
+	</operator>
+
+	<operator>
+		<name>Repair Model (Petri Net)</name>
+		<synopsis>This operator can be used to execute the repair model algorithm as defined in &lt;a href="http://dx.doi.org/10.1016/j.is.2013.12.007"&gt;here&lt;/a&gt;.  </synopsis>
+		<help>This operator can be used to execute the repair model algorithm which provides a repaired Petri net as result. As input an event log and a Petri Net are needed.</help>
+		<key>repair_model</key>
+	</operator>
+
+	<operator>
+		<name>Reduce Silent Transitions (Petri Net)</name>
+		<synopsis>This operator can be used to reduce silent transitions using the Murata rules, as defined in &lt;a href="http://dx.doi.org/10.1109/5.24143"&gt;here&lt;/a&gt;. </synopsis>
+		<help>This operator can be used to execute the reduce silent transitions algorithm which returns a Petri net. As input a Petri Net is needed.</help>
+		<key>reduce_silent_transitions</key>
+	</operator>
+
+	<operator>
+		<name>Export Petri net</name>
+		<synopsis>This operator can be used to export a Petri Net to a (E)PNML file.</synopsis>
+		<help>This operator can be used to export a Petri Net to a (E)PNML file. As Petri Net is needed as an input.</help>
+		<key>export_petri_net</key>
+	</operator> 
+	<operator>
+		<name>Export Data Petri net</name>
+		<synopsis>This operator can be used to export a Data Petri Net to a PNML file.</synopsis>
+		<help>This operator can be used to export a Data Petri Net to a PNML file.</help>
+		<key>export_data_petri_net</key>
+	</operator> 
 	<operator>
 		<name>Export Event Log</name>
 		<synopsis>This operator can be used to export an event log.</synopsis>
-        <help>This operator can be used to export a event log. As log format XES, XES.GZ, MXML, and MXML.GZ are available. As input this operator needs an event log.</help>
+		<help>This operator can be used to export a event log. As log format XES, XES.GZ, MXML, and MXML.GZ are available. As input this operator needs an event log.</help>
 		<key>export_log</key>
 	</operator> 
 	<operator>
@@ -511,295 +510,295 @@
 		<key>export_static_event_stream</key>
 	</operator>
 	<operator>
-        <name>Event Log to Data Table (Exampleset)</name>
-        <synopsis>This operator can be used to convert a ProM log into an Exampleset (data table).</synopsis>
-        <help>This operator can be used to convert a ProM log into an Exampleset. As input a log is needed. Each event of the log is converted into a single row in the Exampleset. Trace attributes are repeated in each row that is created for an event of that trace.</help>
-    <key>xlog_to_exampleset</key>
-  </operator>
-  
+		<name>Event Log to Data Table (Exampleset)</name>
+		<synopsis>This operator can be used to convert a ProM log into an Exampleset (data table).</synopsis>
+		<help>This operator can be used to convert a ProM log into an Exampleset. As input a log is needed. Each event of the log is converted into a single row in the Exampleset. Trace attributes are repeated in each row that is created for an event of that trace.</help>
+		<key>xlog_to_exampleset</key>
+	</operator>
+
 	<operator>
-        <name>Data Table to Event Log (XLog)</name>
-        <synopsis>This operator can be used to convert an Exampleset (data table) into an ProM log.</synopsis>
-        <help>This operator can be used to convert an Exampleset into an ProM log. As input an Exampleset is needed. Each row of the exampleset is converted into a event belonging to a trace. For the conversion it is important that the following columns exist: T:concept:name (the concept name attribute of the trace), E:concept:name (the concept name attribute of the event), E:lifecycle:transition (the life cycle attribute of the event), E:org:resource (the resource attribute of the event), E:org:role (the role attribute of the event), E:org:group (the group attribute of the event), and E:time:time (the time attribute of the event).</help>
-    <key>exampleset_to_xlog</key>
-  </operator>
-  
+		<name>Data Table to Event Log (XLog)</name>
+		<synopsis>This operator can be used to convert an Exampleset (data table) into an ProM log.</synopsis>
+		<help>This operator can be used to convert an Exampleset into an ProM log. As input an Exampleset is needed. Each row of the exampleset is converted into a event belonging to a trace. For the conversion it is important that the following columns exist: T:concept:name (the concept name attribute of the trace), E:concept:name (the concept name attribute of the event), E:lifecycle:transition (the life cycle attribute of the event), E:org:resource (the resource attribute of the event), E:org:role (the role attribute of the event), E:org:group (the group attribute of the event), and E:time:time (the time attribute of the event).</help>
+		<key>exampleset_to_xlog</key>
+	</operator>
+
 	<operator>
-        <name>Heuristics Net to Petri Net</name>
-        <synopsis>This operator can be used to convert a Heuristics Net into a Petri Net.</synopsis>
-        <help>This operator can be used to convert a Heuristics Net into a Petri Net. As input a Heuristics Net is needed.</help>
-    <key>convert_heuristics_net_into_petri_net</key>
-  </operator>
-  
-       <operator>
-        <name>Evolutionary Tree Miner (Process Tree)</name>
-        <synopsis>Discovers a Process Tree from an event log using the &lt;a href="http://dx.doi.org/10.6100/IR780920"&gt;Evolutionary Tree Miner&lt;/a&gt;. The Evolutionary Tree Miner (or ETM) is an evolutionary algorithm to discover a process model (in our case a process tree) from an event log. It does so by creating several process models, checking how good they are (w.r.t the event log) using several quality dimensions, and then slightly modifying the best ones in the hope that they will become even better. By repeating this, and always keeping a list of the best ones found so far, the ETM will discover better and better process models. The main advantage is that many quality dimensions can be used to define what a �better� process model is.</synopsis>
-        <help>Mine a Process Using the ETM Algorithm from an event log.</help>
-    	<key>etm_miner</key>
-  	  </operator>
-  	  
-  	  <operator>
-        <name>Process Tree to Petri Net</name>
-        <synopsis>Convert a Process Tree into a Petri Net.</synopsis>
-        <help>Convert a Process Tree into a Petri Net.</help>
-    	<key>convert_process_tree_to_petri_net</key>
-  	  </operator>
-  	  
-  	  <operator>
-        <name>Analyze Performance (Manifest) </name>
-        <synopsis>A log is replayed on a petri net to get performance information. This operator projects performance measurements in a process model such as bottlenecks.</synopsis>
-        <help>A log is replayed on a petri net to get performance and conformance information.</help>
-    	<key>replay_a_log_on_petri_net_for_performance_conformance_analysis</key>
-  	  </operator>
-  	  
-  	   <operator>
-        <name>Heuristics Miner (Heuristics Net)</name>
-        <synopsis>This operator can be used to execute the Heuristics Miner algorithm.</synopsis>
-        <help>This operator can be used to execute the &lt;a href="http://dx.doi.org/10.1109/CIDM.2011.5949453"&gt;Heuristics Miner&lt;/a&gt;. algorithm which provides a Heuristics Net. As input a log file is needed.</help>
-    	<key>heuristics_miner</key>
-  	   </operator>
-  	   
-  	   <operator>
-        <name>Inductive Miner (Petri Net)</name>
-        <synopsis>This operator can be used to execute the Inductive Miner in order to discover a Petri Net as defined &lt;a href="http://dx.doi.org/10.1007/978-3-642-38697-8_17"&gt;here&lt;/a&gt;.</synopsis>
-        <help>This operator can be used to execute the Inductive Miner algorithm which provides a Petri Net. As input an event log is needed.</help>
-    	<key>mine_petri_net_with_inductive_miner</key>
-  		</operator>
-  		
-  		<operator>
-        <name>Inductive Miner (Process Tree)</name>
-        <synopsis>This operator can be used to execute the Inductive Miner in order to discover a Process Tree as defined &lt;a href="http://dx.doi.org/10.1007/978-3-642-38697-8_17"&gt;here&lt;/a&gt;.</synopsis>
-        <help>This operator can be used to execute the Inductive Miner algorithm which provides a Process Tree. As input an event log is needed.</help>
-    	<key>mine_process_tree_with_inductive_miner</key>
-  		</operator>
-  
-  	<operator>
-        <name>Social Network Miner (Social Network)</name>
-        <synopsis>This plugin reads an event log and generates social networks that can be used as a starting point for SNA. We can apply several techniques to analyze the social networks, e.g., find interaction patterns, evaluate the role of an individual in an organization, etc.</synopsis>
-        <help>An event log is requires as input</help>
-    <key>social_network_miner</key>
-  </operator>
-  
-    <!-- LOG MANIPULATION -->
-    
-    <!-- LOG ABSTRACTION-->
-  	 <operator>
-        <name>Create Abstraction Model</name>
-        <synopsis>Creates an abstraction model for abstracting events using a supervised pattern-based approach.</synopsis>
-        <help>
+		<name>Heuristics Net to Petri Net</name>
+		<synopsis>This operator can be used to convert a Heuristics Net into a Petri Net.</synopsis>
+		<help>This operator can be used to convert a Heuristics Net into a Petri Net. As input a Heuristics Net is needed.</help>
+		<key>convert_heuristics_net_into_petri_net</key>
+	</operator>
+
+	<operator>
+		<name>Evolutionary Tree Miner (Process Tree)</name>
+		<synopsis>Discovers a Process Tree from an event log using the &lt;a href="http://dx.doi.org/10.6100/IR780920"&gt;Evolutionary Tree Miner&lt;/a&gt;. The Evolutionary Tree Miner (or ETM) is an evolutionary algorithm to discover a process model (in our case a process tree) from an event log. It does so by creating several process models, checking how good they are (w.r.t the event log) using several quality dimensions, and then slightly modifying the best ones in the hope that they will become even better. By repeating this, and always keeping a list of the best ones found so far, the ETM will discover better and better process models. The main advantage is that many quality dimensions can be used to define what a �better� process model is.</synopsis>
+		<help>Mine a Process Using the ETM Algorithm from an event log.</help>
+		<key>etm_miner</key>
+	</operator>
+
+	<operator>
+		<name>Process Tree to Petri Net</name>
+		<synopsis>Convert a Process Tree into a Petri Net.</synopsis>
+		<help>Convert a Process Tree into a Petri Net.</help>
+		<key>convert_process_tree_to_petri_net</key>
+	</operator>
+
+	<operator>
+		<name>Analyze Performance (Manifest) </name>
+		<synopsis>A log is replayed on a petri net to get performance information. This operator projects performance measurements in a process model such as bottlenecks.</synopsis>
+		<help>A log is replayed on a petri net to get performance and conformance information.</help>
+		<key>replay_a_log_on_petri_net_for_performance_conformance_analysis</key>
+	</operator>
+
+	<operator>
+		<name>Heuristics Miner (Heuristics Net)</name>
+		<synopsis>This operator can be used to execute the Heuristics Miner algorithm.</synopsis>
+		<help>This operator can be used to execute the &lt;a href="http://dx.doi.org/10.1109/CIDM.2011.5949453"&gt;Heuristics Miner&lt;/a&gt;. algorithm which provides a Heuristics Net. As input a log file is needed.</help>
+		<key>heuristics_miner</key>
+	</operator>
+
+	<operator>
+		<name>Inductive Miner (Petri Net)</name>
+		<synopsis>This operator can be used to execute the Inductive Miner in order to discover a Petri Net as defined &lt;a href="http://dx.doi.org/10.1007/978-3-642-38697-8_17"&gt;here&lt;/a&gt;.</synopsis>
+		<help>This operator can be used to execute the Inductive Miner algorithm which provides a Petri Net. As input an event log is needed.</help>
+		<key>mine_petri_net_with_inductive_miner</key>
+	</operator>
+
+	<operator>
+		<name>Inductive Miner (Process Tree)</name>
+		<synopsis>This operator can be used to execute the Inductive Miner in order to discover a Process Tree as defined &lt;a href="http://dx.doi.org/10.1007/978-3-642-38697-8_17"&gt;here&lt;/a&gt;.</synopsis>
+		<help>This operator can be used to execute the Inductive Miner algorithm which provides a Process Tree. As input an event log is needed.</help>
+		<key>mine_process_tree_with_inductive_miner</key>
+	</operator>
+
+	<operator>
+		<name>Social Network Miner (Social Network)</name>
+		<synopsis>This plugin reads an event log and generates social networks that can be used as a starting point for SNA. We can apply several techniques to analyze the social networks, e.g., find interaction patterns, evaluate the role of an individual in an organization, etc.</synopsis>
+		<help>An event log is requires as input</help>
+		<key>social_network_miner</key>
+	</operator>
+
+	<!-- LOG MANIPULATION -->
+
+	<!-- LOG ABSTRACTION-->
+	<operator>
+		<name>Create Abstraction Model</name>
+		<synopsis>Creates an abstraction model for abstracting events using a supervised pattern-based approach.</synopsis>
+		<help>
         	Creates a combined abstraction model from process/abstraction patterns. Abstraction patterns describe the behavior expected for an (abstract) activity and should be modeled as Data Petri Net (DPN) with a single source and a single sink place (SESE stucture). 
         	This plug-in implements part of the the methodology presented in the BPM'16 paper 'From Low-Level Events to Activities - A Pattern-based Approach' (DOI: 10.1007/978-3-319-45348-4_8).        	
-        </help>
-    	<key>create_abstraction_model</key>
-	 </operator>    
-  	 <operator>
-        <name>Compile Abstraction Model to DPN</name>
-        <synopsis>Compiles the abstraction model to its plain Data Petri net representation.</synopsis>
-        <help>
+		</help>
+		<key>create_abstraction_model</key>
+	</operator>    
+	<operator>
+		<name>Compile Abstraction Model to DPN</name>
+		<synopsis>Compiles the abstraction model to its plain Data Petri net representation.</synopsis>
+		<help>
         	Compiles the abstraction model to its plain Data Petri net representation. 
-        </help>
-    	<key>convert_abstraction_model_to_dpn</key>
-	 </operator>
-  	 <operator>
-        <name>Log Abstraction Based on Patterns</name>
-        <synopsis>Abstracts events from the supplied event log using a supervised pattern-based approach.</synopsis>
-        <help>
+		</help>
+		<key>convert_abstraction_model_to_dpn</key>
+	</operator>
+	<operator>
+		<name>Log Abstraction Based on Patterns</name>
+		<synopsis>Abstracts events from the supplied event log using a supervised pattern-based approach.</synopsis>
+		<help>
         	Abstracts events from the supplied event log using a supervised pattern-based approach.
         	This plug-in implements the methodology presented in the BPM'16 paper 'From Low-Level Events to Activities - A Pattern-based Approach' (DOI: 10.1007/978-3-319-45348-4_8).
         	Activity patterns describe the behavior expected for an (abstract) activity and should be modeled as Data Petri Net (DPN) with a single source and a single sink place (SESE stucture).
-        </help>
-    	<key>abstract_based_on_pattern</key>
-  	</operator>
-      	 <operator>
-        <name>Expand Model Based on Patterns</name>
-        <synopsis>Expands model based on abstraction patterns.</synopsis>
-        <help>
-        	Expands model based on abstraction patterns. The abstract activities are replaced by the low-level patterns.
-        </help>
-    	<key>expand_based_on_pattern</key>
-  	</operator>
-    
-  	<operator>
-        <name>Add Noise</name>
-        <synopsis>This filter randomly adds noise to the log.</synopsis>
-        <help>This operator can be used to add specific noise to a log. Check the parameter descriptions for more info on how noise is added. An event log is required as input.</help>
-    	<key>add_noise_log</key>
-  	</operator>
-  	
-  	<operator>
-        <name>Add Table Column to XLog</name>
-        <synopsis>This operator adds a column of an example set to an XLog.</synopsis>
-        <help>This operator adds a column of an example set to an XLog. As input a log file and an example set is needed.</help>
-    	<key>add_table_column_to_log</key>
-  	</operator>
-  	
-  
-  	<operator>
-        <name>Add Trace Attributes to Log</name>
-        <synopsis>This operator adds trace attributes to a log.</synopsis>
-        <help>This operator adds trace attributes (that are contained in an exampleset) to a log. For each trace only one row in the exampleset exists. In the exampleset one row needs to contain the (unique) case identifiers of the traces. As input a log file and an exampleset is needed.</help>
-    	<key>add_trace_attributes_to_log</key>
-  	</operator>
-  	
-  	<operator>
-        <name>Add Event Attributes to Log</name>
-        <synopsis>This operator adds event attributes to a log.</synopsis>
-        <help>This operator adds event attributes (that are contained in an exampleset) to a log. For each event only one row in the exampleset exists. In the exampleset one column needs to contain the case identifiers of the traces and another column needs to contain the (unique) event identifiers. As input a log file and an exampleset is needed.</help>
-    	<key>add_event_attributes_to_log</key>
-  	</operator>
-  	
-  	 <operator>
-        <name>Add Events to Log</name>
-        <synopsis>This operator adds events to a log.</synopsis>
-        <help>This operator adds events (that are contained in an exampleset) to a log. For each event only one row in the exampleset exists. In the exampleset, separate columns need to contain the following information: case identifiers, concept:name of the events, lifecycle:transition of the events, time:timestamp of the events, org:resource of the events, org:role of the events, group:resource of the events. In case a column with information is not present, no value needs to be filled in. As input a log file and an exampleset is needed.</help>
-    	<key>add_events_to_log</key>
-  	</operator>
-  	
-    <operator>
-        <name>Create Prefix Closure</name>
-        <synopsis>This operator creates a prefix-closure of the event log. For each trace, each prefix, excluding the empty prefix, is added.</synopsis>
-        <help>This operator creates a prefix-closure of the event log. For each trace, each prefix, excluding the empty prefix, is added.</help>
-        <key>create_prefix_closure</key>
-    </operator>
-  	
-  	 <operator>
-        <name>Merge Event Logs</name>
-        <synopsis>This operator merges two event logs.</synopsis>
-        <help>This operator merges two event logs by collecting all the traces into a consolidated event log. As input two logs are needed.</help>
-    	<key>merge_two_event_logs</key>
-  	</operator>
-  	
-  	<operator>
-        <name>Merge Subsequent Events</name>
-        <synopsis>This operator merges subsequent events in an event log.</synopsis>
-        <help>This operator merges subsequent events in an event log into one single event based on different criteria. 
-        	For example, a trace [A,A,A,B,B,C,A,A] is transformed to [A,B,C,A].</help>
-    	<key>merge_subsequent_events</key>
-  	</operator>
-  	
-  	<operator>
-        <name>Move Trace Attributes to Trace</name>
-        <synopsis>Moves all attributes that appear in every event with the same value to the trace level.</synopsis>
-        <help>Moves all attributes that appear in every event with the same value to the trace level, i.e., creates an attribute with that value for the trace.</help>
-    	<key>move_common_attributes_to_trace</key>
-  	</operator>
-  	
-  	<operator>
-        <name>Remove Duplicate Attribute Values</name>
-        <synopsis>Removes duplicate attribute values from events, i.e., attribute that have not change since the last event occurred. </synopsis>
-        <help>Removes duplicate attribute values from events, i.e., attribute that have not change since the last event occurred.
-        This creates a smaller sparse event log, which is useful to reduce the memory consumption.</help>
-    	<key>remove_duplicate_attributes</key>
-  	</operator>
-  	
-  	<operator>
-        <name>Random Sample of Traces</name>
-        <synopsis>Extracts a random sample of traces from the event log.</synopsis>
-        <help>Extracts a random sample of traces from the event log. The size of the sample can be given.</help>
-    	<key>random_sample</key>
-  	</operator>
-  	
-  	<operator>
-        <name>Filter Events</name>
-        <synopsis>Filters the events of an event log.</synopsis>
-        <help>Filters the events of an event log using a filter query.</help>
-    	<key>filter_events</key>
-  	</operator>
-  	
-    <operator>
-        <name>Filter Traces</name>
-        <synopsis>Filters the traces of an event log.</synopsis>
-        <help>Filters the traces of an event log using a filter query.</help>
-    	<key>filter_traces</key>
-  	</operator>
-  	
-  	<operator>
-  		<name>Add Classifier to Event Log</name>
-        <synopsis>This operator adds an event classifier to an event log. An event classifier defines how events are identified.</synopsis>
-        <help>An event log is needed as input.</help>
-        <key>add_classifier_log</key>                
-    </operator> 
-  	
-  	 <operator>
-        <name>Add Artificial Start and End Event</name>
-        <synopsis>This operator adds a start and end event to each trace.</synopsis>
-        <help>This operator adds a start and end event to each trace. As input a log is needed.</help>
-    	<key>add_artificial_start_end_event_filter</key>
-  	</operator>
-  	
-	<operator>
-        <name>Add Elapsed Time</name>
-        <synopsis>This operator adds the time elapsed since trace start to each event.</synopsis>
-        <help>This operator adds the time elapsed since trace start to each event. The time resolution can be chosen.</help>
-    	<key>add_elapsed_time</key>
-  	</operator>
-  	
-  	<operator>
-        <name>Transition System Miner (Transition System)</name>
-        <synopsis>This operator mines a transition system based on the selected parameters, as defined &lt;a href="http://dx.doi.org/10.1016/j.is.2010.09.001"&gt;here&lt;/a&gt;.</synopsis>
-        <help>A log is required as input</help>
-    	<key>mine_transition_system</key>
-  	</operator>
-	
-	<operator>
-        <name>Fuzzy Miner (Fuzzy Model)</name>
-        <synopsis>This operator mines a Fuzzy Model as described &lt;a href="http://dx.doi.org/10.6100/IR644335"&gt;here&lt;/a&gt;. This miner is best suited for flexible or unstructured processes, where other miners give very complex models as result.</synopsis>
-        <help>A log is required for input</help>
-    	<key>mine_fuzzy_model</key>
-  	</operator>
-  	
-  
-  	
-  	<operator>
-  		<name>Compute Prefix Alignments (Incremental)</name>
-  		<synopsis>Computes all prefix alignments of all traces in an incremental fashion</synopsis>
-  		<help>...</help>
-  		<key>incremental_prefix_alignments</key>
-  	</operator>
-  	
-  	<operator>
-  		<name>Compute Prefix Alignments (Incremental / Prefix Aware)</name>
-  		<synopsis>Computes all prefix alignments of all traces in an incremental fashion</synopsis>
-  		<help>...</help>
-  		<key>incremental_prefix_alignments_prefix_aware</key>
-  	</operator>
-  	
-  	<!-- STREAMS -->
-    <operator>
-        <name>Generate Event Stream from CPN</name>
-        <synopsis>Generate stream from CPN</synopsis>
-        <help></help>
-        <key>stream_from_cpn</key>
-    </operator>
-    <operator>
-        <name>Generate Event Stream from Static Event Stream</name>
-        <synopsis>Generate an event stream from a static event stream.</synopsis>
-        <help></help>
-        <key>stream_from_static_event_stream</key>
-    </operator>
-    <operator>
-        <name>Stream Alpha Miner (Accepting Petri Net)</name>
-        <synopsis>Discover a Petri net from an event stream using a stream-based implementation of the alpha miner</synopsis>
-        <key>stream_alpha_miner_apn</key>
-        <help />
-    </operator>
-    <operator>
-        <name>Stream Inductive Miner (Accepting Petri Net)</name>
-        <synopsis>Discover a Petri net from an event stream using a stream-based implementation of the inductive miner</synopsis>
-        <help />
-        <key>stream_inductive_miner_apn</key>
+		</help>
+		<key>abstract_based_on_pattern</key>
 	</operator>
 	<operator>
-        <name>Stream Inductive Miner (Process Tree)</name>
-        <synopsis>Discover a process tree from an event stream using a stream-based implementation of the inductive miner</synopsis>
-        <help />
-        <key>stream_inductive_miner_pt</key>
-    </operator>
-    <operator>
-        <name>Event Stream Algorithm Analyzer (Projected Recall Precision, Accepting Petri Net)</name>
-        <synopsis>Calculates Model to Model similarity of stream based discovery algorithms.</synopsis>
-        <help>Calculates model-to-model similarity of each generated model of each connected algorithm at each point in time w.r.t. a collection of reference models. The reported metrics are: recall and precision.</help>
-        <key>event_stream_analysis_proj_rec_prec_apn</key>
+		<name>Expand Model Based on Patterns</name>
+		<synopsis>Expands model based on abstraction patterns.</synopsis>
+		<help>
+        	Expands model based on abstraction patterns. The abstract activities are replaced by the low-level patterns.
+		</help>
+		<key>expand_based_on_pattern</key>
+	</operator>
+
+	<operator>
+		<name>Add Noise</name>
+		<synopsis>This filter randomly adds noise to the log.</synopsis>
+		<help>This operator can be used to add specific noise to a log. Check the parameter descriptions for more info on how noise is added. An event log is required as input.</help>
+		<key>add_noise_log</key>
+	</operator>
+
+	<operator>
+		<name>Add Table Column to XLog</name>
+		<synopsis>This operator adds a column of an example set to an XLog.</synopsis>
+		<help>This operator adds a column of an example set to an XLog. As input a log file and an example set is needed.</help>
+		<key>add_table_column_to_log</key>
+	</operator>
+
+
+	<operator>
+		<name>Add Trace Attributes to Log</name>
+		<synopsis>This operator adds trace attributes to a log.</synopsis>
+		<help>This operator adds trace attributes (that are contained in an exampleset) to a log. For each trace only one row in the exampleset exists. In the exampleset one row needs to contain the (unique) case identifiers of the traces. As input a log file and an exampleset is needed.</help>
+		<key>add_trace_attributes_to_log</key>
+	</operator>
+
+	<operator>
+		<name>Add Event Attributes to Log</name>
+		<synopsis>This operator adds event attributes to a log.</synopsis>
+		<help>This operator adds event attributes (that are contained in an exampleset) to a log. For each event only one row in the exampleset exists. In the exampleset one column needs to contain the case identifiers of the traces and another column needs to contain the (unique) event identifiers. As input a log file and an exampleset is needed.</help>
+		<key>add_event_attributes_to_log</key>
+	</operator>
+
+	<operator>
+		<name>Add Events to Log</name>
+		<synopsis>This operator adds events to a log.</synopsis>
+		<help>This operator adds events (that are contained in an exampleset) to a log. For each event only one row in the exampleset exists. In the exampleset, separate columns need to contain the following information: case identifiers, concept:name of the events, lifecycle:transition of the events, time:timestamp of the events, org:resource of the events, org:role of the events, group:resource of the events. In case a column with information is not present, no value needs to be filled in. As input a log file and an exampleset is needed.</help>
+		<key>add_events_to_log</key>
+	</operator>
+
+	<operator>
+		<name>Create Prefix Closure</name>
+		<synopsis>This operator creates a prefix-closure of the event log. For each trace, each prefix, excluding the empty prefix, is added.</synopsis>
+		<help>This operator creates a prefix-closure of the event log. For each trace, each prefix, excluding the empty prefix, is added.</help>
+		<key>create_prefix_closure</key>
+	</operator>
+
+	<operator>
+		<name>Merge Event Logs</name>
+		<synopsis>This operator merges two event logs.</synopsis>
+		<help>This operator merges two event logs by collecting all the traces into a consolidated event log. As input two logs are needed.</help>
+		<key>merge_two_event_logs</key>
+	</operator>
+
+	<operator>
+		<name>Merge Subsequent Events</name>
+		<synopsis>This operator merges subsequent events in an event log.</synopsis>
+		<help>This operator merges subsequent events in an event log into one single event based on different criteria. 
+        	For example, a trace [A,A,A,B,B,C,A,A] is transformed to [A,B,C,A].</help>
+		<key>merge_subsequent_events</key>
+	</operator>
+
+	<operator>
+		<name>Move Trace Attributes to Trace</name>
+		<synopsis>Moves all attributes that appear in every event with the same value to the trace level.</synopsis>
+		<help>Moves all attributes that appear in every event with the same value to the trace level, i.e., creates an attribute with that value for the trace.</help>
+		<key>move_common_attributes_to_trace</key>
+	</operator>
+
+	<operator>
+		<name>Remove Duplicate Attribute Values</name>
+		<synopsis>Removes duplicate attribute values from events, i.e., attribute that have not change since the last event occurred. </synopsis>
+		<help>Removes duplicate attribute values from events, i.e., attribute that have not change since the last event occurred.
+        This creates a smaller sparse event log, which is useful to reduce the memory consumption.</help>
+		<key>remove_duplicate_attributes</key>
+	</operator>
+
+	<operator>
+		<name>Random Sample of Traces</name>
+		<synopsis>Extracts a random sample of traces from the event log.</synopsis>
+		<help>Extracts a random sample of traces from the event log. The size of the sample can be given.</help>
+		<key>random_sample</key>
+	</operator>
+
+	<operator>
+		<name>Filter Events</name>
+		<synopsis>Filters the events of an event log.</synopsis>
+		<help>Filters the events of an event log using a filter query.</help>
+		<key>filter_events</key>
+	</operator>
+
+	<operator>
+		<name>Filter Traces</name>
+		<synopsis>Filters the traces of an event log.</synopsis>
+		<help>Filters the traces of an event log using a filter query.</help>
+		<key>filter_traces</key>
+	</operator>
+
+	<operator>
+		<name>Add Classifier to Event Log</name>
+		<synopsis>This operator adds an event classifier to an event log. An event classifier defines how events are identified.</synopsis>
+		<help>An event log is needed as input.</help>
+		<key>add_classifier_log</key>                
+	</operator> 
+
+	<operator>
+		<name>Add Artificial Start and End Event</name>
+		<synopsis>This operator adds a start and end event to each trace.</synopsis>
+		<help>This operator adds a start and end event to each trace. As input a log is needed.</help>
+		<key>add_artificial_start_end_event_filter</key>
+	</operator>
+
+	<operator>
+		<name>Add Elapsed Time</name>
+		<synopsis>This operator adds the time elapsed since trace start to each event.</synopsis>
+		<help>This operator adds the time elapsed since trace start to each event. The time resolution can be chosen.</help>
+		<key>add_elapsed_time</key>
+	</operator>
+
+	<operator>
+		<name>Transition System Miner (Transition System)</name>
+		<synopsis>This operator mines a transition system based on the selected parameters, as defined &lt;a href="http://dx.doi.org/10.1016/j.is.2010.09.001"&gt;here&lt;/a&gt;.</synopsis>
+		<help>A log is required as input</help>
+		<key>mine_transition_system</key>
+	</operator>
+
+	<operator>
+		<name>Fuzzy Miner (Fuzzy Model)</name>
+		<synopsis>This operator mines a Fuzzy Model as described &lt;a href="http://dx.doi.org/10.6100/IR644335"&gt;here&lt;/a&gt;. This miner is best suited for flexible or unstructured processes, where other miners give very complex models as result.</synopsis>
+		<help>A log is required for input</help>
+		<key>mine_fuzzy_model</key>
+	</operator>
+
+
+
+	<operator>
+		<name>Compute Prefix Alignments (Incremental)</name>
+		<synopsis>Computes all prefix alignments of all traces in an incremental fashion</synopsis>
+		<help>...</help>
+		<key>incremental_prefix_alignments</key>
+	</operator>
+
+	<operator>
+		<name>Compute Prefix Alignments (Incremental / Prefix Aware)</name>
+		<synopsis>Computes all prefix alignments of all traces in an incremental fashion</synopsis>
+		<help>...</help>
+		<key>incremental_prefix_alignments_prefix_aware</key>
+	</operator>
+
+	<!-- STREAMS -->
+	<operator>
+		<name>Generate Event Stream from CPN</name>
+		<synopsis>Generate stream from CPN</synopsis>
+		<help></help>
+		<key>stream_from_cpn</key>
+	</operator>
+	<operator>
+		<name>Generate Event Stream from Static Event Stream</name>
+		<synopsis>Generate an event stream from a static event stream.</synopsis>
+		<help></help>
+		<key>stream_from_static_event_stream</key>
+	</operator>
+	<operator>
+		<name>Stream Alpha Miner (Accepting Petri Net)</name>
+		<synopsis>Discover a Petri net from an event stream using a stream-based implementation of the alpha miner</synopsis>
+		<key>stream_alpha_miner_apn</key>
+		<help />
+	</operator>
+	<operator>
+		<name>Stream Inductive Miner (Accepting Petri Net)</name>
+		<synopsis>Discover a Petri net from an event stream using a stream-based implementation of the inductive miner</synopsis>
+		<help />
+		<key>stream_inductive_miner_apn</key>
+	</operator>
+	<operator>
+		<name>Stream Inductive Miner (Process Tree)</name>
+		<synopsis>Discover a process tree from an event stream using a stream-based implementation of the inductive miner</synopsis>
+		<help />
+		<key>stream_inductive_miner_pt</key>
+	</operator>
+	<operator>
+		<name>Event Stream Algorithm Analyzer (Projected Recall Precision, Accepting Petri Net)</name>
+		<synopsis>Calculates Model to Model similarity of stream based discovery algorithms.</synopsis>
+		<help>Calculates model-to-model similarity of each generated model of each connected algorithm at each point in time w.r.t. a collection of reference models. The reported metrics are: recall and precision.</help>
+		<key>event_stream_analysis_proj_rec_prec_apn</key>
 	</operator>
 	<operator>
 		<name>Event Stream Algorithm Analyzer (Alignments, Accepting Petri Net)</name>
@@ -811,7 +810,7 @@
 		<name>Extract Static Event Stream </name>
 		<synopsis> This operator allows for extracting a static event stream from a live event stream.</synopsis>
 		<help> This operator allows for extracting a static event stream from a live event stream. The static event stream can be used repeatedly (i.e. for repeated experiments). The user needs to specify how many packets should be captured by the extractor. The primary input is an (inactive) event stream. As a secondary, optional, input an author object can be given. If the author is not started yet the operator will start the underlying author.</help>
-	    <key>extract_static_event_stream_from_event_stream</key>
+		<key>extract_static_event_stream_from_event_stream</key>
 	</operator>
 	<operator>
 		<name>Start Runnable </name>
@@ -831,238 +830,230 @@
 		<help> This operator allows to poll a runnable entity from the stream framework (i.e. generator, stream algorithm etc.). The operator checks whether the entity is still active. If the entity has become inactive, the operator will pass the entity on as an output object. This operator can be used within repeated experiments of stream related operators</help>
 		<key>poll_xsrunnable</key>
 	</operator>
-	
+
 	<operator>
-	    <name>Case Data Extractor </name>
+		<name>Extract Case Data</name>
 		<synopsis> This extracts data from the traces contained in an event log, such as relative occurrence, etc... </synopsis>
-		<help> An Event log is required as input </help>		
-        <key>case_data_extractor</key>                
-    </operator>
-    <operator>
-        <name>Reduce Petri Net</name>
-        <synopsis>This operator can be used to reduce a petri using the Murata rules, as defined in &lt;a href="http://dx.doi.org/10.1109/5.24143"&gt;here&lt;/a&gt;. Note that this is an agressive reduction that most probably will remove non-silent transitions from the net. This type of reduction, however, facilitates soundness checking since the structural properties of the net are preserved. Hence, a soundness analysis obtained for a reduced Petri net is valid also for the original net. </synopsis>
-        <help>This operator can be used to execute Murata reduction algorithm which returns a Petri net. As input a Petri Net is needed.</help>
-    <key>reduce_petrinet</key>
-  </operator>
-    
-    <!-- UTILITY -->
-    <operator>
-        <name>Free Memory (RapidProM)</name>
-        <synopsis> This operator tries to free the memory used by RapidProM (and also Rapid Miner itself). </synopsis>
-        <help> This operator tries to free the memory used by RapidProM (and also Rapid Miner itself). It does so by clearing the Plugin Context object (which is originating from the ProM framework, i.e., the base of RapidProM)</help>
-        <key>rprom_free_memory</key>
-    </operator>
-    
-    <!-- PADAS -->
+		<help> This extracts data from the traces contained in an event log, such as relative occurrence, etc... </help>		
+		<key>case_data_extractor</key>
+	</operator>
 	<operator>
-	    <name>DAPOQ-Lang Query </name>
+		<name>Reduce Petri Net</name>
+		<synopsis>This operator can be used to reduce a petri using the Murata rules, as defined in &lt;a href="http://dx.doi.org/10.1109/5.24143"&gt;here&lt;/a&gt;. Note that this is an agressive reduction that most probably will remove non-silent transitions from the net. This type of reduction, however, facilitates soundness checking since the structural properties of the net are preserved. Hence, a soundness analysis obtained for a reduced Petri net is valid also for the original net. </synopsis>
+		<help>This operator can be used to execute Murata reduction algorithm which returns a Petri net. As input a Petri Net is needed.</help>
+		<key>reduce_petrinet</key>
+	</operator>
+
+	<!-- UTILITY -->
+	<operator>
+		<name>Free Memory (RapidProM)</name>
+		<synopsis> This operator tries to free the memory used by RapidProM (and also Rapid Miner itself). </synopsis>
+		<help> This operator tries to free the memory used by RapidProM (and also Rapid Miner itself). It does so by clearing the Plugin Context object (which is originating from the ProM framework, i.e., the base of RapidProM)</help>
+		<key>rprom_free_memory</key>
+	</operator>
+
+	<!-- PADAS -->
+	<operator>
+		<name>DAPOQ-Lang Query </name>
 		<synopsis>Executes a DAPOQ-Lang Query on a SLEX Meta Model </synopsis>
 		<help> A SLEX Meta Model is required as input </help>		
-        <key>dapoq_lang_query</key>                
-    </operator>
-    <operator>
-	    <name>SLEXMM Meta Model Importer </name>
+		<key>dapoq_lang_query</key>                
+	</operator>
+	<operator>
+		<name>SLEXMM Meta Model Importer </name>
 		<synopsis>Imports a SLEX Meta Model </synopsis>
 		<help> A file is required as input </help>		
-        <key>import_slex_mm</key>
-    </operator>
-    <operator>
-	    <name>SLEXMM Meta Model Generator </name>
+		<key>import_slex_mm</key>
+	</operator>
+	<operator>
+		<name>SLEXMM Meta Model Generator </name>
 		<synopsis>Generates a SLEX Meta Model from several inputs</synopsis>
 		<help>A Data Model, a set of events and versions, logs and process definitions are required as input</help>		
-        <key>generate_slex_mm</key>
-    </operator>
-    <operator>
-	    <name>PADAS Log Splitter</name>
+		<key>generate_slex_mm</key>
+	</operator>
+	<operator>
+		<name>PADAS Log Splitter</name>
 		<synopsis>Split a set of events into traces according to some criteria</synopsis>
 		<help>A Data Model and a set of events are required as input</help>		
-        <key>padas_split_log</key>
-    </operator>
-    <operator>
-	    <name>DAPOQ-Lang Result to ExampleSet</name>
+		<key>padas_split_log</key>
+	</operator>
+	<operator>
+		<name>DAPOQ-Lang Result to ExampleSet</name>
 		<synopsis>Transforms the results of a DAPOQ-Lang query into an ExampleSet</synopsis>
 		<help>A result of a DAPOQ-Lang query is required as input</help>		
-        <key>dapoql_result_to_exampleset</key>
-    </operator>
+		<key>dapoql_result_to_exampleset</key>
+	</operator>
 
-    <operator>
-        <name>Select Default XFactory</name>
-        <synopsis>Select the default XFactory that is used to create event logs.</synopsis>
-        <help>Select the default XFactory that is used to create event logs.</help>
-        <key>select_xlog_factoryy</key>
-    </operator>
-        
-    <operator>
-        <name>Creates a Transitions and Event Classes Mapping</name>
-        <synopsis>Converts an example set with columns 'transition', 'eventclass' to a ProM mapping.</synopsis>
-        <help>Converts an example set with columns 'transition', 'eventclass' to a ProM mapping.</help>
-        <key>create_transevmapping</key>
-    </operator>
-    
-    <operator>
-        <name>GED between Causal nets</name>
-        <synopsis>Compute the graph edit distance between two Causal nets.</synopsis>
-        <help>Compute the graph edit distance between two Causal nets based on the approach published in: Dijkman, Remco, Marlon Dumas, and Luciano Garcia-Banuelos. Graph matching algorithms for business process model similarity search. BPM 2009</help>
-        <key>ged_causal_net</key>
-    </operator>
-    
-    <operator>
-        <name>GED between Petri nets</name>
-        <synopsis>Compute the graph edit distance between two Petri nets.</synopsis>
-        <help>Compute the graph edit distance between two Petri nets based on the approach published in: Dijkman, Remco, Marlon Dumas, and Luciano Garcia-Banuelos. Graph matching algorithms for business process model similarity search. BPM 2009</help>
-        <key>ged_causal_net</key>
-    </operator>    
-    
-    <operator>
-        <name>GED between Petri nets</name>
-        <synopsis>Compute the graph edit distance between two Petri nets.</synopsis>
-        <help>Compute the graph edit distance between two Petri nets based on the approach published in: Dijkman, Remco, Marlon Dumas, and Luciano Garcia-Banuelos. Graph matching algorithms for business process model similarity search. BPM 2009</help>
-        <key>ged_causal_net</key>
-    </operator>
+	<operator>
+		<name>Select Default XFactory</name>
+		<synopsis>Select the default XFactory that is used to create event logs.</synopsis>
+		<help>Select the default XFactory that is used to create event logs.</help>
+		<key>select_xlog_factoryy</key>
+	</operator>
 
-    <operator>
-        <name>Causal net to Petri net</name>
-        <synopsis>Converts a Causal net into a Petri net representation.</synopsis>
-        <help>Converts a Causal net into a Petri net representation.</help>
-        <key>convert_causal_net_into_petri_net</key>
-    </operator>
-    <operator>
-    	<name>Clean up Threads (RapidProM)</name>
-        <synopsis>This operator kills all threads which seems to be spawned by RapidProM operators that were not killed properly. WARNING: might kill too much leading to unexpected behavior.</synopsis>
+	<operator>
+		<name>Creates a Transitions and Event Classes Mapping</name>
+		<synopsis>Converts an example set with columns 'transition', 'eventclass' to a ProM mapping.</synopsis>
+		<help>Converts an example set with columns 'transition', 'eventclass' to a ProM mapping.</help>
+		<key>create_transevmapping</key>
+	</operator>
+
+	<operator>
+		<name>GED between Causal nets</name>
+		<synopsis>Compute the graph edit distance between two Causal nets.</synopsis>
+		<help>Compute the graph edit distance between two Causal nets based on the approach published in: Dijkman, Remco, Marlon Dumas, and Luciano Garcia-Banuelos. Graph matching algorithms for business process model similarity search. BPM 2009</help>
+		<key>ged_causal_net</key>
+	</operator>
+
+	<operator>
+		<name>GED between Petri nets</name>
+		<synopsis>Compute the graph edit distance between two Petri nets.</synopsis>
+		<help>Compute the graph edit distance between two Petri nets based on the approach published in: Dijkman, Remco, Marlon Dumas, and Luciano Garcia-Banuelos. Graph matching algorithms for business process model similarity search. BPM 2009</help>
+		<key>ged_causal_net</key>
+	</operator>    
+
+	<operator>
+		<name>GED between Petri nets</name>
+		<synopsis>Compute the graph edit distance between two Petri nets.</synopsis>
+		<help>Compute the graph edit distance between two Petri nets based on the approach published in: Dijkman, Remco, Marlon Dumas, and Luciano Garcia-Banuelos. Graph matching algorithms for business process model similarity search. BPM 2009</help>
+		<key>ged_causal_net</key>
+	</operator>
+
+	<operator>
+		<name>Causal net to Petri net</name>
+		<synopsis>Converts a Causal net into a Petri net representation.</synopsis>
+		<help>Converts a Causal net into a Petri net representation.</help>
+		<key>convert_causal_net_into_petri_net</key>
+	</operator>
+	<operator>
+		<name>Clean up Threads (RapidProM)</name>
+		<synopsis>This operator kills all threads which seems to be spawned by RapidProM operators that were not killed properly. WARNING: might kill too much leading to unexpected behavior.</synopsis>
 		<help>This operator kills all threads which seems to be spawned by RapidProM operators that were not killed properly. WARNING: might kill too much leading to unexpected behavior.</help>
 		<key>rprom_clear_threads</key>
-    </operator>
+	</operator>
 
-    <operator>
-        <name>Export Causal net</name>
-        <synopsis>Exports a Causal net to a XML file.</synopsis>
-        <help>Exports a Causal net to a XML file..</help>
-        <key>export_causal_net</key>
-    </operator>
-    
-    <operator>
-        <name>Import Causal net</name>
-        <synopsis>Imports a Causal net from a file.</synopsis>
-        <help>Imports a Causal net from a file.</help>
-        <key>import_causal_net</key>
-    </operator>
+	<operator>
+		<name>Export Causal net</name>
+		<synopsis>Exports a Causal net to a XML file.</synopsis>
+		<help>Exports a Causal net to a XML file..</help>
+		<key>export_causal_net</key>
+	</operator>
 
-    <operator>
+	<operator>
+		<name>Import Causal net</name>
+		<synopsis>Imports a Causal net from a file.</synopsis>
+		<help>Imports a Causal net from a file.</help>
+		<key>import_causal_net</key>
+	</operator>
+
+	<operator>
 		<name>Generate Newick Tree Collection </name>
 		<synopsis>  </synopsis>
 		<help> </help>
 		<key>generate_process_tree</key>
 	</operator>
-	
-	 <operator>
+
+	<operator>
 		<name>Detect Concept Drift (Decision Point Analysis) </name>
 		<synopsis>This is a synopsis  </synopsis>
 		<help> help is coming!</help>
 		<key>concept_drift_1</key>
 	</operator>
-	
-	 <operator>
+
+	<operator>
 		<name>Detect Concept Drift (QUT) </name>
 		<synopsis> this is a synopsis </synopsis>
 		<help> help is coming!</help>
 		<key>concept_drift_qut</key>
 	</operator>
-	
-	 <operator>
+
+	<operator>
 		<name>Measure Concept Drift</name>
 		<synopsis> this is a synopsis </synopsis>
 		<help> help is coming!</help>
 		<key>measure_concept_drift</key>
 	</operator>
-	
+
 	<operator>
 		<name>Generate Event Log from Newick Tree</name>
 		<synopsis>  </synopsis>
 		<help> </help>
 		<key>generate_log</key>
 	</operator>
-	
+
 	<operator>
 		<name>Generate Event Log from Petri Net</name>
 		<synopsis> this is a synopsis </synopsis>
 		<help> help is coming!</help>
 		<key>generate_log_from_petrinet</key>
-    </operator>
-    <operator>
+	</operator>
+	<operator>
 		<name>Generate Event Log With Concept Drift</name>
 		<synopsis>  </synopsis>
 		<help> </help>
 		<key>generate_log_with_conceptdrift</key>
-    </operator>
+	</operator>
 
 	<operator>
 		<name>Convert Newick Tree to Process Tree</name>
 		<synopsis>  </synopsis>
 		<help> </help>
-        <key>convert_newickTree_to_processTree</key>
-    </operator>
-    
-    <operator>
-    	<name>Generate Noisy Log (Event Level)</name>
-		<synopsis>This operator creates a log with noise: each trace of the original log is modified until it no longer fits the given petri net.</synopsis>
-		<help> </help>
-        <key>generate_noisy_log_event</key>      
-    </operator>
-    
-     <operator>
-    	<name>Generate Noisy Log (Trace Level)</name>
-		<synopsis>This operator creates a log with noise: each trace of the original log is modified until it no longer fits the given petri net.</synopsis>
-		<help> </help>
-        <key>generate_noisy_log_trace</key>      
-    </operator>
-    
-    <operator>
-	    <name>Case Data Extractor </name>
-		<synopsis> This extracts data from the traces contained in an event log, such as relative occurrence, etc... </synopsis>
-		<help> An Event log is required as input </help>		
-        <key>case_data_extractor</key>                
-    </operator>
-	
-	
+		<key>convert_newickTree_to_processTree</key>
+	</operator>
+
 	<operator>
-	    <name>Log Cross Validation </name>
+		<name>Generate Noisy Log (Event Level)</name>
+		<synopsis>This operator creates a log with noise: each trace of the original log is modified until it no longer fits the given petri net.</synopsis>
+		<help> </help>
+		<key>generate_noisy_log_event</key>      
+	</operator>
+
+	<operator>
+		<name>Generate Noisy Log (Trace Level)</name>
+		<synopsis>This operator creates a log with noise: each trace of the original log is modified until it no longer fits the given petri net.</synopsis>
+		<help> </help>
+		<key>generate_noisy_log_trace</key>      
+	</operator>
+
+	<operator>
+		<name>Log Cross Validation </name>
 		<synopsis> This operator splits an event log and does k-fold cross validation </synopsis>
 		<help> An Event log is required as input </help>
-        <key>log_cross_validation</key>
-    </operator>
-    <operator>
-        <name>Split Log</name>
+		<key>log_cross_validation</key>
+	</operator>
+	<operator>
+		<name>Split Log</name>
 		<synopsis> This operator splits an event log in two sublogs according to the split ratio </synopsis>
 		<help> An Event log is required as input </help>
-        <key>log_split</key>                    
-    </operator>
-    
-    <operator>
-        <name>Number of Unique Paths</name>
+		<key>log_split</key>                    
+	</operator>
+
+	<operator>
+		<name>Number of Unique Paths</name>
 		<synopsis>This operator calculate the number of unique paths within a process tree</synopsis>
 		<help>The output is an exampleset with a single cell containing the number of unique paths of the process tree given as input, and the parameter value.</help>
-        <key>unique_paths_calculator</key>
-    </operator>
-    
-    <operator>
-        <name>Boolean Conformance checker</name>
+		<key>unique_paths_calculator</key>
+	</operator>
+
+	<operator>
+		<name>Boolean Conformance checker</name>
 		<synopsis>This operator replays an event log into a Petri net, and it decides whether traces perfectly fit the model (1) or not (0).</synopsis>
 		<help>The output is an exampleset with a row for each trace, indicating if it fits the  petri net or not.</help>
-        <key>boolean_conformance_checker</key>   
-    </operator>
-    
-    <operator>
-        <name>Count Unique Traces</name>
+		<key>boolean_conformance_checker</key>   
+	</operator>
+
+	<operator>
+		<name>Count Unique Traces</name>
 		<synopsis>This operator counts the unique traces in a log according to the specified classifier.</synopsis>
 		<help>The output is an exampleset with the number of unique traces in the input log.</help>
-        <key>unique_traces_calculator</key>
-    </operator>
-    
-    <operator>
-        <name>Plugin Context Size</name>
+		<key>unique_traces_calculator</key>
+	</operator>
+
+	<operator>
+		<name>Plugin Context Size</name>
 		<synopsis>This operator measures the size of the connection manager and provided object manager</synopsis>
 		<help>The output is an exampleset with the size of both.</help>
-        <key>rprom_count_pc_size</key>
-    </operator>
+		<key>rprom_count_pc_size</key>
+	</operator>
 
 </operatorHelp>

@@ -37,6 +37,7 @@ import com.rapidminer.example.table.AttributeFactory;
 import com.rapidminer.example.table.DataRow;
 import com.rapidminer.example.table.DataRowFactory;
 import com.rapidminer.example.table.MemoryExampleTable;
+import com.rapidminer.example.utils.ExampleSets;
 import com.rapidminer.operator.Operator;
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
@@ -52,35 +53,33 @@ import com.rapidminer.tools.LogService;
 import com.rapidminer.tools.Ontology;
 import com.rapidminer.tools.math.container.Range;
 
-public class CaseDataExtractorOperator extends Operator  {
-	
+public class CaseDataExtractorOperator extends Operator {
+
 	/** defining the ports */
 	private InputPort inputLog = getInputPorts().createPort("event log (ProM Event Log)", XLogIOObject.class);
 	private OutputPort output = getOutputPorts().createPort("example set (Data Table)");
-	
-	
+
 	private ExampleSetMetaData metaData = null;
 	private Attribute[] attributes;
-	
+
 	private TableModel tm = null;
-	private Map<XEventClass,Set<String>> mappingAttributesEventClass = new HashMap<XEventClass,Set<String>>();
-	
+	private Map<XEventClass, Set<String>> mappingAttributesEventClass = new HashMap<XEventClass, Set<String>>();
+
 	/**
 	 * The default constructor needed in exactly this signature
 	 */
 	public CaseDataExtractorOperator(OperatorDescription description) {
 		super(description);
 		/** Adding a rule for the output */
-		getTransformer().addRule( new GenerateNewMDRule(output, ExampleSet.class));
+		getTransformer().addRule(new GenerateNewMDRule(output, ExampleSet.class));
 	}
-	
+
 	@Override
 	public void doWork() throws OperatorException {
 		Logger logger = LogService.getRoot();
-		logger.log(Level.INFO,
-				"Start: log to data table conversion");
+		logger.log(Level.INFO, "Start: log to data table conversion");
 		long time = System.currentTimeMillis();
-		
+
 		XLogIOObject log = inputLog.getData(XLogIOObject.class);
 		XLog promLog = log.getArtifact();
 		MemoryExampleTable table = null;
@@ -88,28 +87,26 @@ public class CaseDataExtractorOperator extends Operator  {
 		try {
 			// create the exampleset`
 			XLogInfo summary = XLogInfoFactory.createLogInfo(promLog);
-			createMappingEventClassesAndAttributes(summary,promLog);
+			createMappingEventClassesAndAttributes(summary, promLog);
 			table = createStructureTable(promLog, summary);
 			es = fillTable(table, promLog);
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("error when creating exampleset, creating empty exampleset");
 			List<Attribute> attributes = new LinkedList<Attribute>();
-			table = new MemoryExampleTable(attributes);
-			es = table.createExampleSet();
+			// table = new MemoryExampleTable(attributes);
+			es = ExampleSets.from(attributes).build();
 		}
 		/** Adding a rule for the output */
-		getTransformer().addRule( new GenerateNewMDRule(output, this.metaData));
+		getTransformer().addRule(new GenerateNewMDRule(output, this.metaData));
 		output.deliver(es);
 		logger.log(Level.INFO,
-				"End: log to data table conversion ("
-						+ (System.currentTimeMillis() - time) / 1000 + " sec)");
+				"End: log to data table conversion (" + (System.currentTimeMillis() - time) / 1000 + " sec)");
 
 	}
 
-	private void createMappingEventClassesAndAttributes(XLogInfo summary,
-			XLog log) {
-		for (int i=0; i<summary.getNameClasses().size(); i++) {
+	private void createMappingEventClassesAndAttributes(XLogInfo summary, XLog log) {
+		for (int i = 0; i < summary.getNameClasses().size(); i++) {
 			XEventClass ec = summary.getNameClasses().getByIndex(i);
 			mappingAttributesEventClass.put(ec, new TreeSet<String>());
 		}
@@ -120,11 +117,11 @@ public class CaseDataExtractorOperator extends Operator  {
 				Iterator<String> iterator = e.getAttributes().keySet().iterator();
 				while (iterator.hasNext()) {
 					String next = iterator.next();
-					if (next.equals("concept:name") || next.equals("lifecycle:transition") || next.equals("time:timestamp") ||
-							next.equals("org:resource") || next.equals("org:group") || next.equals("org:role")) {
+					if (next.equals("concept:name") || next.equals("lifecycle:transition")
+							|| next.equals("time:timestamp") || next.equals("org:resource") || next.equals("org:group")
+							|| next.equals("org:role")) {
 						// ignore
-					}
-					else {
+					} else {
 						set.add(next);
 					}
 				}
@@ -145,8 +142,8 @@ public class CaseDataExtractorOperator extends Operator  {
 			strings[1] = t.size() + "";
 			// sojourn time
 			long startTime = XTimeExtension.instance().extractTimestamp(t.get(0)).getTime();
-			long endTime = XTimeExtension.instance().extractTimestamp(t.get(t.size()-1)).getTime();
-			strings[2] =  endTime-startTime + "";
+			long endTime = XTimeExtension.instance().extractTimestamp(t.get(t.size() - 1)).getTime();
+			strings[2] = endTime - startTime + "";
 			// now for the data
 			Iterator<String> iterator = t.getAttributes().keySet().iterator();
 			while (iterator.hasNext()) {
@@ -156,42 +153,41 @@ public class CaseDataExtractorOperator extends Operator  {
 				if (numberColumn > -1 && numberColumn < strings.length) {
 					XAttribute xAttribute = t.getAttributes().get(next);
 					if (xAttribute instanceof XAttributeLiteral) {
-						XAttributeLiteral attribLit = (XAttributeLiteral) xAttribute; 
+						XAttributeLiteral attribLit = (XAttributeLiteral) xAttribute;
 						String value = attribLit.getValue();
 						strings[numberColumn] = value;
 					}
 					if (xAttribute instanceof XAttributeBoolean) {
-						XAttributeBoolean attribBool = (XAttributeBoolean) xAttribute; 
+						XAttributeBoolean attribBool = (XAttributeBoolean) xAttribute;
 						boolean value = attribBool.getValue();
 						strings[numberColumn] = value + "";
 					}
 					if (xAttribute instanceof XAttributeContinuous) {
-						XAttributeContinuous attribCont = (XAttributeContinuous) xAttribute; 
+						XAttributeContinuous attribCont = (XAttributeContinuous) xAttribute;
 						double value = attribCont.getValue();
 						strings[numberColumn] = value + "";
 					}
 					if (xAttribute instanceof XAttributeDiscrete) {
-						XAttributeDiscrete attribDisc = (XAttributeDiscrete) xAttribute; 
+						XAttributeDiscrete attribDisc = (XAttributeDiscrete) xAttribute;
 						long value = attribDisc.getValue();
 						strings[numberColumn] = value + "";
 					}
 					if (xAttribute instanceof XAttributeTimestamp) {
-						XAttributeTimestamp attribTs = (XAttributeTimestamp) xAttribute; 
+						XAttributeTimestamp attribTs = (XAttributeTimestamp) xAttribute;
 						long value = attribTs.getValue().getTime();
 						strings[numberColumn] = value + "";
 					}
 				}
 			}
 			// now for the events
-			for (int i=0; i<tm.getColumnCount(); i++) {
+			for (int i = 0; i < tm.getColumnCount(); i++) {
 				Object descriptionColumn = tm.getDescriptionColumn(i);
 				if (descriptionColumn instanceof EventRow) {
 					EventRow er = (EventRow) descriptionColumn;
 					String nameAct = er.getNameActivity();
 					if (er.isActivityName()) {
 						// do nothing now
-					}
-					else if (er.isNrInstances) {
+					} else if (er.isNrInstances) {
 						// count the number of occurrences
 						int counter = 0;
 						for (XEvent e : t) {
@@ -200,9 +196,8 @@ public class CaseDataExtractorOperator extends Operator  {
 								counter++;
 							}
 						}
-						strings[i] = counter+"";
-					}
-					else if (er.isTimestamp) {
+						strings[i] = counter + "";
+					} else if (er.isTimestamp) {
 						// get the timestamp of the last occurrence (in seconds)
 						long ts = -1;
 						for (XEvent e : t) {
@@ -211,14 +206,12 @@ public class CaseDataExtractorOperator extends Operator  {
 								ts = XTimeExtension.instance().extractTimestamp(e).getTime() / 1000;
 							}
 						}
-						if (ts==-1) {
+						if (ts == -1) {
 							strings[i] = "";
+						} else {
+							strings[i] = ts + "";
 						}
-						else {
-							strings[i] = ts+"";
-						}
-					}
-					else if (er.isRelativeTimestamp) {
+					} else if (er.isRelativeTimestamp) {
 						// get the timestamp of the first event
 						long timeFirst = XTimeExtension.instance().extractTimestamp(t.get(0)).getTime();
 						// get the timestamp of the last occurrence (in seconds)
@@ -232,26 +225,24 @@ public class CaseDataExtractorOperator extends Operator  {
 						if (ts != -1) {
 							long relative = (ts - timeFirst) / 1000;
 							strings[i] = relative + "";
-						}
-						else {
+						} else {
 							strings[i] = "";
 						}
-					}
-					else if (er.isLc && er.isResource) {
+					} else if (er.isLc && er.isResource) {
 						// indicate if exists or not
 						int counter = 0;
 						for (XEvent e : t) {
 							String nameEvt = XConceptExtension.instance().extractName(e);
 							String resource = XOrganizationalExtension.instance().extractResource(e);
 							String transition = XLifecycleExtension.instance().extractTransition(e);
-							if (nameEvt.equals(nameAct) && er.getResource().equals(resource) && er.getLc().equals(transition)) {
-								// found 
+							if (nameEvt.equals(nameAct) && er.getResource().equals(resource)
+									&& er.getLc().equals(transition)) {
+								// found
 								counter++;
 							}
 						}
-						strings[i]=counter+"";
-					}
-					else if (er.isData) {
+						strings[i] = counter + "";
+					} else if (er.isData) {
 						String nameData = er.getNameData();
 						// search for the event and its data
 						String valueData = "";
@@ -261,40 +252,40 @@ public class CaseDataExtractorOperator extends Operator  {
 								// get the one
 								XAttribute xAttribute = e.getAttributes().get(nameData);
 								if (xAttribute instanceof XAttributeLiteral) {
-									XAttributeLiteral attribLit = (XAttributeLiteral) xAttribute; 
-									//valueData = attribLit.getValue();
+									XAttributeLiteral attribLit = (XAttributeLiteral) xAttribute;
+									// valueData = attribLit.getValue();
 									valueData = valueData + attribLit.getValue() + ",";
 								}
 								if (xAttribute instanceof XAttributeBoolean) {
-									XAttributeBoolean attribBool = (XAttributeBoolean) xAttribute; 
-									//valueData = attribBool.getValue() + "";
+									XAttributeBoolean attribBool = (XAttributeBoolean) xAttribute;
+									// valueData = attribBool.getValue() + "";
 									valueData = valueData + attribBool.getValue() + ",";
 								}
 								if (xAttribute instanceof XAttributeContinuous) {
-									XAttributeContinuous attribCont = (XAttributeContinuous) xAttribute; 
-									//valueData = attribCont.getValue() + "";
+									XAttributeContinuous attribCont = (XAttributeContinuous) xAttribute;
+									// valueData = attribCont.getValue() + "";
 									valueData = valueData + attribCont.getValue() + ",";
 								}
 								if (xAttribute instanceof XAttributeDiscrete) {
-									XAttributeDiscrete attribDisc = (XAttributeDiscrete) xAttribute; 
-									//valueData = attribDisc.getValue() + "";
+									XAttributeDiscrete attribDisc = (XAttributeDiscrete) xAttribute;
+									// valueData = attribDisc.getValue() + "";
 									valueData = valueData + attribDisc.getValue() + ",";
 								}
 								if (xAttribute instanceof XAttributeTimestamp) {
-									XAttributeTimestamp attribTs = (XAttributeTimestamp) xAttribute; 
-									//valueData = attribTs.getValue().getTime() + "";
+									XAttributeTimestamp attribTs = (XAttributeTimestamp) xAttribute;
+									// valueData = attribTs.getValue().getTime()
+									// + "";
 									valueData = valueData + attribTs.getValue() + ",";
 								}
 							}
 						}
-						if (!valueData.equals("") && valueData.charAt(valueData.length()-1) == ',') {
-							valueData = valueData.substring(0, valueData.length()-1);
+						if (!valueData.equals("") && valueData.charAt(valueData.length() - 1) == ',') {
+							valueData = valueData.substring(0, valueData.length() - 1);
 							strings[i] = valueData;
-							System.out.println("data:"+nameData + "," + valueData);
-						}
-						else {
+							System.out.println("data:" + nameData + "," + valueData);
+						} else {
 							strings[i] = valueData;
-							System.out.println("data:"+nameData + "," + valueData);
+							System.out.println("data:" + nameData + "," + valueData);
 						}
 					}
 				}
@@ -304,11 +295,10 @@ public class CaseDataExtractorOperator extends Operator  {
 			System.out.println(dataRow.toString());
 			if (name.equals("100")) {
 				// print everything
-				for (int i=0; i<attributes.length; i++) {
+				for (int i = 0; i < attributes.length; i++) {
 					if (attributes[i].isNominal()) {
 						System.out.println(attributes[i].getName() + "," + strings[i]);
-					}
-					else {
+					} else {
 						System.out.println(attributes[i].getName() + "," + strings[i]);
 					}
 				}
@@ -316,13 +306,13 @@ public class CaseDataExtractorOperator extends Operator  {
 			table.addDataRow(dataRow);
 		}
 		ExampleSet createExampleSet = table.createExampleSet();
-		//createExampleSet.getExample(100).getValueAsString(attribute);
+		// createExampleSet.getExample(100).getValueAsString(attribute);
 		return createExampleSet;
 	}
 
 	private MemoryExampleTable createStructureTable(XLog promLog, XLogInfo summary) {
 		int numberOfTraces = summary.getNumberOfTraces();
-		
+
 		ExampleSetMetaData metaData = new ExampleSetMetaData();
 		List<Attribute> attributes = new LinkedList<Attribute>();
 		AttributeMetaData amd = null;
@@ -333,7 +323,7 @@ public class CaseDataExtractorOperator extends Operator  {
 		amd = new AttributeMetaData("T:concept:name", Ontology.NOMINAL);
 		amd.setRole(AttributeColumn.REGULAR);
 		amd.setNumberOfMissingValues(new MDInteger(0));
-		tm.addDescriptionColumn(new CaseRow("T:concept:name",true,false,false,false,""));
+		tm.addDescriptionColumn(new CaseRow("T:concept:name", true, false, false, false, ""));
 		// number of events
 		attributes.add(AttributeFactory.createAttribute("T:number_of_events", Ontology.NUMERICAL));
 		amd = new AttributeMetaData("T:number_of_events", Ontology.NUMERICAL);
@@ -341,7 +331,7 @@ public class CaseDataExtractorOperator extends Operator  {
 		amd.setNumberOfMissingValues(new MDInteger(0));
 		amd.setValueRange(new Range(0, Long.MAX_VALUE), SetRelation.EQUAL);
 		metaData.addAttribute(amd);
-		tm.addDescriptionColumn(new CaseRow("T:number_of_events",false,true,false,false,""));
+		tm.addDescriptionColumn(new CaseRow("T:number_of_events", false, true, false, false, ""));
 		// sojourn time
 		attributes.add(AttributeFactory.createAttribute("T:sojourn_time.seconds", Ontology.NUMERICAL));
 		amd = new AttributeMetaData("T:sojourn_time.seconds", Ontology.NUMERICAL);
@@ -349,7 +339,7 @@ public class CaseDataExtractorOperator extends Operator  {
 		amd.setNumberOfMissingValues(new MDInteger(0));
 		amd.setValueRange(new Range(0, Long.MAX_VALUE), SetRelation.EQUAL);
 		metaData.addAttribute(amd);
-		tm.addDescriptionColumn(new CaseRow("T:sojourn_time.seconds",false,false,true,false,""));
+		tm.addDescriptionColumn(new CaseRow("T:sojourn_time.seconds", false, false, true, false, ""));
 		// data of the trace
 		Iterator<String> iterator2 = summary.getTraceAttributeInfo().getAttributeKeys().iterator();
 		while (iterator2.hasNext()) {
@@ -359,18 +349,21 @@ public class CaseDataExtractorOperator extends Operator  {
 				amd = new AttributeMetaData("T:data." + next, Ontology.NOMINAL);
 				amd.setRole(AttributeColumn.REGULAR);
 				amd.setNumberOfMissingValues(new MDInteger(0));
-				tm.addDescriptionColumn(new CaseRow("T:data." + next,true,false,false,true,next));
+				tm.addDescriptionColumn(new CaseRow("T:data." + next, true, false, false, true, next));
 			}
 		}
 		// now for the events/tasks
-		for (int i=0; i<summary.getNameClasses().size(); i++) {
+		for (int i = 0; i < summary.getNameClasses().size(); i++) {
 			XEventClass ec = summary.getNameClasses().getByIndex(i);
 			// add name
-//			attributes.add(AttributeFactory.createAttribute("E:concept:name" + ":" + ec.getId(), Ontology.NOMINAL));
-//			amd = new AttributeMetaData("E:concept:name" + ":" + ec.getId(), Ontology.NOMINAL);
-//			amd.setRole(AttributeColumn.REGULAR);
-//			amd.setNumberOfMissingValues(new MDInteger(0));
-//			tm.addDescriptionColumn(new EventRow("E:concept:name" + ":" + ec.getId(),true,false,false,false,false,false,false,ec.getId(),"","",""));
+			// attributes.add(AttributeFactory.createAttribute("E:concept:name"
+			// + ":" + ec.getId(), Ontology.NOMINAL));
+			// amd = new AttributeMetaData("E:concept:name" + ":" + ec.getId(),
+			// Ontology.NOMINAL);
+			// amd.setRole(AttributeColumn.REGULAR);
+			// amd.setNumberOfMissingValues(new MDInteger(0));
+			// tm.addDescriptionColumn(new EventRow("E:concept:name" + ":" +
+			// ec.getId(),true,false,false,false,false,false,false,ec.getId(),"","",""));
 			// add nrInstances
 			attributes.add(AttributeFactory.createAttribute("E:" + ec.getId() + ".nrInstances", Ontology.NUMERICAL));
 			amd = new AttributeMetaData("E:" + ec.getId() + ".nrInstances", Ontology.NUMERICAL);
@@ -378,21 +371,24 @@ public class CaseDataExtractorOperator extends Operator  {
 			amd.setNumberOfMissingValues(new MDInteger(0));
 			amd.setValueRange(new Range(0, Long.MAX_VALUE), SetRelation.EQUAL);
 			metaData.addAttribute(amd);
-			tm.addDescriptionColumn(new EventRow("E:" + ec.getId() + ".nrInstances",false,false,false,false,true,false,false,ec.getId(),"","",""));
+			tm.addDescriptionColumn(new EventRow("E:" + ec.getId() + ".nrInstances", false, false, false, false, true,
+					false, false, ec.getId(), "", "", ""));
 			// add combination for lc and resource
-			for (int j=0; j<summary.getTransitionClasses().size(); j++) {
-				for (int k=0; k<summary.getResourceClasses().size(); k++) {
+			for (int j = 0; j < summary.getTransitionClasses().size(); j++) {
+				for (int k = 0; k < summary.getResourceClasses().size(); k++) {
 					XEventClass lc = summary.getTransitionClasses().getByIndex(j);
 					XEventClass res = summary.getResourceClasses().getByIndex(k);
 					if (lc != null && res != null) {
 						// was NOMINAL
-						attributes.add(AttributeFactory.createAttribute("E:" + ec.getId() + "." + lc + "." + res, Ontology.NUMERICAL));
+						attributes.add(AttributeFactory.createAttribute("E:" + ec.getId() + "." + lc + "." + res,
+								Ontology.NUMERICAL));
 						amd = new AttributeMetaData("E:" + ec.getId() + "." + lc + "." + res, Ontology.NUMERICAL);
 						amd.setRole(AttributeColumn.REGULAR);
 						amd.setNumberOfMissingValues(new MDInteger(0));
 						amd.setValueRange(new Range(0, Long.MAX_VALUE), SetRelation.EQUAL);
 						metaData.addAttribute(amd);
-						tm.addDescriptionColumn(new EventRow("E:" + ec.getId() + "." + lc + "." + res,false,true,true,false,false,false,false,ec.getId(),lc.getId(),res.getId(),""));
+						tm.addDescriptionColumn(new EventRow("E:" + ec.getId() + "." + lc + "." + res, false, true,
+								true, false, false, false, false, ec.getId(), lc.getId(), res.getId(), ""));
 					}
 				}
 			}
@@ -403,15 +399,18 @@ public class CaseDataExtractorOperator extends Operator  {
 			amd.setNumberOfMissingValues(new MDInteger(0));
 			amd.setValueRange(new Range(0, Long.MAX_VALUE), SetRelation.EQUAL);
 			metaData.addAttribute(amd);
-			tm.addDescriptionColumn(new EventRow("E:" + ec.getId() + ".timestamp",false,false,false,true,false,false,false,ec.getId(),"","",""));
+			tm.addDescriptionColumn(new EventRow("E:" + ec.getId() + ".timestamp", false, false, false, true, false,
+					false, false, ec.getId(), "", "", ""));
 			// add for the relative timestamp
-			attributes.add(AttributeFactory.createAttribute("E:" + ec.getId() + ".timestamp.relative", Ontology.NUMERICAL));
+			attributes.add(
+					AttributeFactory.createAttribute("E:" + ec.getId() + ".timestamp.relative", Ontology.NUMERICAL));
 			amd = new AttributeMetaData("E:" + ec.getId() + ".timestamp.relative", Ontology.NUMERICAL);
 			amd.setRole(AttributeColumn.REGULAR);
 			amd.setNumberOfMissingValues(new MDInteger(0));
 			amd.setValueRange(new Range(0, Long.MAX_VALUE), SetRelation.EQUAL);
 			metaData.addAttribute(amd);
-			tm.addDescriptionColumn(new EventRow("E:" + ec.getId() + ".timestamp.relative",false,false,false,false,false,false,true,ec.getId(),"","",""));
+			tm.addDescriptionColumn(new EventRow("E:" + ec.getId() + ".timestamp.relative", false, false, false, false,
+					false, false, true, ec.getId(), "", "", ""));
 			// add for the data
 			Iterator<String> iterator = summary.getEventAttributeInfo().getAttributeKeys().iterator();
 			while (iterator.hasNext()) {
@@ -419,18 +418,20 @@ public class CaseDataExtractorOperator extends Operator  {
 				// check whether the attribute exists for the event
 				Set<String> set = mappingAttributesEventClass.get(ec);
 				if (set != null && set.contains(next)) {
-					attributes.add(AttributeFactory.createAttribute("E:data." + ec.getId() + "." + next, Ontology.NOMINAL));
+					attributes.add(
+							AttributeFactory.createAttribute("E:data." + ec.getId() + "." + next, Ontology.NOMINAL));
 					amd = new AttributeMetaData("E:data." + ec.getId() + "." + next, Ontology.NOMINAL);
 					amd.setRole(AttributeColumn.REGULAR);
 					amd.setNumberOfMissingValues(new MDInteger(0));
 					metaData.addAttribute(amd);
-					tm.addDescriptionColumn(new EventRow("E:data." + ec.getId() + "." + next,false,false,false,false,false,true,false,ec.getId(),"","",next));
+					tm.addDescriptionColumn(new EventRow("E:data." + ec.getId() + "." + next, false, false, false,
+							false, false, true, false, ec.getId(), "", "", next));
 				}
 			}
 		}
 		// convert the list to array
 		Attribute[] attribArray = new Attribute[attributes.size()];
-		for (int i=0; i<attributes.size(); i++) {
+		for (int i = 0; i < attributes.size(); i++) {
 			attribArray[i] = attributes.get(i);
 		}
 		metaData.setNumberOfExamples(numberOfTraces);
@@ -438,31 +439,31 @@ public class CaseDataExtractorOperator extends Operator  {
 		this.attributes = attribArray;
 		MemoryExampleTable memoryExampleTable = new MemoryExampleTable(attributes);
 		return memoryExampleTable;
-		
+
 	}
-	
+
 	public class TableModel extends AbstractTableModel {
-		
+
 		/**
 		 * generated
 		 */
 		private static final long serialVersionUID = 6419753586794813744L;
 		private List<Object> descriptionColumns = new ArrayList<Object>();
 		private List<Object[]> values = new ArrayList<Object[]>();
-		
+
 		public TableModel(int nrRows) {
 			values = new ArrayList<Object[]>(nrRows);
 		}
-		
-		public void addDescriptionColumn (Object obj) {
+
+		public void addDescriptionColumn(Object obj) {
 			this.descriptionColumns.add(obj);
 		}
-		
-		public Object getDescriptionColumn (int nrColumn) {
+
+		public Object getDescriptionColumn(int nrColumn) {
 			return this.descriptionColumns.get(nrColumn);
 		}
-		
-		public String getNameColumn (int nrColumn) {
+
+		public String getNameColumn(int nrColumn) {
 			Object object = this.descriptionColumns.get(nrColumn);
 			if (object instanceof CaseRow) {
 				CaseRow cr = (CaseRow) object;
@@ -474,14 +475,14 @@ public class CaseDataExtractorOperator extends Operator  {
 			}
 			return "";
 		}
-		
-		public int getNumberColumn (String name) {
-			for (int i=0; i<descriptionColumns.size(); i++) {
+
+		public int getNumberColumn(String name) {
+			for (int i = 0; i < descriptionColumns.size(); i++) {
 				Object obj = descriptionColumns.get(i);
 				if (obj instanceof CaseRow) {
 					CaseRow cr = (CaseRow) obj;
 					if (cr.getNameColum().equals(name)) {
-						// found 
+						// found
 						return i;
 					}
 				}
@@ -512,19 +513,21 @@ public class CaseDataExtractorOperator extends Operator  {
 			Object object = list[columnIndex];
 			return object;
 		}
-		
+
 	}
+
 	@SuppressWarnings("unused")
 	private class CaseRow {
-		
+
 		private String nameColum = "";
 		private boolean isName = false;
 		private boolean isNumberEvents = false;
 		private boolean isSojournTime = false;
 		private boolean isData = false;
 		private String nameData = "";
-		
-		public CaseRow(String nameColumn, boolean isName, boolean isNumberEvents, boolean isSojournTime, boolean isData, String nameData) {
+
+		public CaseRow(String nameColumn, boolean isName, boolean isNumberEvents, boolean isSojournTime, boolean isData,
+				String nameData) {
 			this.nameColum = nameColumn;
 			this.isName = isName;
 			this.isNumberEvents = isNumberEvents;
@@ -533,7 +536,6 @@ public class CaseDataExtractorOperator extends Operator  {
 			this.nameData = nameData;
 		}
 
-		
 		public boolean isData() {
 			return isData;
 		}
@@ -581,9 +583,9 @@ public class CaseDataExtractorOperator extends Operator  {
 		public void setSojournTime(boolean isSojournTime) {
 			this.isSojournTime = isSojournTime;
 		}
-		
+
 	}
-	
+
 	@SuppressWarnings("unused")
 	private class EventRow {
 
@@ -599,10 +601,10 @@ public class CaseDataExtractorOperator extends Operator  {
 		private String lc;
 		private String resource;
 		private String nameData;
-		
-		
-		public EventRow (String nameColumn, boolean isActivityName, boolean isLc, boolean isResource, boolean isTimestamp, 
-				boolean isNrInstances, boolean isData, boolean isRelativeTimestamp, String nameActivity, String lc, String resource, String nameData) {
+
+		public EventRow(String nameColumn, boolean isActivityName, boolean isLc, boolean isResource,
+				boolean isTimestamp, boolean isNrInstances, boolean isData, boolean isRelativeTimestamp,
+				String nameActivity, String lc, String resource, String nameData) {
 			this.nameColumn = nameColumn;
 			this.isActivityName = isActivityName;
 			this.isLc = isLc;
@@ -644,7 +646,7 @@ public class CaseDataExtractorOperator extends Operator  {
 		public String getNameActivity() {
 			return this.nameActivity;
 		}
-		
+
 		public void setNameActivity(String nameActivity) {
 			this.nameActivity = nameActivity;
 		}
@@ -696,7 +698,7 @@ public class CaseDataExtractorOperator extends Operator  {
 		public void setNrInstances(boolean isNrInstances) {
 			this.isNrInstances = isNrInstances;
 		}
-		
+
 		public boolean isData() {
 			return isData;
 		}
@@ -704,7 +706,7 @@ public class CaseDataExtractorOperator extends Operator  {
 		public void setData(boolean isData) {
 			this.isData = isData;
 		}
-		
+
 		public String getNameData() {
 			return nameData;
 		}
@@ -712,8 +714,7 @@ public class CaseDataExtractorOperator extends Operator  {
 		public void setNameData(String nameData) {
 			this.nameData = nameData;
 		}
-		
+
 	}
 
 }
-

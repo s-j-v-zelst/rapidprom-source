@@ -7,6 +7,11 @@
 			<icon>magnifying_glass.png</icon>
 		</operator>
 		<operator>
+			<key>case_data_extractor</key>
+			<class>org.rapidprom.operators.analysis.CaseDataExtractorOperator</class>
+			<icon>magnifying_glass.png</icon>
+		</operator>
+		<operator>
 			<key>analyze_with_woflan</key>
 			<class>org.rapidprom.operators.analysis.WoflanAnalysisOperator</class>
 			<icon>magnifying_glass.png</icon>
@@ -54,11 +59,6 @@
 		<operator>
 			<key>mine_with_inductive_visual_miner</key>
 			<class>org.rapidprom.operators.analysis.InductiveVisualMinerOperator</class>
-			<icon>magnifying_glass.png</icon>
-		</operator>
-		<operator>
-			<key>case_data_extractor</key>
-			<class>org.rapidprom.operators.analysis.CaseDataExtractorOperator</class>
 			<icon>magnifying_glass.png</icon>
 		</operator>
 		<operator>
