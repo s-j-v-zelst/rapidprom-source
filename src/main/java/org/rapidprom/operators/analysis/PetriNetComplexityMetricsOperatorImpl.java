@@ -17,7 +17,8 @@ import org.rapidprom.ioobjects.PetriNetIOObject;
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.table.AttributeFactory;
 import com.rapidminer.example.table.DataRowFactory;
-import com.rapidminer.example.table.MemoryExampleTable;
+import com.rapidminer.example.utils.ExampleSetBuilder;
+import com.rapidminer.example.utils.ExampleSets;
 import com.rapidminer.operator.Operator;
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
@@ -32,7 +33,7 @@ import com.rapidminer.tools.Ontology;
 
 import javassist.tools.rmi.ObjectNotFoundException;
 
-public class PetriNetMetricsOperatorImpl extends Operator {
+public class PetriNetComplexityMetricsOperatorImpl extends Operator {
 
 	private InputPort inputPetriNet = getInputPorts().createPort("model (Petri Net)", PetriNetIOObject.class);
 
@@ -44,7 +45,7 @@ public class PetriNetMetricsOperatorImpl extends Operator {
 			PetriNetDensityMetric.NAME, PetriNetNofArcsMetric.NAME, PetriNetNofPlacesMetric.NAME,
 			PetriNetNofTransitionsMetric.NAME, PetriNetStructurednessMetric.NAME };
 
-	public PetriNetMetricsOperatorImpl(OperatorDescription description) {
+	public PetriNetComplexityMetricsOperatorImpl(OperatorDescription description) {
 		super(description);
 		outputMetricsMetaData = new ExampleSetMetaData();
 		for (String metric : METRICS) {
@@ -66,16 +67,16 @@ public class PetriNetMetricsOperatorImpl extends Operator {
 			for (String metric : METRICS) {
 				metricAttributes.add(AttributeFactory.createAttribute(metric, Ontology.NUMERICAL));
 			}
-			MemoryExampleTable metricsTable = new MemoryExampleTable(metricAttributes);
+			ExampleSetBuilder metricsTableBuilder = ExampleSets.from(metricAttributes);
 
 			Object[] metricValues = new Object[METRICS.length];
 			for (int i = 0; i < METRICS.length; i++) {
 				metricValues[i] = metrics.getMetricValue(METRICS[i]);
 			}
-			metricsTable.addDataRow(new DataRowFactory(DataRowFactory.TYPE_DOUBLE_ARRAY, '.').create(metricValues,
-					metricAttributes.toArray(new Attribute[metricAttributes.size()])));
+			metricsTableBuilder.addDataRow(new DataRowFactory(DataRowFactory.TYPE_DOUBLE_ARRAY, '.')
+					.create(metricValues, metricAttributes.toArray(new Attribute[metricAttributes.size()])));
 
-			outputMetricsExampleSet.deliver(metricsTable.createExampleSet());
+			outputMetricsExampleSet.deliver(metricsTableBuilder.build());
 		} catch (ObjectNotFoundException e) {
 			throw new OperatorException(e.getMessage());
 		}

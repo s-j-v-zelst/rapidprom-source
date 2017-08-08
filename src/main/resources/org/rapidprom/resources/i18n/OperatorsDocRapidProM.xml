@@ -71,17 +71,17 @@
         <key>decomposition</key>
         <name>Decomposition</name>
     </group>    
-    
+
    <operator>
-        <name>Petri net Complexity Metrics</name>
+        <name>Complexity Metrics (Petri Net)</name>
         <Synopyis>Calculates complexity metrics for a Petri net.</Synopyis>
         <help>
 	      Calculates complexity metrics for a Petri net. Implements metrics describe in the article: &lt;a href="https://doi.org/10.1016/j.infsof.2008.08.005"&gt;Complexity metrics for Workflow nets&lt;/a&gt; and some more.
 	      Implemented metrics are: 'Extended Cardoso metric', 'Extended Cyclomatic metric', 'Structuredness metric', 'Density metric', 'Number of arcs', 'Number of transitions' and 'Number of places'.
         </help>
  		<key>petrinet_complexity_metrics</key>
-   </operator>      
-    
+   </operator>
+
   <operator>
         <name>Filter Unmapped Events</name>
         <Synopyis>Removes events that are not mapped to any transition in the supplied mapping.</Synopyis>
@@ -748,12 +748,7 @@
     	<key>mine_fuzzy_model</key>
   	</operator>
   	
-  	<operator>
-  		<name>Complexity Metrics (Petri net)</name>
-  		<synopsis>This operator computes Petri net (Workflow net) complexity metrics mainly based on: K.B. Lassen and W.M.P. van der Aalst; Complexity Metrics for Workflow Nets; Information and Software Technology, 51(3):610-626, 2009.</synopsis>
-  		<help>This operator computes Petri net (Workflow net) complexity metrics mainly based on: K.B. Lassen and W.M.P. van der Aalst; Complexity Metrics for Workflow Nets; Information and Software Technology, 51(3):610-626, 2009. It contains the following metrics: Cardoso Metric, Cyclomatic Metric, Density Metric, Number of Arcs, Number of Places, Number of Transitions and Structuredness.</help>
-  		<key>complexity_metrics_petri_net</key>
-  	</operator>
+  
   	
   	<operator>
   		<name>Compute Prefix Alignments (Incremental)</name>
