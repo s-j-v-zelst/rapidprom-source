@@ -2,12 +2,11 @@ package org.rapidprom.ioobjectrenderers;
 
 import javax.swing.JComponent;
 
-import org.processmining.lpm.util.VisualizeLocalProcessModelDotPlugin;
+import org.processmining.lpm.visualization.VisualizeLocalProcessModelDotPlugin;
 import org.rapidprom.ioobjectrenderers.abstr.AbstractRapidProMIOObjectRenderer;
 import org.rapidprom.ioobjects.LocalProcessModelIOObject;
 
-public class LocalProcessModelIOObjectRenderer
-		extends AbstractRapidProMIOObjectRenderer<LocalProcessModelIOObject> {
+public class LocalProcessModelIOObjectRenderer extends AbstractRapidProMIOObjectRenderer<LocalProcessModelIOObject> {
 
 	@Override
 	public String getName() {
@@ -16,7 +15,8 @@ public class LocalProcessModelIOObjectRenderer
 
 	@Override
 	protected JComponent runVisualization(LocalProcessModelIOObject ioObject) {
-		return VisualizeLocalProcessModelDotPlugin.visualize(ioObject.getPluginContext(), ioObject.getArtifact());
+		VisualizeLocalProcessModelDotPlugin visualizer = new VisualizeLocalProcessModelDotPlugin();
+		return visualizer.visualize(ioObject.getPluginContext(), ioObject.getArtifact());
 	}
 
 }
