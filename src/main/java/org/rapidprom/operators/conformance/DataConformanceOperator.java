@@ -252,13 +252,20 @@ public class DataConformanceOperator extends Operator {
 		config.setKeepControlFlowSearchSpace(getKeepControlFlowSearchSpace());
 		config.setKeepDataFlowSearchSpace(getKeepDataFlowSearchSpace());
 
+		// Don't share data structure beteen threads when running single threaded
 		if (config.getConcurrentThreads() == 1) {
-			config.setControlFlowStorageHandler(ControlFlowStorageHandlerType.MEMORY_EFFICIENT);
-			config.setDataStateStorageHandler(DataStateStorageHandlerType.PRIMITIVE_NOLOCK);
 			config.setKeepDataFlowSearchSpace(false);
 			config.setKeepControlFlowSearchSpace(false);
 		}
 
+		// Use more efficient data structures without locking in these cases
+		if (!config.isKeepControlFlowSearchSpace()) {
+			config.setControlFlowStorageHandler(ControlFlowStorageHandlerType.MEMORY_EFFICIENT);
+		}
+		if (!config.isKeepDataFlowSearchSpace()) {
+			config.setDataStateStorageHandler(DataStateStorageHandlerType.PRIMITIVE_NOLOCK);				
+		}
+		
 		applyUserDefinedTransitionMapping(transitionMapping, config);
 
 		if (inputVariableMapping.isConnected()) {
