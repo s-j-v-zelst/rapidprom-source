@@ -126,7 +126,9 @@ public class ETCPrecisionOperator extends Operator {
 				ra.extend(net.getArtifact(), net.getInitialMarking());
 			} catch (IllegalTransitionException | ObjectNotFoundException e1) {
 				e1.printStackTrace();
-			}
+			} catch (StackOverflowError e){
+				e.printStackTrace();
+			};
 			ra.conformance(res);
 			precision = res.ap;
 		}
@@ -134,11 +136,10 @@ public class ETCPrecisionOperator extends Operator {
 		ExampleSet es = null;
 		MemoryExampleTable table = null;
 		List<Attribute> attributes = new LinkedList<Attribute>();
-		attributes.add(AttributeFactory.createAttribute(this.NAMECOL,
-				Ontology.STRING));
-		attributes.add(AttributeFactory.createAttribute(this.VALUECOL,
-				Ontology.NUMERICAL));
+		attributes.add(AttributeFactory.createAttribute(this.NAMECOL, Ontology.STRING));
+		attributes.add(AttributeFactory.createAttribute(this.VALUECOL, Ontology.NUMERICAL));
 		table = new MemoryExampleTable(attributes);
+
 		fillTableWithRow(table, "Precision", precision, attributes);
 		
 		es = table.createExampleSet();

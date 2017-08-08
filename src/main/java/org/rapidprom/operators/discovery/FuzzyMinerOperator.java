@@ -13,7 +13,7 @@ import org.processmining.models.graphbased.directed.fuzzymodel.metrics.MetricsRe
 import org.processmining.plugins.fuzzymodel.miner.FuzzyMinerPlugin;
 import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.MetricsRepositoryIOObject;
-import org.rapidprom.operators.abstr.AbstractRapidProMDiscoveryOperator;
+import org.rapidprom.operators.abstr.AbstractRapidProMEventLogBasedOperator;
 
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
@@ -25,7 +25,7 @@ import com.rapidminer.parameter.ParameterTypeDouble;
 import com.rapidminer.parameter.ParameterTypeInt;
 import com.rapidminer.tools.LogService;
 
-public class FuzzyMinerOperator extends AbstractRapidProMDiscoveryOperator {
+public class FuzzyMinerOperator extends AbstractRapidProMEventLogBasedOperator {
 
 	private static final String PARAMETER_1_KEY = "Frequency significance metric (Unitary)",
 			PARAMETER_1_DESCR = "Unary significance describes the relative importance of an event class, "

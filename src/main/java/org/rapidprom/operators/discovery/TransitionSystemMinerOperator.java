@@ -15,7 +15,7 @@ import org.processmining.plugins.transitionsystem.miner.util.TSAbstractions;
 import org.processmining.plugins.transitionsystem.miner.util.TSDirections;
 import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.TransitionSystemIOObject;
-import org.rapidprom.operators.abstr.AbstractRapidProMDiscoveryOperator;
+import org.rapidprom.operators.abstr.AbstractRapidProMEventLogBasedOperator;
 
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
@@ -27,7 +27,7 @@ import com.rapidminer.parameter.ParameterTypeCategory;
 import com.rapidminer.parameter.ParameterTypeInt;
 import com.rapidminer.tools.LogService;
 
-public class TransitionSystemMinerOperator extends AbstractRapidProMDiscoveryOperator {
+public class TransitionSystemMinerOperator extends AbstractRapidProMEventLogBasedOperator {
 
 	public static final String PARAMETER_1_KEY = "Abstraction",
 			PARAMETER_1_DESCR = "Defines the abstraction used to define a state: "
@@ -60,13 +60,15 @@ public class TransitionSystemMinerOperator extends AbstractRapidProMDiscoveryOpe
 		classifiers[0] = getXEventClassifier();
 
 		XEventClassifier transitionClassifier = getXEventClassifier();
+		
+		TSMinerInput settings = getConfiguration(pluginContext, classifiers, transitionClassifier);
 
 		Object[] result = TSMinerPlugin.main(pluginContext, getXLog(), classifiers, transitionClassifier,
-				getConfiguration(pluginContext, classifiers, transitionClassifier));
+				settings);
 
 		// TO-DO: for now we use default parameters, we should use the same
 		// parameters used in prom.
-		TransitionSystemIOObject ts = new TransitionSystemIOObject((TSMinerTransitionSystem) result[0], pluginContext);
+		TransitionSystemIOObject ts = new TransitionSystemIOObject((TSMinerTransitionSystem) result[0], settings, pluginContext);
 		output.deliver(ts);
 
 		logger.log(Level.INFO, "End: transition system miner (" + (System.currentTimeMillis() - time) / 1000 + " sec)");

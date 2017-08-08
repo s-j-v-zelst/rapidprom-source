@@ -30,7 +30,7 @@ import org.processmining.models.cnet.CausalNet;
 import org.rapidprom.exceptions.ExampleSetReaderException;
 import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.CausalNetIOObject;
-import org.rapidprom.operators.abstr.AbstractRapidProMDiscoveryOperator;
+import org.rapidprom.operators.abstr.AbstractRapidProMEventLogBasedOperator;
 import org.rapidprom.operators.util.RapidProMProgress;
 
 import com.google.common.collect.ImmutableSet;
@@ -63,7 +63,7 @@ import com.rapidminer.tools.Ontology;
  * @author F. Mannhardt
  *
  */
-public class DataAwareHeuristicMinerOperator extends AbstractRapidProMDiscoveryOperator {
+public class DataAwareHeuristicMinerOperator extends AbstractRapidProMEventLogBasedOperator {
 
 	public static final String PARAMETER_RELATIVE_TO_BEST = "Heuristic: Relative-to-best threshold",
 			PARAMETER_RELATIVE_TO_BEST_DESCR = "Admissable distance between directly follows relations for an "
@@ -272,7 +272,8 @@ public class DataAwareHeuristicMinerOperator extends AbstractRapidProMDiscoveryO
 
 			DataAwareCausalGraphBuilder dataBuilder = new DataAwareCausalGraphBuilder(eventRelations, dataRelations,
 					dataConfig);
-			dependencyGraph = dataBuilder.build(minerContext, dependencyGraph);
+			 dependencyGraph = dataBuilder.build(minerContext,
+			 dependencyGraph);
 		}
 
 		HeuristicsCausalNetMiner causalNetMiner = new HeuristicsCausalNetMiner(eventRelations);

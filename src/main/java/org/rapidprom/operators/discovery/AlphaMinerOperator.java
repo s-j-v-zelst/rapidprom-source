@@ -85,9 +85,8 @@ public class AlphaMinerOperator extends AbstractLabelAwareRapidProMDiscoveryOper
 		if (getLabel() != null && !getLabel().isEmpty()) {
 			net.getAttributeMap().put(AttributeMap.LABEL, getLabel());
 		}
-		
-		PetriNetIOObject petriNetIOObject = new PetriNetIOObject(net, (Marking) result[1], null,
-				pluginContext);
+
+		PetriNetIOObject petriNetIOObject = new PetriNetIOObject(net, (Marking) result[1], null, pluginContext);
 
 		output.deliver(petriNetIOObject);
 

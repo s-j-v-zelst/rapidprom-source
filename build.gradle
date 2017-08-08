@@ -13,7 +13,7 @@ repositories {
     jcenter()
 	maven { url 'https://maven.rapidminer.com/content/groups/public/' }
 	ivy {
-		url "https://github.com/rapidprom/rapidprom-libraries/raw/lib_fmannhardt/prom/"
+		url "https://github.com/rapidprom/rapidprom-libraries/raw/${project.properties["libs"]}/prom/"
 		layout "pattern", {
 			artifact "[module]-[revision]/[module]-[revision].[ext]"
 			artifact "[module]-[revision]/[artifact].[ext]"
@@ -21,19 +21,26 @@ repositories {
 		}
 	}
 	ivy {
-		url "https://github.com/rapidprom/rapidprom-libraries/raw/lib_fmannhardt/thirdparty/lib/"
+		url "https://github.com/rapidprom/rapidprom-libraries/raw/${project.properties["libs"]}/thirdparty/lib/"
 		layout "pattern", {
 			artifact "[module]-[revision]/[module]-[revision].[ext]"
 			ivy "[module]-[revision]/ivy-[module]-[revision].xml"
 		}
 	}
 	ivy {
-		url "https://github.com/rapidprom/rapidprom-libraries/raw/lib_fmannhardt/thirdparty/resource/"
+		url "https://github.com/rapidprom/rapidprom-libraries/raw/${project.properties["libs"]}/thirdparty/resource/"
 		layout "pattern", {
 			artifact "[module]-[revision]/[module]-[revision].[ext]"
 			ivy "[module]-[revision]/ivy-[module]-[revision].xml"
 		}
-	}	
+	}
+	ivy {
+		url "http://github.com/edugonza/DatabaseProcessMining-Repository/raw/master/Releases/"
+		layout "pattern", {
+			artifact "[organisation]/[module]/[revision]/[module]-[revision].[ext]"
+			ivy "[organisation]/[module]/[revision]/[module]/ivy-[revision].xml"
+		}
+	}
 }
 
 extensionConfig {
@@ -69,29 +76,27 @@ extensionConfig {
 	
     // define RapidMiner version and extension dependencies
     dependencies {
-        rapidminer '7.2.0'
-        //extension namespace: 'text', version: '7.2.0'
+        rapidminer '7.4.0'
+        //extension namespace: 'text', version: '7.4.0'
     }
 }
 
 // Define third party library dependencies
-dependencies {	
+dependencies {
+	
 	compile group:"org.rapidprom", name:"ProM-Framework", version:"34109"
-	compile "org.rapidprom:AcceptingPetriNet:6.7.93"
+	compile "org.rapidprom:AcceptingPetriNet:6.7.125"
 	compile "org.rapidprom:AlphaMiner:6.5.47"
 	compile "org.rapidprom:Animation:6.5.50"
-	compile "org.rapidprom:ApacheUtils:6.7.109"
+	compile "org.rapidprom:ApacheUtils:6.7.107"
 	compile "org.rapidprom:BasicUtils:6.7.104"
 	compile "org.rapidprom:BPMN:6.5.56"
 	compile "org.rapidprom:BPMNConversions:6.5.48"
-	compile "org.rapidprom:CNet:6.7.161"	
 	compile "org.rapidprom:CPNet:6.5.84"
-	compile "org.rapidprom:DataAwareCNetMiner:6.7.178"
-	compile "org.rapidprom:DataAwareExplorer:6.7.409"
 	compile "org.rapidprom:DataAwareReplayer:6.7.692"
-	compile "org.rapidprom:DataDiscovery:6.7.94"
-	compile "org.rapidprom:DataExpression:6.7.52"	
-	compile "org.rapidprom:DataPetriNets:6.7.435"
+	compile "org.rapidprom:DataAwareCNetMiner:6.7.186"
+	compile "org.rapidprom:DataDiscovery:6.7.96"
+	compile "org.rapidprom:DataPetriNets:6.7.421"
 	compile "org.rapidprom:DottedChart:6.5.17"
 	compile "org.rapidprom:EvolutionaryTreeMiner:6.7.154"
 	compile "org.rapidprom:EventStream:6.5.72"
@@ -100,22 +105,27 @@ dependencies {
 	compile "org.rapidprom:GraphViz:6.7.185"
 	compile "org.rapidprom:GuideTreeMiner:6.5.18"
 	compile "org.rapidprom:HeuristicsMiner:6.5.49"
-	compile "org.rapidprom:HybridILPMiner:6.7.136"
-	compile "org.rapidprom:InductiveMiner:6.7.381"
+	compile "org.rapidprom:HybridILPMiner:6.7.144"
+	compile "org.rapidprom:InductiveMiner:6.7.297"
 	compile "org.rapidprom:InductiveVisualMiner:6.7.413"
-	compile "org.rapidprom:LocalProcessModelDiscovery:6.7.28"	
-	compile "org.rapidprom:Log:6.7.329"
+	compile "org.rapidprom:LocalProcessModelDiscovery:6.7.86"
+	compile "org.rapidprom:Log:6.7.315"
 	compile "org.rapidprom:LogDialog:6.5.42"
-	compile "org.rapidprom:LogEnhancement:6.7.354"
+	compile "org.rapidprom:LogFiltering:6.7.22"
 	compile "org.rapidprom:LogProjection:6.5.38"
 	compile "org.rapidprom:ModelRepair:6.5.12"
 	compile "org.rapidprom:Murata:6.5.54"
+	compile "org.rapidprom:NoiseFiltering:0.0.1"
+	compile "org.rapidprom:OnlineConformance:6.7.115"
 	compile "org.rapidprom:PetriNets:6.7.136"
+	compile "org.rapidprom:PetriNetSimulator:6.7.19"
 	compile "org.rapidprom:PNetAlignmentAnalysis:6.7.91"
 	compile "org.rapidprom:PNAnalysis:6.7.128"
-	compile "org.rapidprom:PNetReplayer:6.7.158"
+	compile "org.rapidprom:PNetReplayer:6.7.152"
 	compile "org.rapidprom:PTConversions:6.5.3"
+	compile "org.rapidprom:PTAndLogGenerator:6.7.92"
 	compile "org.rapidprom:PomPomView:6.5.36"
+	compile "org.rapidprom:ProcessComparator:6.7.95"
 	compile "org.rapidprom:SocialNetwork:6.5.35"
 	compile "org.rapidprom:StreamAlphaMiner:6.5.15"
 	compile "org.rapidprom:StreamAnalysis:6.5.38"
@@ -123,9 +133,12 @@ dependencies {
 	compile "org.rapidprom:TransitionSystems:6.7.71"
 	compile "org.rapidprom:TSPetriNet:6.5.35"
 	compile "org.rapidprom:Uma:6.5.46"
-	compile "org.rapidprom:Widgets:6.7.224"
 	compile "org.rapidprom:Woflan:6.7.59"
-	compile "org.rapidprom:XESAlignmentExtension:6.7.60"
-	compile "org.rapidprom:XESLite:6.7.333"
+	compile "org.rapidprom:VariantFinder:6.7.9"
+	compile "org.rapidprom:XESLite:6.7.319"
 	compile "org.rapidprom:Weka:6.7.25"
+	compile "org.processmining:OpenSLEX:0.8"
+	compile "org.processmining:DAPOQ-Lang:0.8"
+	compile 'com.github.fommil.netlib:all:1.1.2'
+	compile 'com.googlecode.matrix-toolkits-java:mtj:1.0.3'
 }

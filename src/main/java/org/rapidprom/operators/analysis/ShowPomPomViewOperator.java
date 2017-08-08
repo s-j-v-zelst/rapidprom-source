@@ -8,7 +8,7 @@ import org.processmining.plugins.pompom.PomPomView;
 import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.PetriNetIOObject;
 import org.rapidprom.ioobjects.PomPomViewIOObject;
-import org.rapidprom.operators.abstr.AbstractRapidProMDiscoveryOperator;
+import org.rapidprom.operators.abstr.AbstractRapidProMEventLogBasedOperator;
 
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
@@ -19,7 +19,7 @@ import com.rapidminer.tools.LogService;
 
 import javassist.tools.rmi.ObjectNotFoundException;
 
-public class ShowPomPomViewOperator extends AbstractRapidProMDiscoveryOperator {
+public class ShowPomPomViewOperator extends AbstractRapidProMEventLogBasedOperator {
 
 	private InputPort inputPetrinet = getInputPorts().createPort("model (ProM Petri Net)", PetriNetIOObject.class);
 	private OutputPort outputPomPomView = getOutputPorts().createPort("model (ProM PomPomView)");

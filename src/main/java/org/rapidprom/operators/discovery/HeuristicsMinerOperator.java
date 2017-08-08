@@ -10,7 +10,7 @@ import org.processmining.plugins.heuristicsnet.miner.heuristics.miner.FlexibleHe
 import org.processmining.plugins.heuristicsnet.miner.heuristics.miner.settings.HeuristicsMinerSettings;
 import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.HeuristicsNetIOObject;
-import org.rapidprom.operators.abstr.AbstractRapidProMDiscoveryOperator;
+import org.rapidprom.operators.abstr.AbstractRapidProMEventLogBasedOperator;
 
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
@@ -29,7 +29,7 @@ import com.rapidminer.tools.LogService;
  * @author abolt
  *
  */
-public class HeuristicsMinerOperator extends AbstractRapidProMDiscoveryOperator {
+public class HeuristicsMinerOperator extends AbstractRapidProMEventLogBasedOperator {
 
 	// Parameter keys (also used as description)
 	public static final String PARAMETER_1_KEY = "Threshold: Relative-to-best",

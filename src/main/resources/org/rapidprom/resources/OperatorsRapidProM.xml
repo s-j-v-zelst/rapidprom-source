@@ -79,6 +79,11 @@
                 <icon>checks.png</icon>
             </operator>
             <operator>
+                <key>boolean_conformance_checker</key>
+                <class>org.rapidprom.operators.conformance.BooleanConformanceCheckerOperator</class>
+                <icon>checks.png</icon>
+            </operator>
+            <operator>
                 <key>measure_precision</key>
                 <class>org.rapidprom.operators.conformance.MeasurePrecisionAnalysisOperator</class>
                 <icon>checks.png</icon>
@@ -94,7 +99,7 @@
             	<icon>checks.png</icon>
             </operator>
             <operator>
-                <key>create_transevmapping</key>
+               <key>create_transevmapping</key>
                 <class>org.rapidprom.operators.conformance.CreateTransEvMappingOperator</class>
                 <icon>objects_transform.png</icon>
             </operator>
@@ -102,6 +107,19 @@
                 <key>data_conformance</key>
                 <class>org.rapidprom.operators.conformance.DataConformanceOperator</class>
                 <icon>checks.png</icon>
+            </operator>
+            <operator>
+            	<key>ne_precision</key>
+            	<class>org.rapidprom.operators.conformance.NEPrecisionOperator</class>
+
+            	<key>incremental_prefix_alignments</key>
+            	<class>org.rapidprom.operators.conformance.IncrementalAlignmentOperator</class>
+            	<icon>checks.png</icon>
+            </operator>
+            <operator>
+            	<key>incremental_prefix_alignments_prefix_aware</key>
+            	<class>org.rapidprom.operators.conformance.IncrementalPrefixClosureAwareAlignmentOperatorImpl</class>
+            	<icon>checks.png</icon>
             </operator>
         </group>
         <group key="conversion">
@@ -272,10 +290,49 @@
                 <icon>inbox_out.png</icon>
             </operator>
         </group>
+        <group key="filtering">
+            <operator>
+                <key>filter_log_automaton</key>
+                <class>org.rapidprom.operators.filtering.FilterOutInfrequentBehaviorLogAutomatonOperatorImpl</class>
+                <icon>funnel.png</icon>
+            </operator>
+            <operator>
+            	<key>matrix_filter</key>
+            	<class>org.rapidprom.operators.filtering.MatrixFilterOperatorImpl</class>
+            	<icon>funnel.png</icon>
+            </operator>
+            <operator>
+            	<key>sequence_filter</key>
+            	<class>org.rapidprom.operators.filtering.SequenceFilterOperatorImpl</class>
+            	<icon>funnel.png</icon>
+            </operator>
+
+        <group key="concept_drift">
+            <operator>
+                <key>concept_drift_1</key>
+                <class>org.rapidprom.operators.conceptdrift.DecisionPointAnalysisOperator</class>
+                <icon>hardhat.png</icon>
+            </operator>
+            <operator>
+                <key>concept_drift_qut</key>
+                <class>org.rapidprom.operators.conceptdrift.QUTDrifterOperator</class>
+                <icon>hardhat.png</icon>
+            </operator>
+            <operator>
+                <key>measure_concept_drift</key>
+                <class>org.rapidprom.operators.conceptdrift.MeasureDriftDetectionOperator</class>
+                <icon>hardhat.png</icon>
+            </operator>
+        </group>
         <group key="import">
             <operator>
                 <key>extract_log_from_file</key>
                 <class>org.rapidprom.operators.extract.ExtractXLogOperator</class>
+                <icon>box_out.png</icon>
+            </operator>
+            <operator>
+                <key>extract_petrinet_from_file</key>
+                <class>org.rapidprom.operators.extract.ExtractPetriNetOperator</class>
                 <icon>box_out.png</icon>
             </operator>
             <operator>
@@ -350,6 +407,10 @@
                 <class>org.rapidprom.operators.logmanipulation.AddTraceAttributesToLogOperator</class>
             </operator>
             <operator>
+                <key>create_prefix_closure</key>
+                <class>org.rapidprom.operators.logmanipulation.PrefixClosureOperatorImpl</class>
+            </operator>
+            <operator>
                 <key>merge_two_event_logs</key>
                 <class>org.rapidprom.operators.logmanipulation.MergeTwoEventLogsOperator</class>
             </operator>
@@ -366,10 +427,72 @@
                 <class>org.rapidprom.operators.logmanipulation.TimestampSortOperator</class>
             </operator>
             <operator>
-                <key>merge_subsequent_events</key>
-                <class>org.rapidprom.operators.logmanipulation.MergeSubsequentEventsOperator</class>
+            	<key>contain_only_complete_log</key>
+            	<class>org.rapidprom.operators.niek.OnlyContainCompleteEventsOperator</class>
             </operator>
             <operator>
+                <key>merge_subsequent_events</key>
+                <class>org.rapidprom.operators.logmanipulation.MergeSubsequentEventsOperator</class>
+   			</operator>
+            <group key="log_projections">
+            	<operator>
+			 		<key>entopy_projections_greedy</key>
+			 		<class>org.rapidprom.operators.niek.GreedyEntropyBasedLogFilterOperator</class>
+			   	</operator>
+			   	<operator>
+			 		<key>entopy_projections_direct</key>
+			 		<class>org.rapidprom.operators.niek.DirectEntropyBasedLogFilterOperator</class>
+			   	</operator>
+			   	<operator>
+			 		<key>entopy_projections_direct2</key>
+			 		<class>org.rapidprom.operators.niek.DirectEntropyBasedLogFilterOperator2</class>
+			   	</operator>
+			   	<operator>
+			 		<key>entopy_projections_beam</key>
+			 		<class>org.rapidprom.operators.niek.BeamEntropyBasedLogFilterOperator3</class>
+			   	</operator>
+			   	<operator>
+			 		<key>entopy_projections_greedy3</key>
+			 		<class>org.rapidprom.operators.niek.GreedyEntropyBasedLogFilterOperator3</class>
+			   	</operator>
+			   	<operator>
+			 		<key>entopy_projections_greedy2</key>
+			 		<class>org.rapidprom.operators.niek.GreedyEntropyBasedLogFilterOperator2</class>
+			   	</operator>
+			   	<operator>
+			 		<key>entopy_projections_global</key>
+			 		<class>org.rapidprom.operators.niek.EntropyBasedLogFilterOperator</class>
+			   	</operator>
+			   	<operator>
+			 		<key>kl_projections_greedy</key>
+			 		<class>org.rapidprom.operators.niek.GreedyKLBasedLogFilterOperator</class>
+			   	</operator>
+            
+			   	<operator>
+			 		<key>frequency_projections_1</key>
+			 		<class>org.rapidprom.operators.niek.FrequencyBasedLogFilter1Operator</class>
+			   	</operator>
+			   	<operator>
+			 		<key>frequency_projections_2</key>
+			 		<class>org.rapidprom.operators.niek.FrequencyBasedLogFilter2Operator</class>
+			   	</operator>
+			   	<operator>
+			 		<key>random_projections</key>
+			 		<class>org.rapidprom.operators.niek.RandomLogFilterOperator</class>
+			   	</operator>
+ 			   	<operator>
+			 		<key>entropy_adjusted_projections</key>
+			 		<class>org.rapidprom.operators.niek.GreedyAdjustedEntropyBasedLogFilterOperator</class>
+			   	</operator>
+			   	<operator>
+			 		<key>apply_log_projection</key>
+			 		<class>org.rapidprom.operators.niek.ApplyProjectionOperator</class>
+			   	</operator>
+				<operator>
+			 		<key>calculate_determinism</key>
+			 		<class>org.rapidprom.operators.niek.DeterminismCalculatorOperator</class>
+			   	</operator>
+			<operator>
                 <key>move_common_attributes_to_trace</key>
                 <class>org.rapidprom.operators.logmanipulation.MoveCommonAttributeToTraceOperator</class>
             </operator>
@@ -409,7 +532,10 @@
             <operator>
                 <key>add_elapsed_time</key>
                 <class>org.rapidprom.operators.logmanipulation.AddElapsedTimeInTraceOperator</class>
-            </operator>                 
+            </operator>
+                <key>unique_traces_calculator</key>
+                <class>org.rapidprom.operators.logmanipulation.CountUniqueTracesOperator</class>
+            </operator>
         </group> 
         <group key="streams">
             <group key="analysis">
@@ -490,5 +616,78 @@
                 <class>org.rapidprom.operators.util.XLogFactorySelectionOperator</class>
                 <icon>wrench.png</icon>
             </operator>
-        </group>               
+            <operator>
+                <key>rprom_clear_threads</key>
+                <class>org.rapidprom.operators.niek.RapidProMThreadCleanUpOperator</class>
+                <icon>wrench.png</icon>
+            </operator>
+        </group>
+        <group key="padas">
+        	<operator>
+        		<key>dapoq_lang_query</key>
+        		<class>org.rapidprom.operators.padas.DAPOQLangQueryOperator</class>
+        	</operator>
+        	<operator>
+        		<key>import_slex_mm</key>
+        		<class>org.rapidprom.operators.padas.ImportSLEXMMOperator</class>
+        	</operator>
+        	<operator>
+        		<key>generate_slex_mm</key>
+        		<class>org.rapidprom.operators.padas.GenerateSLEXMMOperator</class>
+        	</operator>
+        	<operator>
+        		<key>padas_split_log</key>
+        		<class>org.rapidprom.operators.padas.PADASLogSplitterOperator</class>
+        	</operator>
+        	<operator>
+        		<key>dapoql_result_to_exampleset</key>
+        		<class>org.rapidprom.operators.padas.SLEXMMSubSetToExampleSetConversionOperator</class>
+        	</operator>
+                <key>rprom_count_pc_size</key>
+                <class>org.rapidprom.operators.util.PluginContextSizeOperator</class>
+                <icon>wrench.png</icon>
+            </operator>
+        </group>
+        <group key="generation">
+            	<operator>
+                    <key>generate_process_tree</key>
+                    <class>org.rapidprom.operators.generation.GenerateNewickTreeOperator</class>
+                </operator>
+                <operator>
+                    <key>generate_log_from_petrinet</key>
+                    <class>org.rapidprom.operators.generation.GenerateEventLogFromPetriNetOperator</class>
+                </operator>
+                <operator>
+                    <key>generate_log_with_conceptdrift</key>
+                    <class>org.rapidprom.operators.generation.GenerateConceptDriftOperator</class>
+                </operator>
+                <operator>
+                    <key>generate_log</key>
+                    <class>org.rapidprom.operators.generation.GenerateEventLogOperator</class>
+                </operator>
+                <operator>
+                    <key>convert_newickTree_to_processTree</key>
+                    <class>org.rapidprom.operators.generation.ConvertNewickTreeToProcessTree</class>
+                </operator>
+                <operator>
+                    <key>generate_noisy_log_event</key>
+                    <class>org.rapidprom.operators.generation.GenerateNoisyLogOperator</class>
+                </operator>
+                <operator>
+                    <key>generate_noisy_log_trace</key>
+                    <class>org.rapidprom.operators.generation.GenerateNoisyLog2Operator</class>
+                </operator>
+                <operator>
+                    <key>log_cross_validation</key>
+                    <class>org.rapidprom.operators.validation.XLogKFoldCrossValidationOperator</class>
+                </operator>
+                <operator>
+                    <key>log_split</key>
+                    <class>org.rapidprom.operators.logmanipulation.SplitXLogOperator</class>
+                </operator>
+                <operator>
+                    <key>unique_paths_calculator</key>
+                    <class>org.rapidprom.operators.generation.NoUniquePathsCalculatorOperator</class>
+                </operator>
+            </group>
 </operators>

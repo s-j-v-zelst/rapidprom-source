@@ -16,7 +16,7 @@ import org.processmining.models.semantics.petrinet.Marking;
 import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.PetriNetIOObject;
 import org.rapidprom.ioobjects.XLogIOObject;
-import org.rapidprom.operators.abstr.AbstractRapidProMDiscoveryOperator;
+import org.rapidprom.operators.abstr.AbstractRapidProMEventLogBasedOperator;
 
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
@@ -31,7 +31,7 @@ import com.rapidminer.tools.LogService;
 
 import javassist.tools.rmi.ObjectNotFoundException;
 
-public class RepairModelOperator extends AbstractRapidProMDiscoveryOperator {
+public class RepairModelOperator extends AbstractRapidProMEventLogBasedOperator {
 
 	private static final String PARAMETER_1_KEY = "Detect loops",
 			PARAMETER_1_DESCR = "If set to 'true', the plugin will apply a few heuristics "

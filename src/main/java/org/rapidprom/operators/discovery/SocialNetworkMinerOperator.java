@@ -12,7 +12,7 @@ import org.processmining.plugins.socialnetwork.miner.SNSCMiner;
 import org.processmining.plugins.socialnetwork.miner.SNWTMiner;
 import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.SocialNetworkIOObject;
-import org.rapidprom.operators.abstr.AbstractRapidProMDiscoveryOperator;
+import org.rapidprom.operators.abstr.AbstractRapidProMEventLogBasedOperator;
 
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
@@ -22,7 +22,7 @@ import com.rapidminer.parameter.ParameterType;
 import com.rapidminer.parameter.ParameterTypeCategory;
 import com.rapidminer.tools.LogService;
 
-public class SocialNetworkMinerOperator extends AbstractRapidProMDiscoveryOperator {
+public class SocialNetworkMinerOperator extends AbstractRapidProMEventLogBasedOperator {
 
 	private static final String HANDOVER_OF_WORK = "Handover of work",
 			HANDOVER_OF_WORK_DESCR = "Handover of work metric: Within a case (i.e., process "

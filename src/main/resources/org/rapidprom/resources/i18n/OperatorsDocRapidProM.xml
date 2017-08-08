@@ -9,6 +9,11 @@
     </group>
     
     <group>
+    <key>concept_drift</key>
+    <name>Concept Drift</name>
+    </group>
+    
+    <group>
       <key>conformance</key>
       <name>Conformance</name>
     </group>
@@ -34,6 +39,11 @@
     </group>
     
     <group>
+        <key>filtering</key>
+        <name>Filtering</name>
+    </group>
+    
+    <group>
       <key>log_manipulation</key>
       <name>Log Manipulation</name>
     </group>
@@ -52,6 +62,10 @@
         <key>utility</key>
         <name>Utility</name>
     </group>
+        <group>
+        <key>padas</key>
+        <name>PADAS</name>
+    </group>
 
     <group>
         <key>decomposition</key>
@@ -68,7 +82,7 @@
  		<key>petrinet_complexity_metrics</key>
    </operator>      
     
-   <operator>
+  <operator>
         <name>Filter Unmapped Events</name>
         <Synopyis>Removes events that are not mapped to any transition in the supplied mapping.</Synopyis>
         <help>
@@ -85,6 +99,11 @@
         </help>
  		<key>filter_low_frequency_traces</key>
    </operator>    
+
+    <group>
+    	<key>generation</key>
+    	<name>Generation</name>
+    </group>
     
    <operator>
         <name>Filter In High-Frequency Traces</name>
@@ -103,6 +122,102 @@
         <help>Projects an aligned log on a Data Petri net.</help>
  		<key>project_alignment_on_dpn</key>
    </operator>
+   <operator>
+        <name>Only contain lifecycle 'complete' events</name>
+        <Synopyis>Removes all events with another lifecycle than 'complete'</Synopyis>
+        <help></help>
+ 		<key>contain_only_complete_log</key>
+   </operator>
+   <operator>
+        <name>Add noisy activities to event log</name>
+        <Synopyis>Adds noisy activities to log</Synopyis>
+        <help></help>
+        <key>add_noisy_activities_log</key>
+   </operator>
+   <operator>
+   		<name>Apply projection set to log</name>
+   		<Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
+        <help></help>
+   		<key>apply_log_projection</key>
+   </operator>
+   <operator>
+        <name>Apply entropy-based projections to log (greedy)</name>
+        <Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
+        <help></help>
+ 		<key>entopy_projections_greedy</key>
+   </operator>
+   <operator>
+        <name>Apply entropy-based projections to log (direct, alpha=1/d)</name>
+        <Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
+        <help></help>
+ 		<key>entopy_projections_direct</key>
+   </operator>
+   <operator>
+        <name>Apply entropy-based projections to log (direct)</name>
+        <Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
+        <help></help>
+		<key>entopy_projections_direct2</key>
+   </operator>
+   <operator>
+        <name>Apply entropy-based projections to log (beam)</name>
+        <Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
+        <help></help>
+ 		<key>entopy_projections_beam</key>
+   </operator>
+   <operator>
+        <name>Apply entropy-based projections to log (greedy3)</name>
+        <Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
+        <help></help>
+ 		<key>entopy_projections_greedy3</key>
+   </operator>
+   <operator>
+        <name>Apply entropy-based projections to log (greedy2)</name>
+        <Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
+        <help></help>
+ 		<key>entopy_projections_greedy2</key>
+   </operator>
+   <operator>
+        <name>Apply entropy-based projections to log (global)</name>
+        <Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
+        <help></help>
+ 		<key>entopy_projections_global</key>
+   </operator>
+   <operator>
+        <name>Apply KL-divergence-based projections to log (greedy)</name>
+        <Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
+        <help></help>
+ 		<key>kl_projections_greedy</key>
+   </operator>
+   <operator>
+        <name>Apply frequency-based projections to log (ascendingly)</name>
+        <Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
+        <help></help>
+ 		<key>frequency_projections_1</key>
+   </operator>
+   <operator>
+        <name>Apply frequency-based projections to log (descendingly)</name>
+        <Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
+        <help></help>
+ 		<key>frequency_projections_2</key>
+   </operator>
+   <operator>
+        <name>Apply random projections to log</name>
+        <Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
+        <help></help>
+ 		<key>random_projections</key>
+   </operator>
+   <operator>
+   		<name>Apply adjusted entropy-based projections to log (greedy)</name>
+ 		<Synopyis>Returns a collection of logs, with iteratively one activity removed from the original log</Synopyis>
+        <help></help>
+        <key>entropy_adjusted_projections</key>
+   </operator>
+   <operator>
+   		<name>Calculate determinism</name>
+   		<Synopyis>Calculates determinism</Synopyis>
+   		<help></help>
+   		<key>calculate_determinism</key>
+   </operator> 
    
     <!-- IMPORTERS -->
    <operator>
@@ -110,6 +225,12 @@
         <Synopyis>Calculate precision using 1-align ETC conformance</Synopyis>
         <help>This technique uses the Align-ETC precision measurement plugin from ProM. The underlying technique is explained &lt;a href="http://dx.doi.org/10.1007/s10257-014-0234-7"&gt;here&lt;/a&gt;</help>
  		<key>etc_1_align_precision</key>
+   </operator>
+   <operator>
+   	    <name>Calculate negative event precision</name>
+        <Synopyis>Calculate precision using weighted negative events</Synopyis>
+        <help></help>
+ 		<key>ne_precision</key>
    </operator>
    <operator>
         <name>Measure Model Precision based on alignments</name>
@@ -252,9 +373,8 @@
    <operator>
         <name>Import Event Log</name>
         <synopsis>This operator can be used to import a ProM XES event log from a file.</synopsis>
-        <help>This operator can be used to import a ProM XES event log file. 
-        Note that only .xes files can be read.</help>
-    <key>import_xlog</key>
+        <help>This operator can be used to import a ProM XES event log file. Note that only .xes files can be read.</help>
+    	<key>import_xlog</key>
   </operator>
   
   <operator>
@@ -264,11 +384,39 @@
     <key>extract_log_from_file</key>
   </operator>
   <operator>
+        <name>Extract Petri Net</name>
+        <synopsis>This operator can be used to read a ProM Pnml petrinet file from a file object (useful for loops over file collections)</synopsis>
+        <help>This operator can be used to read a ProM  Pnml petrinet file</help>
+    <key>extract_petrinet_from_file</key>
+  </operator>
+  
+  <operator>
         <name>Sort chronologically</name>
         <synopsis>This operator sorts traces and events within traces by timestamp (increasing).</synopsis>
         <help>This operator sorts traces and events within traces by timestamp.</help>
     <key>timestamp_sort</key>
   </operator>
+  
+  
+  <operator>
+      <name>Filter Infrequent Behavior (Log Automaton)</name>
+      <synopsis>Event log filter able to filter out infrequent behavior. Based on: Conforti, R., La Rosa, M., and, ter Hofstede, A.; Filtering Out Infrequent Behavior from Business Process Event Logs"; IEEE Transactions on Knowledge and Data Engineering, Vol 29., No 2.</synopsis> 
+      <help> Event log filter able to filter out infrequent behavior. The filter creates an automaton based on the event log and uses the threshold to filter out infrequent transitions within the automaton. Based on: Conforti, R., La Rosa, M., and, ter Hofstede, A.; Filtering Out Infrequent Behavior from Business Process Event Logs"; IEEE Transactions on Knowledge and Data Engineering, Vol 29., No 2.</help>
+      <key>filter_log_automaton</key> 
+  </operator>
+  <operator> 
+  	<name>Matrix Filter</name>
+  	<synopsis>...</synopsis>
+  	<help>LONGER HELP</help>
+  	<key>matrix_filter</key>
+  </operator>
+  <operator> 
+    <name>Sequence Filter</name>
+  	<synopsis>...</synopsis>
+  	<help>LONGER HELP</help>
+  	<key>sequence_filter</key>
+  </operator>
+  
   
    <operator>
         <name>Alpha Miner (Petri Net)</name>
@@ -385,7 +533,7 @@
   
        <operator>
         <name>Evolutionary Tree Miner (Process Tree)</name>
-        <synopsis>Discovers a Process Tree from an event log using the &lt;a href="http://dx.doi.org/10.6100/IR780920"&gt;Evolutionary Tree Miner&lt;/a&gt;. The Evolutionary Tree Miner (or ETM) is an evolutionary algorithm to discover a process model (in our case a process tree) from an event log. It does so by creating several process models, checking how good they are (w.r.t the event log) using several quality dimensions, and then slightly modifying the best ones in the hope that they will become even better. By repeating this, and always keeping a list of the best ones found so far, the ETM will discover better and better process models. The main advantage is that many quality dimensions can be used to define what a ‘better’ process model is.</synopsis>
+        <synopsis>Discovers a Process Tree from an event log using the &lt;a href="http://dx.doi.org/10.6100/IR780920"&gt;Evolutionary Tree Miner&lt;/a&gt;. The Evolutionary Tree Miner (or ETM) is an evolutionary algorithm to discover a process model (in our case a process tree) from an event log. It does so by creating several process models, checking how good they are (w.r.t the event log) using several quality dimensions, and then slightly modifying the best ones in the hope that they will become even better. By repeating this, and always keeping a list of the best ones found so far, the ETM will discover better and better process models. The main advantage is that many quality dimensions can be used to define what a ï¿½betterï¿½ process model is.</synopsis>
         <help>Mine a Process Using the ETM Algorithm from an event log.</help>
     	<key>etm_miner</key>
   	  </operator>
@@ -507,6 +655,13 @@
     	<key>add_events_to_log</key>
   	</operator>
   	
+    <operator>
+        <name>Create Prefix Closure</name>
+        <synopsis>This operator creates a prefix-closure of the event log. For each trace, each prefix, excluding the empty prefix, is added.</synopsis>
+        <help>This operator creates a prefix-closure of the event log. For each trace, each prefix, excluding the empty prefix, is added.</help>
+        <key>create_prefix_closure</key>
+    </operator>
+  	
   	 <operator>
         <name>Merge Event Logs</name>
         <synopsis>This operator merges two event logs.</synopsis>
@@ -600,6 +755,20 @@
   		<key>complexity_metrics_petri_net</key>
   	</operator>
   	
+  	<operator>
+  		<name>Compute Prefix Alignments (Incremental)</name>
+  		<synopsis>Computes all prefix alignments of all traces in an incremental fashion</synopsis>
+  		<help>...</help>
+  		<key>incremental_prefix_alignments</key>
+  	</operator>
+  	
+  	<operator>
+  		<name>Compute Prefix Alignments (Incremental / Prefix Aware)</name>
+  		<synopsis>Computes all prefix alignments of all traces in an incremental fashion</synopsis>
+  		<help>...</help>
+  		<key>incremental_prefix_alignments_prefix_aware</key>
+  	</operator>
+  	
   	<!-- STREAMS -->
     <operator>
         <name>Generate Event Stream from CPN</name>
@@ -688,6 +857,38 @@
         <help> This operator tries to free the memory used by RapidProM (and also Rapid Miner itself). It does so by clearing the Plugin Context object (which is originating from the ProM framework, i.e., the base of RapidProM)</help>
         <key>rprom_free_memory</key>
     </operator>
+    
+    <!-- PADAS -->
+	<operator>
+	    <name>DAPOQ-Lang Query </name>
+		<synopsis>Executes a DAPOQ-Lang Query on a SLEX Meta Model </synopsis>
+		<help> A SLEX Meta Model is required as input </help>		
+        <key>dapoq_lang_query</key>                
+    </operator>
+    <operator>
+	    <name>SLEXMM Meta Model Importer </name>
+		<synopsis>Imports a SLEX Meta Model </synopsis>
+		<help> A file is required as input </help>		
+        <key>import_slex_mm</key>
+    </operator>
+    <operator>
+	    <name>SLEXMM Meta Model Generator </name>
+		<synopsis>Generates a SLEX Meta Model from several inputs</synopsis>
+		<help>A Data Model, a set of events and versions, logs and process definitions are required as input</help>		
+        <key>generate_slex_mm</key>
+    </operator>
+    <operator>
+	    <name>PADAS Log Splitter</name>
+		<synopsis>Split a set of events into traces according to some criteria</synopsis>
+		<help>A Data Model and a set of events are required as input</help>		
+        <key>padas_split_log</key>
+    </operator>
+    <operator>
+	    <name>DAPOQ-Lang Result to ExampleSet</name>
+		<synopsis>Transforms the results of a DAPOQ-Lang query into an ExampleSet</synopsis>
+		<help>A result of a DAPOQ-Lang query is required as input</help>		
+        <key>dapoql_result_to_exampleset</key>
+    </operator>
 
     <operator>
         <name>Select Default XFactory</name>
@@ -730,6 +931,12 @@
         <help>Converts a Causal net into a Petri net representation.</help>
         <key>convert_causal_net_into_petri_net</key>
     </operator>
+    <operator>
+    	<name>Clean up Threads (RapidProM)</name>
+        <synopsis>This operator kills all threads which seems to be spawned by RapidProM operators that were not killed properly. WARNING: might kill too much leading to unexpected behavior.</synopsis>
+		<help>This operator kills all threads which seems to be spawned by RapidProM operators that were not killed properly. WARNING: might kill too much leading to unexpected behavior.</help>
+		<key>rprom_clear_threads</key>
+    </operator>
 
     <operator>
         <name>Export Causal net</name>
@@ -744,5 +951,123 @@
         <help>Imports a Causal net from a file.</help>
         <key>import_causal_net</key>
     </operator>
-                	
+
+    <operator>
+		<name>Generate Newick Tree Collection </name>
+		<synopsis>  </synopsis>
+		<help> </help>
+		<key>generate_process_tree</key>
+	</operator>
+	
+	 <operator>
+		<name>Detect Concept Drift (Decision Point Analysis) </name>
+		<synopsis>This is a synopsis  </synopsis>
+		<help> help is coming!</help>
+		<key>concept_drift_1</key>
+	</operator>
+	
+	 <operator>
+		<name>Detect Concept Drift (QUT) </name>
+		<synopsis> this is a synopsis </synopsis>
+		<help> help is coming!</help>
+		<key>concept_drift_qut</key>
+	</operator>
+	
+	 <operator>
+		<name>Measure Concept Drift</name>
+		<synopsis> this is a synopsis </synopsis>
+		<help> help is coming!</help>
+		<key>measure_concept_drift</key>
+	</operator>
+	
+	<operator>
+		<name>Generate Event Log from Newick Tree</name>
+		<synopsis>  </synopsis>
+		<help> </help>
+		<key>generate_log</key>
+	</operator>
+	
+	<operator>
+		<name>Generate Event Log from Petri Net</name>
+		<synopsis> this is a synopsis </synopsis>
+		<help> help is coming!</help>
+		<key>generate_log_from_petrinet</key>
+    </operator>
+    <operator>
+		<name>Generate Event Log With Concept Drift</name>
+		<synopsis>  </synopsis>
+		<help> </help>
+		<key>generate_log_with_conceptdrift</key>
+    </operator>
+
+	<operator>
+		<name>Convert Newick Tree to Process Tree</name>
+		<synopsis>  </synopsis>
+		<help> </help>
+        <key>convert_newickTree_to_processTree</key>
+    </operator>
+    
+    <operator>
+    	<name>Generate Noisy Log (Event Level)</name>
+		<synopsis>This operator creates a log with noise: each trace of the original log is modified until it no longer fits the given petri net.</synopsis>
+		<help> </help>
+        <key>generate_noisy_log_event</key>      
+    </operator>
+    
+     <operator>
+    	<name>Generate Noisy Log (Trace Level)</name>
+		<synopsis>This operator creates a log with noise: each trace of the original log is modified until it no longer fits the given petri net.</synopsis>
+		<help> </help>
+        <key>generate_noisy_log_trace</key>      
+    </operator>
+    
+    <operator>
+	    <name>Case Data Extractor </name>
+		<synopsis> This extracts data from the traces contained in an event log, such as relative occurrence, etc... </synopsis>
+		<help> An Event log is required as input </help>		
+        <key>case_data_extractor</key>                
+    </operator>
+	
+	
+	<operator>
+	    <name>Log Cross Validation </name>
+		<synopsis> This operator splits an event log and does k-fold cross validation </synopsis>
+		<help> An Event log is required as input </help>
+        <key>log_cross_validation</key>
+    </operator>
+    <operator>
+        <name>Split Log</name>
+		<synopsis> This operator splits an event log in two sublogs according to the split ratio </synopsis>
+		<help> An Event log is required as input </help>
+        <key>log_split</key>                    
+    </operator>
+    
+    <operator>
+        <name>Number of Unique Paths</name>
+		<synopsis>This operator calculate the number of unique paths within a process tree</synopsis>
+		<help>The output is an exampleset with a single cell containing the number of unique paths of the process tree given as input, and the parameter value.</help>
+        <key>unique_paths_calculator</key>
+    </operator>
+    
+    <operator>
+        <name>Boolean Conformance checker</name>
+		<synopsis>This operator replays an event log into a Petri net, and it decides whether traces perfectly fit the model (1) or not (0).</synopsis>
+		<help>The output is an exampleset with a row for each trace, indicating if it fits the  petri net or not.</help>
+        <key>boolean_conformance_checker</key>   
+    </operator>
+    
+    <operator>
+        <name>Count Unique Traces</name>
+		<synopsis>This operator counts the unique traces in a log according to the specified classifier.</synopsis>
+		<help>The output is an exampleset with the number of unique traces in the input log.</help>
+        <key>unique_traces_calculator</key>
+    </operator>
+    
+    <operator>
+        <name>Plugin Context Size</name>
+		<synopsis>This operator measures the size of the connection manager and provided object manager</synopsis>
+		<help>The output is an exampleset with the size of both.</help>
+        <key>rprom_count_pc_size</key>
+    </operator>
+
 </operatorHelp>

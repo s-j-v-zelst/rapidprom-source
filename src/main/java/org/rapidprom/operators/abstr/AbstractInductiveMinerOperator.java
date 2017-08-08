@@ -7,6 +7,7 @@ import org.processmining.plugins.InductiveMiner.mining.MiningParametersEKS;
 import org.processmining.plugins.InductiveMiner.mining.MiningParametersIM;
 import org.processmining.plugins.InductiveMiner.mining.MiningParametersIMf;
 import org.processmining.plugins.InductiveMiner.mining.MiningParametersIMflc;
+
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.parameter.ParameterType;
 import com.rapidminer.parameter.ParameterTypeCategory;
@@ -36,8 +37,8 @@ public abstract class AbstractInductiveMinerOperator extends AbstractLabelAwareR
 			PARAMETER_2_DESCR = "This threshold represents the percentage of infrequent (noisy) "
 					+ "traces that are filtered out. The remaining traces are used to discover a model. ";
 
-	private static final String IM = "Inductive Miner", //  
-			IMi = "Inductive Miner - Infrequent", // 
+	private static final String IM = "Inductive Miner", //
+			IMi = "Inductive Miner - Infrequent", //
 			IMin = "Inductive Miner - Incompleteness", //
 			IMeks = "Inductive Miner - exhaustive K-successor", //
 			IMflc = "Inductive Miner - Life cycle";
@@ -70,11 +71,12 @@ public abstract class AbstractInductiveMinerOperator extends AbstractLabelAwareR
 				miningParameters = new MiningParametersEKS();
 			else if (getParameterAsString(PARAMETER_1_KEY).equals(IMflc))
 				miningParameters = new MiningParametersIMflc();
-			else 
-				throw new IllegalArgumentException("Unknown inductive miner type "+getParameterAsString(PARAMETER_1_KEY));
-			
+			else
+				throw new IllegalArgumentException(
+						"Unknown inductive miner type " + getParameterAsString(PARAMETER_1_KEY));
+
 			miningParameters.setNoiseThreshold((float) getParameterAsDouble(PARAMETER_2_KEY));
-			miningParameters.setClassifier(getXEventClassifier());			
+			miningParameters.setClassifier(getXEventClassifier());
 		} catch (UndefinedParameterError e) {
 			e.printStackTrace();
 		}
