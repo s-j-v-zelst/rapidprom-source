@@ -29,19 +29,18 @@ import com.rapidminer.parameter.UndefinedParameterError;
 import com.rapidminer.tools.LogService;
 
 public class LocalProcessModelDiscoveryOperator extends AbstractLabelAwareRapidProMDiscoveryOperator {
-	
+
 	OutputPort output = getOutputPorts().createPort("model (ProM ProcessTree)");
 	LocalProcessModelParameters lpmp;
-	
+
 	// Parameter keys (also used as description)
-	public static final String 
-			PARAMETER_1_KEY = "Maximum number of transitions in LPMs",
+	public static final String PARAMETER_1_KEY = "Maximum number of transitions in LPMs",
 			PARAMETER_1_DESCR = "Maximum number of non-silent transitions in LPMs. Higher values lead to higher computation time. A value of at most 4 is advised.",
 			PARAMETER_2_KEY = "Maximum number of LPMs to discover",
 			PARAMETER_2_DESCR = "Maximum size of result list of LPMs. Has no influence on computation time.",
 			PARAMETER_3_KEY = "Allow duplicate transitions",
 			PARAMETER_3_DESCR = "Whether to allow LPMs to contain duplicate transitions. This significantly increases computation time.",
-			
+
 			PARAMETER_4_KEY = "Use sequence operator",
 			PARAMETER_4_DESCR = "Whether to allow resulting LPMs to contain sequence constructs",
 			PARAMETER_5_KEY = "Use concurrency operator",
@@ -52,7 +51,7 @@ public class LocalProcessModelDiscoveryOperator extends AbstractLabelAwareRapidP
 			PARAMETER_7_DESCR = "Whether to allow resulting LPMs to contain exclusive choice constructs",
 			PARAMETER_8_KEY = "Use loop operator",
 			PARAMETER_8_DESCR = "Whether to allow resulting LPMs to contain loop constructs",
-			
+
 			PARAMETER_9_KEY = "Minimum occurrences of LPMs",
 			PARAMETER_9_DESCR = "Minimum number of occurrences of an LPM in the log. The set value is used for pruning, therefore higher values lead to lower computation time.",
 			PARAMETER_10_KEY = "Minimum determinicsm",
@@ -60,7 +59,7 @@ public class LocalProcessModelDiscoveryOperator extends AbstractLabelAwareRapidP
 
 			PARAMETER_11_KEY = "Log projections method",
 			PARAMETER_11_DESCR = "Projection method used on the event log to speed up discovery of LPMs",
-			
+
 			PARAMETER_12_KEY = "Weight of support metric",
 			PARAMETER_12_DESCR = "Relative weights of the metrics are used to rank the discovered LPMs",
 			PARAMETER_13_KEY = "Weight of language fit metric",
@@ -73,12 +72,12 @@ public class LocalProcessModelDiscoveryOperator extends AbstractLabelAwareRapidP
 			PARAMETER_16_DESCR = "Relative weights of the metrics are used to rank the discovered LPMs",
 			PARAMETER_17_KEY = "Weight of average number of firings metric",
 			PARAMETER_17_DESCR = "Relative weights of the metrics are used to rank the discovered LPMs";
-	
+
 	public LocalProcessModelDiscoveryOperator(OperatorDescription description) {
 		super(description);
 		getTransformer().addRule(new GenerateNewMDRule(output, LocalProcessModelRankingIOObject.class));
 	}
-	
+
 	public void doWork() throws OperatorException {
 		Logger logger = LogService.getRoot();
 		logger.log(Level.INFO, "Start: lpm discovery");
@@ -87,12 +86,13 @@ public class LocalProcessModelDiscoveryOperator extends AbstractLabelAwareRapidP
 		lpmp = getConfiguration(getXLog());
 
 		LocalProcessModelDiscovery lpmd = new LocalProcessModelDiscovery();
-		PluginContext pluginContext = RapidProMGlobalContext.instance().getFutureResultAwarePluginContext(LocalProcessModelDiscovery.class);		
-		
+		PluginContext pluginContext = RapidProMGlobalContext.instance()
+				.getFutureResultAwarePluginContext(LocalProcessModelDiscovery.class);
+
 		LocalProcessModelRanking result = lpmd.runHeadless(pluginContext, lpmp);
-		
+
 		renameModels(result);
-		
+
 		LocalProcessModelRankingIOObject resultObject = new LocalProcessModelRankingIOObject(result, pluginContext);
 
 		output.deliver(resultObject);
@@ -105,9 +105,9 @@ public class LocalProcessModelDiscoveryOperator extends AbstractLabelAwareRapidP
 			LocalProcessModel model = result.getNet(i);
 			Petrinet net = model.getAcceptingPetriNet().getNet();
 			if (getLabel() != null && !getLabel().isEmpty()) {
-				net.getAttributeMap().put(AttributeMap.LABEL, getLabel() +  "-" +  i);
+				net.getAttributeMap().put(AttributeMap.LABEL, getLabel() + "-" + i);
 			} else {
-				net.getAttributeMap().put(AttributeMap.LABEL, "LPM" +  "-" +  i);
+				net.getAttributeMap().put(AttributeMap.LABEL, "LPM" + "-" + i);
 			}
 		}
 	}
@@ -115,18 +115,20 @@ public class LocalProcessModelDiscoveryOperator extends AbstractLabelAwareRapidP
 	@Override
 	public List<ParameterType> getParameterTypes() {
 		List<ParameterType> parameterTypes = super.getParameterTypes();
-		if(lpmp==null)
+		if (lpmp == null)
 			lpmp = new LocalProcessModelParameters();
-		ParameterTypeInt parameter1 = new ParameterTypeInt(PARAMETER_1_KEY, PARAMETER_1_DESCR, 1, 5, lpmp.getNumTransitions());
+		ParameterTypeInt parameter1 = new ParameterTypeInt(PARAMETER_1_KEY, PARAMETER_1_DESCR, 1, 5,
+				lpmp.getNumTransitions());
 		parameter1.setExpert(false);
 		parameterTypes.add(parameter1);
 		ParameterTypeInt parameter2 = new ParameterTypeInt(PARAMETER_2_KEY, PARAMETER_2_DESCR, 0, 500, lpmp.getTop_k());
 		parameter2.setExpert(false);
 		parameterTypes.add(parameter2);
-		ParameterTypeBoolean parameter3 = new ParameterTypeBoolean(PARAMETER_3_KEY, PARAMETER_3_DESCR, lpmp.isDuplicateTransitions());
+		ParameterTypeBoolean parameter3 = new ParameterTypeBoolean(PARAMETER_3_KEY, PARAMETER_3_DESCR,
+				lpmp.isDuplicateTransitions());
 		parameter3.setExpert(true);
 		parameterTypes.add(parameter3);
-		
+
 		ParameterTypeBoolean parameter4 = new ParameterTypeBoolean(PARAMETER_4_KEY, PARAMETER_4_DESCR, lpmp.isUseSeq());
 		parameter4.setExpert(false);
 		parameterTypes.add(parameter4);
@@ -139,44 +141,55 @@ public class LocalProcessModelDiscoveryOperator extends AbstractLabelAwareRapidP
 		ParameterTypeBoolean parameter7 = new ParameterTypeBoolean(PARAMETER_7_KEY, PARAMETER_7_DESCR, lpmp.isUseXor());
 		parameter7.setExpert(false);
 		parameterTypes.add(parameter7);
-		ParameterTypeBoolean parameter8 = new ParameterTypeBoolean(PARAMETER_8_KEY, PARAMETER_8_DESCR, lpmp.isUseXorloop());
+		ParameterTypeBoolean parameter8 = new ParameterTypeBoolean(PARAMETER_8_KEY, PARAMETER_8_DESCR,
+				lpmp.isUseXorloop());
 		parameter8.setExpert(false);
 		parameterTypes.add(parameter8);
 
-		ParameterTypeInt parameter9 = new ParameterTypeInt(PARAMETER_9_KEY, PARAMETER_9_DESCR, 0, Integer.MAX_VALUE, lpmp.getFrequencyMinimum());
+		ParameterTypeInt parameter9 = new ParameterTypeInt(PARAMETER_9_KEY, PARAMETER_9_DESCR, 0, Integer.MAX_VALUE,
+				lpmp.getFrequencyMinimum());
 		parameter9.setExpert(false);
 		parameterTypes.add(parameter9);
-		ParameterTypeDouble parameter10 = new ParameterTypeDouble(PARAMETER_10_KEY, PARAMETER_10_DESCR, 0, 1, lpmp.getDeterminismMinimum());
+		ParameterTypeDouble parameter10 = new ParameterTypeDouble(PARAMETER_10_KEY, PARAMETER_10_DESCR, 0, 1,
+				lpmp.getDeterminismMinimum());
 		parameter10.setExpert(true);
 		parameterTypes.add(parameter10);
 
-		LocalProcessModelParameters.ProjectionMethods[] methods = LocalProcessModelParameters.ProjectionMethods.values();
+		LocalProcessModelParameters.ProjectionMethods[] methods = LocalProcessModelParameters.ProjectionMethods
+				.values();
 		String[] descriptions = new String[methods.length];
-		for(int i=0; i<methods.length; i++)
+		for (int i = 0; i < methods.length; i++)
 			descriptions[i] = methods[i].toString();
-		ParameterTypeCategory parameter11 = new ParameterTypeCategory(PARAMETER_11_KEY, PARAMETER_11_DESCR, descriptions, 1);
+		ParameterTypeCategory parameter11 = new ParameterTypeCategory(PARAMETER_11_KEY, PARAMETER_11_DESCR,
+				descriptions, 1);
 		parameter11.setExpert(false);
 		parameterTypes.add(parameter11);
-		
-		ParameterTypeDouble parameter12 = new ParameterTypeDouble(PARAMETER_12_KEY, PARAMETER_12_DESCR, 0, 1, lpmp.getSupportWeight());
+
+		ParameterTypeDouble parameter12 = new ParameterTypeDouble(PARAMETER_12_KEY, PARAMETER_12_DESCR, 0, 1,
+				lpmp.getSupportWeight());
 		parameter12.setExpert(false);
 		parameterTypes.add(parameter12);
-		ParameterTypeDouble parameter13 = new ParameterTypeDouble(PARAMETER_13_KEY, PARAMETER_13_DESCR, 0, 1, lpmp.getLanguageFitWeight());
+		ParameterTypeDouble parameter13 = new ParameterTypeDouble(PARAMETER_13_KEY, PARAMETER_13_DESCR, 0, 1,
+				lpmp.getLanguageFitWeight());
 		parameter13.setExpert(false);
 		parameterTypes.add(parameter13);
-		ParameterTypeDouble parameter14 = new ParameterTypeDouble(PARAMETER_14_KEY, PARAMETER_14_DESCR, 0, 1, lpmp.getConfidenceWeight());
+		ParameterTypeDouble parameter14 = new ParameterTypeDouble(PARAMETER_14_KEY, PARAMETER_14_DESCR, 0, 1,
+				lpmp.getConfidenceWeight());
 		parameter14.setExpert(false);
 		parameterTypes.add(parameter14);
-		ParameterTypeDouble parameter15 = new ParameterTypeDouble(PARAMETER_15_KEY, PARAMETER_15_DESCR, 0, 1, lpmp.getCoverageWeight());
+		ParameterTypeDouble parameter15 = new ParameterTypeDouble(PARAMETER_15_KEY, PARAMETER_15_DESCR, 0, 1,
+				lpmp.getCoverageWeight());
 		parameter15.setExpert(false);
 		parameterTypes.add(parameter15);
-		ParameterTypeDouble parameter16 = new ParameterTypeDouble(PARAMETER_16_KEY, PARAMETER_16_DESCR, 0, 1, lpmp.getDeterminismWeight());
+		ParameterTypeDouble parameter16 = new ParameterTypeDouble(PARAMETER_16_KEY, PARAMETER_16_DESCR, 0, 1,
+				lpmp.getDeterminismWeight());
 		parameter16.setExpert(false);
 		parameterTypes.add(parameter16);
-		ParameterTypeDouble parameter17 = new ParameterTypeDouble(PARAMETER_17_KEY, PARAMETER_17_DESCR, 0, 1, lpmp.getAvgNumFiringsWeight());
+		ParameterTypeDouble parameter17 = new ParameterTypeDouble(PARAMETER_17_KEY, PARAMETER_17_DESCR, 0, 1,
+				lpmp.getAvgNumFiringsWeight());
 		parameter17.setExpert(true);
-		parameterTypes.add(parameter17);		
-		
+		parameterTypes.add(parameter17);
+
 		return parameterTypes;
 	}
 
@@ -184,31 +197,35 @@ public class LocalProcessModelDiscoveryOperator extends AbstractLabelAwareRapidP
 		try {
 			lpmp.setDiscoveryLog(log);
 			lpmp.setEvaluationLog(log);
-			
+
 			lpmp.setNumTransitions(getParameterAsInt(PARAMETER_1_KEY));
 			lpmp.setTop_k(getParameterAsInt(PARAMETER_2_KEY));
 			lpmp.setDuplicateTransitions(getParameterAsBoolean(PARAMETER_3_KEY));
-			
+
 			lpmp.setUseSeq(getParameterAsBoolean(PARAMETER_4_KEY));
 			lpmp.setUseAnd(getParameterAsBoolean(PARAMETER_5_KEY));
 			lpmp.setUseOr(getParameterAsBoolean(PARAMETER_6_KEY));
 			lpmp.setUseXor(getParameterAsBoolean(PARAMETER_7_KEY));
 			lpmp.setUseXorloop(getParameterAsBoolean(PARAMETER_8_KEY));
-			
+
 			lpmp.setFrequencyMinimum(getParameterAsInt(PARAMETER_9_KEY));
 			lpmp.setDeterminismMinimum(getParameterAsDouble(PARAMETER_10_KEY));
-			
-			if (getParameterAsString(PARAMETER_11_KEY).matches(LocalProcessModelParameters.ProjectionMethods.Markov.toString()))
+
+			if (getParameterAsString(PARAMETER_11_KEY)
+					.matches(LocalProcessModelParameters.ProjectionMethods.Markov.toString()))
 				lpmp.setProjectionMethod(LocalProcessModelParameters.ProjectionMethods.Markov);
-			else if (getParameterAsString(PARAMETER_11_KEY).matches(LocalProcessModelParameters.ProjectionMethods.MRIG.toString()))
+			else if (getParameterAsString(PARAMETER_11_KEY)
+					.matches(LocalProcessModelParameters.ProjectionMethods.MRIG.toString()))
 				lpmp.setProjectionMethod(LocalProcessModelParameters.ProjectionMethods.MRIG);
-			else if (getParameterAsString(PARAMETER_11_KEY).matches(LocalProcessModelParameters.ProjectionMethods.Entropy.toString()))
+			else if (getParameterAsString(PARAMETER_11_KEY)
+					.matches(LocalProcessModelParameters.ProjectionMethods.Entropy.toString()))
 				lpmp.setProjectionMethod(LocalProcessModelParameters.ProjectionMethods.Entropy);
-			else if (getParameterAsString(PARAMETER_11_KEY).matches(LocalProcessModelParameters.ProjectionMethods.None.toString()))
+			else if (getParameterAsString(PARAMETER_11_KEY)
+					.matches(LocalProcessModelParameters.ProjectionMethods.None.toString()))
 				lpmp.setProjectionMethod(LocalProcessModelParameters.ProjectionMethods.None);
-			
-			System.out.println("projection method: "+lpmp.getProjectionMethod());
-			
+
+			System.out.println("projection method: " + lpmp.getProjectionMethod());
+
 			lpmp.setSupportWeight(getParameterAsDouble(PARAMETER_12_KEY));
 			lpmp.setLanguageFitWeight(getParameterAsDouble(PARAMETER_13_KEY));
 			lpmp.setConfidenceWeight(getParameterAsDouble(PARAMETER_14_KEY));

@@ -5,7 +5,7 @@ import java.util.List;
 import org.deckfour.xes.classification.XEventClassifier;
 import org.deckfour.xes.model.XLog;
 import org.processmining.dataawarecnetminer.mining.classic.HeuristicsCausalGraphBuilder.HeuristicsConfig;
-import org.processmining.dataawarecnetminer.plugins.CausalGraphMinerPlugin;
+import org.processmining.dataawarecnetminer.mining.classic.HeuristicsCausalGraphMiner;
 import org.processmining.framework.plugin.PluginContext;
 import org.processmining.hybridilpminer.parameters.LPFilter;
 import org.processmining.hybridilpminer.parameters.LPFilterType;
@@ -18,7 +18,7 @@ import org.processmining.models.semantics.petrinet.Marking;
 import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.PetriNetIOObject;
 import org.rapidprom.ioobjects.XEventClassifierAwareSimpleCausalGraphIOObject;
-import org.rapidprom.operators.abstr.AbstractRapidProMDiscoveryOperator;
+import org.rapidprom.operators.abstr.AbstractRapidProMEventLogBasedOperator;
 
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
@@ -32,21 +32,11 @@ import com.rapidminer.parameter.ParameterTypeDouble;
 import com.rapidminer.parameter.UndefinedParameterError;
 import com.rapidminer.parameter.conditions.EqualStringCondition;
 
-public class ILPMinerOperator extends AbstractRapidProMDiscoveryOperator {
+public class ILPMinerOperator extends AbstractRapidProMEventLogBasedOperator {
 
 	private OutputPort outputPetrinet = getOutputPorts().createPort("model (ProM Petri Net)");
 
 	private InputPort inputCausalGraph = getInputPorts().createPort("causal graph");
-
-	// private static final String PARAMETER_KEY_EAC =
-	// "enforce_emptiness_after_completion";
-	// private static final String PARAMETER_DESC_EAC = "Indicates whether the
-	// net is empty after replaying the event log";
-
-	// private static final String PARAMETER_KEY_SINK = "find_sink";
-	// private static final String PARAMETER_DESC_SINK = "Indicates whether the
-	// miner needs to search for a sink place, only works if emptiness after
-	// completion is selected";
 
 	private static final String PARAMETER_KEY_FILTER = "Filter";
 	private static final String PARAMETER_DESC_FILTER = "We can either apply no filtering, which guarantees perfect replay-fitness, or filter using Sequence Encoding Filtering (SEF)";
@@ -149,8 +139,9 @@ public class ILPMinerOperator extends AbstractRapidProMDiscoveryOperator {
 		if (cagIoobj == null) {
 			HeuristicsConfig heuristicsConfig = new HeuristicsConfig();
 			heuristicsConfig.setAllTasksConnected(true);
-			SimpleCausalGraph scag = CausalGraphMinerPlugin.doMineCausalGraph(getXLog(), getXEventClassifier(),
-					heuristicsConfig);
+			HeuristicsCausalGraphMiner miner = new HeuristicsCausalGraphMiner(getXLog(), getXEventClassifier());
+			miner.setHeuristicsConfig(heuristicsConfig);
+			SimpleCausalGraph scag = miner.mineCausalGraph();
 			cag = XEventClassifierAwareSimpleCausalGraph.Factory.construct(getXEventClassifier(),
 					scag.getSetActivities(), scag.getCausalRelations());
 		} else {
