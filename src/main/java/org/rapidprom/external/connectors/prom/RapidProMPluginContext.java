@@ -1,6 +1,6 @@
 package org.rapidprom.external.connectors.prom;
 
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.processmining.framework.plugin.GlobalContext;
@@ -10,14 +10,14 @@ import org.processmining.framework.plugin.impl.AbstractPluginContext;
 
 public class RapidProMPluginContext extends AbstractPluginContext {
 
-	private final Executor executor;
+	private ExecutorService executor;
 	private Progress progress;
 
 	public RapidProMPluginContext(GlobalContext context, String label) {
 		super(context, label);
 		executor = Executors.newCachedThreadPool();
 	}
-	
+
 	public RapidProMPluginContext(GlobalContext context, String label, Progress progress) {
 		super(context, label);
 		this.progress = progress;
@@ -33,17 +33,17 @@ public class RapidProMPluginContext extends AbstractPluginContext {
 		}
 	}
 
-	public void renewExecutor(){
-		executor.shutdownNow();
+	public void renewExecutor() {
+		((ExecutorService) executor).shutdownNow();
 		executor = Executors.newCachedThreadPool();
 	}
-	
-	public void closeExecutor(){
+
+	public void closeExecutor() {
 		executor.shutdownNow();
 	}
-	
+
 	@Override
-	public Executor getExecutor() {
+	public ExecutorService getExecutor() {
 		return executor;
 	}
 
@@ -51,7 +51,7 @@ public class RapidProMPluginContext extends AbstractPluginContext {
 	protected PluginContext createTypedChildContext(String label) {
 		return new RapidProMPluginContext(this, label);
 	}
-	
+
 	public PluginContext createChildContext(String label, Progress progress) {
 		return new RapidProMPluginContext(this, label, progress);
 	}
@@ -68,8 +68,8 @@ public class RapidProMPluginContext extends AbstractPluginContext {
 		if (progress != null) {
 			return progress;
 		} else {
-			return super.getProgress();	
-		}		
+			return super.getProgress();
+		}
 	}
 
 }
