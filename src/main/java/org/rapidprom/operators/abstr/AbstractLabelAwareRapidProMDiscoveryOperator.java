@@ -14,14 +14,14 @@ import com.rapidminer.parameter.UndefinedParameterError;
  * @author F. Mannhardt
  *
  */
-abstract public class AbstractLabelAwareRapidProMDiscoveryOperator extends AbstractRapidProMDiscoveryOperator {
+abstract public class AbstractLabelAwareRapidProMDiscoveryOperator extends AbstractRapidProMEventLogBasedOperator {
 
 	private static final String PARAMETER_LABEL_KEY = "Model label";
 	private static final String PARAMETER_LABEL_DESC = "The label assigned to the discovered model.";
-	
+
 	public AbstractLabelAwareRapidProMDiscoveryOperator(OperatorDescription description) {
 		super(description);
-	}	
+	}
 
 	@Override
 	public List<ParameterType> getParameterTypes() {

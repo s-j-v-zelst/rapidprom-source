@@ -7,7 +7,6 @@ import org.deckfour.xes.classification.XEventNameClassifier;
 import org.deckfour.xes.model.XLog;
 import org.rapidprom.ioobjects.XLogIOObject;
 import org.rapidprom.parameter.ParameterTypeXEventClassifierCategory;
-import org.rapidprom.util.ObjectUtils;
 
 import com.rapidminer.operator.Operator;
 import com.rapidminer.operator.OperatorDescription;
