@@ -95,8 +95,8 @@ public class ExpandAbstractModelOperator extends Operator {
 		}
 
 		try {
-			DataPetriNet dpn = doTransformModelBasedOnAbstractionPatterns(
-					model, modelIO.getInitialMarking(), modelIO.getFinalMarking(), defaultValues);
+			DataPetriNet dpn = doTransformModelBasedOnAbstractionPatterns(model, modelIO.getInitialMarking(),
+					modelIO.getFinalMarking(), defaultValues);
 			if (!(dpn instanceof DataPetriNetsWithMarkings)) {
 				throw new OperatorException("DPN is not a DataPetriNetsWithMarkings");
 			}
@@ -113,7 +113,7 @@ public class ExpandAbstractModelOperator extends Operator {
 				Petrinet net = (Petrinet) murateResult[0];
 				Marking initialMarking = (Marking) murateResult[1];
 
-				//TODO convert original final marking
+				// TODO convert original final marking
 				Marking finalMarking = PetrinetUtils.guessFinalMarking(net);
 
 				output.deliver(new PetriNetIOObject(net, initialMarking, finalMarking, getContext()));

@@ -93,10 +93,11 @@ public class AbstractLogBasedOnAbstractionModelOperator extends Operator {
 	private InputPort inputCosts = getInputPorts().createPort("costs control-flow (Example set)");
 	private InputPort inputCostsData = getInputPorts().createPort("costs data (Example set)");
 
-	private OutputPort outputLog = getOutputPorts().createPort("abstracted event log (ProM Event Log)");	
+	private OutputPort outputLog = getOutputPorts().createPort("abstracted event log (ProM Event Log)");
 	private OutputPort outputQualityMeasure = getOutputPorts().createPort("quality measures (Example set)");
 	private OutputPort outputAlignedLog = getOutputPorts().createPort("aligned log (ProM Aligned Event Log)");
-	private OutputPort passthroughAbstractionModel = getOutputPorts().createPort("abstraction model (ProM Abstraction Model)");
+	private OutputPort passthroughAbstractionModel = getOutputPorts()
+			.createPort("abstraction model (ProM Abstraction Model)");
 	private OutputPort passthroughLog = getOutputPorts().createPort("event log (ProM Event Log)");
 	private OutputPort passthroughTransitionMapping = getOutputPorts().createPort("mapping (Example set)");
 	private OutputPort passthroughVariableMapping = getOutputPorts().createPort("variable mapping (Example set)");
