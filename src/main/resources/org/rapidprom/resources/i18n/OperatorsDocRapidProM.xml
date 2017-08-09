@@ -204,7 +204,7 @@
   </operator>
   <operator> 
   	<name>Matrix Filter</name>
-  	<synopsis>...</synopsis>
+  	<synopsis>This operator is helpful to separate outliers from the event log based on conditional behavioural probabilities</synopsis>
   	<help>LONGER HELP</help>
   	<key>matrix_filter</key>
   </operator>
