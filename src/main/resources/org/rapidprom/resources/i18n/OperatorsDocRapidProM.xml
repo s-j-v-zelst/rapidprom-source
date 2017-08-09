@@ -323,11 +323,17 @@
 		<key>convert_petrinet_to_bpmn</key>
 	</operator>
 	<operator>
-		<name>Petri Net to Data Petri net</name>
-		<synopsis>This operator transforms a Petri net into a Data Petri net.</synopsis>
-		<help>This operator transforms a Petri net into a Data Petri net. The Data Petri net has the same structure as the Petri net, and, initially no variables and guards.</help>
+		<name>Petri Net to Data Petri Net</name>
+		<synopsis>This operator transforms a Petri Net into a Data Petri Net.</synopsis>
+		<help>This operator transforms a Petri Net into a Data Petri Net. The Data Petri Net has the same structure as the Petri net, and, initially no variables and guards.</help>
 		<key>convert_petrinet_to_datapetrinet</key>
 	</operator>
+	<operator>
+		<name>Data Petri Net to Petri Net</name>
+		<synopsis>This operator transforms a Data Petri Net to a Petri Net.</synopsis>
+		<help>This operator transforms a Data Petri Net into a Petri Net. The Petri Net has the same structure as the Data Petri Net, but is missing all the data perspective.</help>
+		<key>convert_datapetrinet_to_petrinet</key>
+	</operator>	
 	 <operator>
 		<name>Petri Net to RPST</name>
 		<synopsis>This operator transforms a Petri net into a RPST.</synopsis>
@@ -1055,5 +1061,26 @@
 		<help>The output is an exampleset with the size of both.</help>
 		<key>rprom_count_pc_size</key>
 	</operator>
+	
+	<operator>
+		<name>Filter RPST</name>
+		<synopsis>Filters the RPST by collapsing node until a specified minimum size of each RPST fragment is reached.</synopsis>
+		<help>Filters the RPST by collapsing node until a specified minimum size of each RPST fragment is reached.</help>
+		<key>filter_rpst</key>
+	</operator>	
+	
+	<operator>
+		<name>Extract Leafs from RPST</name>
+		<synopsis>Extracts the leafs of a (possibly filtered) RPST as Petri Nets.</synopsis>
+		<help>Extracts the leafs of a (possibly filtered) RPST as Petri Nets</help>
+		<key>extract_leafs_from_rpst</key>
+	</operator>		
 
+	<operator>
+		<name>Repair the Data Types of a XES Event Log</name>
+		<synopsis>Repairs the data type of event attributes in the log. For each attribute the correct XES datatype is guessed and applied.</synopsis>
+		<help>Repairs the data type of event attributes in the log. For each attribute the correct XES datatype is guessed and applied.</help>
+		<key>repair_log_data_types</key>
+	</operator>		
+	
 </operatorHelp>
