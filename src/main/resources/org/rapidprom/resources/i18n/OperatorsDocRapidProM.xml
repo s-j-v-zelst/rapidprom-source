@@ -909,15 +909,8 @@
 		<name>GED between Petri nets</name>
 		<synopsis>Compute the graph edit distance between two Petri nets.</synopsis>
 		<help>Compute the graph edit distance between two Petri nets based on the approach published in: Dijkman, Remco, Marlon Dumas, and Luciano Garcia-Banuelos. Graph matching algorithms for business process model similarity search. BPM 2009</help>
-		<key>ged_causal_net</key>
+		<key>ged_petri_net</key>
 	</operator>    
-
-	<operator>
-		<name>GED between Petri nets</name>
-		<synopsis>Compute the graph edit distance between two Petri nets.</synopsis>
-		<help>Compute the graph edit distance between two Petri nets based on the approach published in: Dijkman, Remco, Marlon Dumas, and Luciano Garcia-Banuelos. Graph matching algorithms for business process model similarity search. BPM 2009</help>
-		<key>ged_causal_net</key>
-	</operator>
 
 	<operator>
 		<name>Causal net to Petri net</name>
@@ -925,6 +918,7 @@
 		<help>Converts a Causal net into a Petri net representation.</help>
 		<key>convert_causal_net_into_petri_net</key>
 	</operator>
+	
 	<operator>
 		<name>Clean up Threads (RapidProM)</name>
 		<synopsis>This operator kills all threads which seems to be spawned by RapidProM operators that were not killed properly. WARNING: might kill too much leading to unexpected behavior.</synopsis>
