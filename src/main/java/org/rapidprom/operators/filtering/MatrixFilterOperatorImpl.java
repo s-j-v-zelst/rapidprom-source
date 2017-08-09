@@ -9,7 +9,9 @@ import org.jbpt.petri.unfolding.order.AdequateOrderType;
 import org.processmining.framework.plugin.PluginContext;
 import org.processmining.hybridilpminer.parameters.LPFilterType;
 import org.processmining.logfiltering.parameters.AdjustingType;
+import org.processmining.logfiltering.parameters.FilterLevel;
 import org.processmining.logfiltering.parameters.MatrixFilterParameter;
+import org.processmining.logfiltering.parameters.ProbabilityType;
 import org.processmining.logfiltering.plugins.MatrixFilterPlugin;
 import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.XLogIOObject;
@@ -26,16 +28,25 @@ public class MatrixFilterOperatorImpl extends AbstractFilteringOperator {
 
 	private static final String PARAMETER_KEY_FILTER_THRESHOLD = "Threshold";
 	private static final String PARAMETER_DESC_FILTER_THRESHOLD = "Set the filtering threshold which is used for outlier detection";
+	
 	private static final String PARAMETER_KEY_SUBSEQUENT_LENGTH = "Subsequent Length";
 	private static final String PARAMETER_DESC_SUBSEQUENT_LENGTH = "Set the subsequent length which is used for outlier detection";
+	
 	private static final String PARAMETER_KEY_Adjustment_Method = "Threshold Adjustment";
 	private static final String PARAMETER_DESC_Adjustment_Method = "Set the Threshold Adjustment Method";
-	private static final String PARAMETER_DESC_Probability_Method = "Set the method of detecting behavioural probabilities (values)";
-	private static AdjustingType none= AdjustingType.None;private static AdjustingType mean= AdjustingType.Mean;
-	private static AdjustingType maxmean= AdjustingType.MaxMean;private static AdjustingType maxVmean= AdjustingType.MaxVMean;
-	
-	private static final String[] Adjustment_OPTIONS = new String[] { none.toString(), mean.toString(),maxmean.toString(),maxVmean.toString() };
+	private static final String[] Adjustment_OPTIONS = new String[] { AdjustingType.None.toString(), AdjustingType.Mean.toString(),AdjustingType.MaxMean.toString(),AdjustingType.MaxVMean.toString() };
 	private static final AdjustingType[] Adjustment_OPTIONS_List= new AdjustingType[]{ AdjustingType.None,AdjustingType.Mean, AdjustingType.MaxMean,AdjustingType.MaxVMean};
+	
+	private static final String PARAMETER_DESC_Filtering_type = "Set the method of Filtering Event Base or Trace Base!";
+	private static final String PARAMETER_KEY_Filtering_Type = "Event/Trace";
+	private static final String[] Filtering_Type_OPTIONS = new String[] { FilterLevel.EVENT.toString(), FilterLevel.TRACE.toString()};
+	private static final FilterLevel[] Filtering_Type_OPTIONS_List= new FilterLevel[]{ FilterLevel.TRACE,FilterLevel.EVENT};
+	
+	private static final String PARAMETER_KEY_Probability_Method = "Measuring Probabilities";
+	private static final String PARAMETER_DESC_Probability_Method = "How to compute Probability values";
+	private static final String[] Probability_OPTIONS = new String[] { ProbabilityType.DIRECT.toString(), ProbabilityType.REVERSE.toString(),ProbabilityType.MIX.toString(),ProbabilityType.AFA.toString() };
+	private static final ProbabilityType[] Probability_OPTIONS_List= new ProbabilityType[]{ ProbabilityType.DIRECT,ProbabilityType.REVERSE, ProbabilityType.MIX,ProbabilityType.AFA};
+	
 	public MatrixFilterOperatorImpl(OperatorDescription description) {
 		super(description);
 	}
@@ -50,6 +61,8 @@ public class MatrixFilterOperatorImpl extends AbstractFilteringOperator {
 		parameters.setSubsequenceLength(getParameterAsInt(PARAMETER_KEY_SUBSEQUENT_LENGTH));
 		parameters.setAdjustingThresholdMethod(Adjustment_OPTIONS_List[getParameterAsInt(PARAMETER_KEY_Adjustment_Method)]);
 		parameters.setSubsequenceLength(getParameterAsInt(PARAMETER_KEY_SUBSEQUENT_LENGTH));
+		parameters.setFilterLevel(Filtering_Type_OPTIONS_List[getParameterAsInt(PARAMETER_KEY_Filtering_Type)]);
+		parameters.setProbabilitycomutingMethod(Probability_OPTIONS_List[getParameterAsInt(PARAMETER_KEY_Probability_Method)]);
 		PluginContext context = RapidProMGlobalContext.instance().getPluginContext();
 		getOutputLogPort().deliver(new XLogIOObject(MatrixFilterPlugin.run(context, noisyLog, parameters), context));
 	}
@@ -62,6 +75,10 @@ public class MatrixFilterOperatorImpl extends AbstractFilteringOperator {
 		params.add(new ParameterTypeInt(PARAMETER_KEY_SUBSEQUENT_LENGTH, PARAMETER_DESC_SUBSEQUENT_LENGTH, 1, 10, 2,
 				false));
 		params.add(new ParameterTypeCategory(PARAMETER_KEY_Adjustment_Method, PARAMETER_DESC_Adjustment_Method, Adjustment_OPTIONS, 0,
+				false));
+		params.add(new ParameterTypeCategory(PARAMETER_KEY_Filtering_Type, PARAMETER_DESC_Filtering_type, Filtering_Type_OPTIONS, 0,
+				false));
+		params.add(new ParameterTypeCategory(PARAMETER_KEY_Probability_Method, PARAMETER_DESC_Probability_Method, Probability_OPTIONS, 0,
 				false));
 		return params;
 	}
