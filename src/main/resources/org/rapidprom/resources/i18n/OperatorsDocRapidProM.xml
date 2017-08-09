@@ -327,7 +327,13 @@
 		<synopsis>This operator transforms a Petri net into a Data Petri net.</synopsis>
 		<help>This operator transforms a Petri net into a Data Petri net. The Data Petri net has the same structure as the Petri net, and, initially no variables and guards.</help>
 		<key>convert_petrinet_to_datapetrinet</key>
-	</operator>  	
+	</operator>
+	 <operator>
+		<name>Petri Net to RPST</name>
+		<synopsis>This operator transforms a Petri net into a RPST.</synopsis>
+		<help>This operator transforms a Petri net into a RPST based on the approach in: Artem Polyvyanyy, Jussi Vanhatalo, Hagen Volzer: Simplified Computation and Generalization of the Refined Process Structure Tree. WS-FM 2010: 25-41.</help>
+		<key>convert_petri_net_to_rpst</key>
+	</operator>
 	<operator>
 		<name>Transition System to Petri Net </name>
 		<synopsis>This operator transforms a Transition System (Reachability Graph) into a petri net, using &lt;a href="http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.17.8484"&gt;Petrify&lt;/a&gt;.</synopsis>
