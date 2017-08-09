@@ -48,10 +48,10 @@ public class MatrixFilterOperatorImpl extends AbstractFilteringOperator {
 	private static final String[] Probability_OPTIONS = new String[] { ProbabilityType.DIRECT.toString(), ProbabilityType.REVERSE.toString(),ProbabilityType.MIX.toString(),ProbabilityType.AFA.toString() };
 	private static final ProbabilityType[] Probability_OPTIONS_List= new ProbabilityType[]{ ProbabilityType.DIRECT,ProbabilityType.REVERSE, ProbabilityType.MIX,ProbabilityType.AFA};
 	
-	private static final String PARAMETER_KEY_Selection_Method = "Outlier Selection";
-	private static final String PARAMETER_DESC_Selection_Method = "Do you want to Remove or Keeping the Outlires";
-	private static final String[] Selection_OPTIONS = new String[] { FilterSelection.REMOVE.toString() ,FilterSelection.SELECT.toString() };
-	private static final FilterSelection[] Selection_OPTIONS_List= new FilterSelection[]{ FilterSelection.REMOVE ,FilterSelection.SELECT};
+//	private static final String PARAMETER_KEY_Selection_Method = "Outlier Selection";
+//	private static final String PARAMETER_DESC_Selection_Method = "Do you want to Remove or Keeping the Outlires";
+//	private static final String[] Selection_OPTIONS = new String[] { FilterSelection.REMOVE.toString() ,FilterSelection.SELECT.toString() };
+//	private static final FilterSelection[] Selection_OPTIONS_List= new FilterSelection[]{ FilterSelection.REMOVE ,FilterSelection.SELECT};
 	public MatrixFilterOperatorImpl(OperatorDescription description) {
 		super(description);
 	}
@@ -68,7 +68,7 @@ public class MatrixFilterOperatorImpl extends AbstractFilteringOperator {
 		parameters.setSubsequenceLength(getParameterAsInt(PARAMETER_KEY_SUBSEQUENT_LENGTH));
 		parameters.setFilterLevel(Filtering_Type_OPTIONS_List[getParameterAsInt(PARAMETER_KEY_Filtering_Type)]);
 		parameters.setProbabilitycomutingMethod(Probability_OPTIONS_List[getParameterAsInt(PARAMETER_KEY_Probability_Method)]);
-		parameters.setFilteringSelection(Selection_OPTIONS_List[getParameterAsInt(PARAMETER_KEY_Selection_Method)]);
+//		parameters.setFilteringSelection(Selection_OPTIONS_List[getParameterAsInt(PARAMETER_KEY_Selection_Method)]);
 		PluginContext context = RapidProMGlobalContext.instance().getPluginContext();
 		getOutputLogPort().deliver(new XLogIOObject(MatrixFilterPlugin.run(context, noisyLog, parameters), context));
 	}
@@ -86,8 +86,8 @@ public class MatrixFilterOperatorImpl extends AbstractFilteringOperator {
 				false));
 		params.add(new ParameterTypeCategory(PARAMETER_KEY_Probability_Method, PARAMETER_DESC_Probability_Method, Probability_OPTIONS, 0,
 				false));
-		params.add(new ParameterTypeCategory(PARAMETER_KEY_Selection_Method, PARAMETER_DESC_Selection_Method, Selection_OPTIONS, 0,
-				false));
+//		params.add(new ParameterTypeCategory(PARAMETER_KEY_Selection_Method, PARAMETER_DESC_Selection_Method, Selection_OPTIONS, 0,
+//				false));
 		return params;
 	}
 
