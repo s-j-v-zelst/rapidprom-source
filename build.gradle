@@ -113,7 +113,7 @@ dependencies {
 	compile "org.rapidprom:Log:6.7.315"
 	compile "org.rapidprom:LogDialog:6.5.42"
 	compile "org.rapidprom:LogEnhancement:6.7.354"
-	compile "org.rapidprom:LogFiltering:6.7.22"
+	compile "org.rapidprom:LogFiltering:6.8.31"
 	compile "org.rapidprom:LogProjection:6.5.38"
 	compile "org.rapidprom:ModelRepair:6.5.12"
 	compile "org.rapidprom:Murata:6.5.54"

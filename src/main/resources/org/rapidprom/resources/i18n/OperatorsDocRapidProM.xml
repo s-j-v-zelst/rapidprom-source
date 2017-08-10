@@ -380,14 +380,12 @@
 		<help>For using this operator, an event log, and a Fuzzy Graph are necessary as inputs. </help>
 		<key>animate_event_log_in_fuzzy_instance</key>
 	</operator>
-
 	<operator>
 		<name>Import Event Log</name>
 		<synopsis>This operator can be used to import a ProM XES event log from a file.</synopsis>
 		<help>This operator can be used to import a ProM XES event log file. Note that only .xes files can be read.</help>
 		<key>import_xlog</key>
 	</operator>
-
 	<operator>
 		<name>Extract Event Log</name>
 		<synopsis>This operator can be used to read a ProM XES log file from a file object (useful for loops over file collections)</synopsis>
@@ -400,24 +398,21 @@
 		<help>This operator can be used to read a ProM  Pnml petrinet file</help>
 		<key>extract_petrinet_from_file</key>
 	</operator>
-
 	<operator>
-		<name>Sort chronologically</name>
+		<name>Sort Chronologically</name>
 		<synopsis>This operator sorts traces and events within traces by timestamp (increasing).</synopsis>
 		<help>This operator sorts traces and events within traces by timestamp.</help>
 		<key>timestamp_sort</key>
 	</operator>
-
-
 	<operator>
-		<name>Filter Infrequent Behavior (Log Automaton)</name>
-		<synopsis>Event log filter able to filter out infrequent behavior. Based on: Conforti, R., La Rosa, M., and, ter Hofstede, A.; Filtering Out Infrequent Behavior from Business Process Event Logs"; IEEE Transactions on Knowledge and Data Engineering, Vol 29., No 2.</synopsis> 
-		<help> Event log filter able to filter out infrequent behavior. The filter creates an automaton based on the event log and uses the threshold to filter out infrequent transitions within the automaton. Based on: Conforti, R., La Rosa, M., and, ter Hofstede, A.; Filtering Out Infrequent Behavior from Business Process Event Logs"; IEEE Transactions on Knowledge and Data Engineering, Vol 29., No 2.</help>
-		<key>filter_log_automaton</key> 
+      <name>Filter Infrequent Behavior (Log Automaton)</name>
+      <synopsis>Event log filter able to filter out infrequent behavior. Based on: Conforti, R., La Rosa, M., and, ter Hofstede, A.; Filtering Out Infrequent Behavior from Business Process Event Logs"; IEEE Transactions on Knowledge and Data Engineering, Vol 29., No 2.</synopsis> 
+      <help> Event log filter able to filter out infrequent behavior. The filter creates an automaton based on the event log and uses the threshold to filter out infrequent transitions within the automaton. Based on: Conforti, R., La Rosa, M., and, ter Hofstede, A.; Filtering Out Infrequent Behavior from Business Process Event Logs"; IEEE Transactions on Knowledge and Data Engineering, Vol 29., No 2.</help>
+      <key>filter_log_automaton</key> 
 	</operator>
 	<operator> 
 		<name>Matrix Filter</name>
-		<synopsis>...</synopsis>
+		<synopsis>This operator is helpful to separate outliers from the event log based on conditional behavioural probabilities</synopsis>
 		<help>LONGER HELP</help>
 		<key>matrix_filter</key>
 	</operator>
@@ -427,36 +422,30 @@
 		<help>LONGER HELP</help>
 		<key>sequence_filter</key>
 	</operator>
-
-
 	<operator>
 		<name>Alpha Miner (Petri Net)</name>
 		<synopsis>This operator can be used to execute the Alpha algorithm.</synopsis>
 		<help>This operator can be used to execute the Alpha algorithm which provides a Petri Net and a Marking. As input a log file is needed.</help>
 		<key>alpha_miner</key>
 	</operator>
-
 	<operator>
 		<name>Causal Graph (Flexible Heuristics Miner)</name>
 		<synopsis>This operator discovers a causal graph, based on the Flexible Heuristics Miner.</synopsis>
 		<help>This operator discovers a causal graph, based on the Flexible Heuristics Miner as described in:  Weijters, A. J. M. M., and J. T. S. Ribeiro. "Flexible heuristics miner (FHM)." Computational Intelligence and Data Mining (CIDM), 2011 IEEE Symposium on. IEEE, 2011. </help>
 		<key>discover_causal_graph_fhm</key>
 	</operator>
-
 	<operator>
 		<name>Data-aware Heuristic Miner (Causal net)</name>
 		<synopsis>This operator discovers a causal net (C-net), based on the Data-aware Heuristic Miner.</synopsis>
 		<help>This operator discovers a causal net (C-net), based on the Data-aware Heuristic Miner as described in: TODO </help>
 		<key>dataaware_heuristic_miner</key>
 	</operator>  
-
 	<operator>
 		<name>ILP Miner (Petri Net)</name>
 		<synopsis>This operator can be used to execute the ILP Miner discovery algorithm.</synopsis>
 		<help>This operator can be used to execute the ILP Miner algorithm which provides a Petri Net and a marking. As input a log file is needed.</help>
 		<key>ilp_miner</key>
 	</operator>
-
 	<operator>
 		<name>Local Process Model Discovery</name>
 		<synopsis>This operator mines a collection of Petri Nets that describe local behavior in the process, using the algorithm described in: https://arxiv.org/abs/1606.06066.</synopsis>
@@ -475,28 +464,24 @@
 		<help>This operator re-ranks out the Local Process Models by taking into account a new diversity score as well as the old LPM score</help>
 		<key>rerank_lpms_for_diversity</key>
 	</operator>
-
 	<operator>
 		<name>Genetic Miner (Heuristics Net)</name>
 		<synopsis>This operator can be used to execute the Genetic Miner discovery algorithm.</synopsis>
 		<help>This operator can be used to execute the Genetic Miner algorithm which provides a Heuristics Net. As input a log file is needed.</help>
 		<key>genetic_miner</key>
 	</operator>
-
 	<operator>
 		<name>Repair Model (Petri Net)</name>
 		<synopsis>This operator can be used to execute the repair model algorithm as defined in &lt;a href="http://dx.doi.org/10.1016/j.is.2013.12.007"&gt;here&lt;/a&gt;.  </synopsis>
 		<help>This operator can be used to execute the repair model algorithm which provides a repaired Petri net as result. As input an event log and a Petri Net are needed.</help>
 		<key>repair_model</key>
 	</operator>
-
 	<operator>
 		<name>Reduce Silent Transitions (Petri Net)</name>
 		<synopsis>This operator can be used to reduce silent transitions using the Murata rules, as defined in &lt;a href="http://dx.doi.org/10.1109/5.24143"&gt;here&lt;/a&gt;. </synopsis>
 		<help>This operator can be used to execute the reduce silent transitions algorithm which returns a Petri net. As input a Petri Net is needed.</help>
 		<key>reduce_silent_transitions</key>
 	</operator>
-
 	<operator>
 		<name>Export Petri net</name>
 		<synopsis>This operator can be used to export a Petri Net to a (E)PNML file.</synopsis>
