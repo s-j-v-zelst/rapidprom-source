@@ -103,14 +103,13 @@
 			<class>org.rapidprom.operators.conformance.DataConformanceOperator</class>
 			<icon>checks.png</icon>
 		</operator>
-		<operator>
+		<!-- operator>
 			<key>ne_precision</key>
 			<class>org.rapidprom.operators.conformance.NEPrecisionOperator</class>
-
 			<key>incremental_prefix_alignments</key>
 			<class>org.rapidprom.operators.conformance.IncrementalAlignmentOperator</class>
 			<icon>checks.png</icon>
-		</operator>
+		</operator -->
 		<operator>
 			<key>incremental_prefix_alignments_prefix_aware</key>
 			<class>org.rapidprom.operators.conformance.IncrementalPrefixClosureAwareAlignmentOperatorImpl</class>

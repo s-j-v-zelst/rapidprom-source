@@ -264,14 +264,14 @@
 	</operator>
 	<operator>
 		<name>ActivityList to Petri net</name>
-		<synopsis>This operator creates a sequencial Petri net based on an activity name list extracted from a data table</synopsis>
+		<synopsis>This operator creates a sequential Petri net based on an activity name list extracted from a data table</synopsis>
 		<help> </help>
 		<key>name_to_petrinet</key>
 	</operator>
 	<operator>
-		<name>Soundness analysis (WOFLAN)</name>
+		<name>Soundness Analysis (Woflan)</name>
 		<synopsis>This operator analyzes the soundness of a Petri net using the Woflan workflow diagnosis tool, as defined in &lt;a href="http://dx.doi.org/10.1007/3-540-44988-4_28"&gt;here&lt;/a&gt;.</synopsis>
-		<help>For using this operator, you need a Petri net. </help>
+		<help>This operator analyzes the soundness of a Petri net using the Woflan workflow diagnosis tool, as defined in &lt;a href="http://dx.doi.org/10.1007/3-540-44988-4_28"&gt;here&lt;/a&gt;. For using this operator, you need a Petri net. </help>
 		<key>analyze_with_woflan</key>
 	</operator>
 	<operator>
