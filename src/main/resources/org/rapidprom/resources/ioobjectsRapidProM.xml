@@ -122,12 +122,13 @@
 		<renderer>org.rapidprom.ioobjectrenderers.PNRepResultIOObjectModelRenderer</renderer>
 		<renderer>org.rapidprom.ioobjectrenderers.PNRepResultIOObjectLogRenderer</renderer>
 	</ioobject>
-	<ioobject name="Set<String>"
+	<ioobject 
+		name="Set (String)"
 		class="org.rapidprom.ioobjects.SetStringIOObject" reportable="true">
 		<renderer>org.rapidprom.ioobjectrenderers.SetStringIOObjectRenderer</renderer>
 	</ioobject>
 	<ioobject
-		name="Social Network
+		name="Social Network"
 		class="org.rapidprom.ioobjects.SocialNetworkIOObject"
 		reportable="true">
 		<renderer>org.rapidprom.ioobjectrenderers.SocialNetworkIOObjectRenderer</renderer>
