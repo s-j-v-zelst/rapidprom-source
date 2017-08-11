@@ -123,7 +123,7 @@
 		<renderer>org.rapidprom.ioobjectrenderers.PNRepResultIOObjectLogRenderer</renderer>
 	</ioobject>
 	<ioobject 
-		name="Set&lt;String&gt;"
+		name="Set (String)"
 		class="org.rapidprom.ioobjects.SetStringIOObject" reportable="true">
 		<renderer>org.rapidprom.ioobjectrenderers.SetStringIOObjectRenderer</renderer>
 	</ioobject>
