@@ -565,12 +565,6 @@
 				<class>org.rapidprom.operators.streams.extract.EventStreamToStaticEventStream</class>
 			</operator>
 		</group>
-		<group key="import">
-			<operator>
-				<key>import_static_event_stream</key>
-				<class>org.rapidprom.operators.io.ImportXSStaticXSEventStreamOperator</class>
-			</operator>
-		</group>
 		<group key="generators">
 			<operator>
 				<key>stream_from_cpn</key>
@@ -583,6 +577,12 @@
 			<operator>
 				<key>stream_from_static_event_stream</key>
 				<class>org.rapidprom.operators.streams.generators.StaticEventStreamToEventStreamOperator</class>
+			</operator>
+		</group>
+		<group key="import">
+			<operator>
+				<key>import_static_event_stream</key>
+				<class>org.rapidprom.operators.io.ImportXSStaticXSEventStreamOperator</class>
 			</operator>
 		</group>
 		<group key="utility">
@@ -599,23 +599,23 @@
 				<class>org.rapidprom.operators.streams.util.StopXSRunnableOperator</class>
 			</operator>
 		</group>
-		<group key="utility">
-			<operator>
-				<key>rprom_free_memory</key>
-				<class>org.rapidprom.operators.util.RapidProMMemoryCleanUpOperator</class>
-				<icon>wrench.png</icon>
-			</operator>
-			<operator>
-				<key>select_xlog_factory</key>
-				<class>org.rapidprom.operators.util.XLogFactorySelectionOperator</class>
-				<icon>wrench.png</icon>
-			</operator>
-			<operator>
-				<key>rprom_clear_threads</key>
-				<class>org.rapidprom.operators.niek.RapidProMThreadCleanUpOperator</class>
-				<icon>wrench.png</icon>
-			</operator>
-		</group>
+	</group>
+	<group key="utility">
+		<operator>
+			<key>rprom_free_memory</key>
+			<class>org.rapidprom.operators.util.RapidProMMemoryCleanUpOperator</class>
+			<icon>wrench.png</icon>
+		</operator>
+		<operator>
+			<key>select_xlog_factory</key>
+			<class>org.rapidprom.operators.util.XLogFactorySelectionOperator</class>
+			<icon>wrench.png</icon>
+		</operator>
+		<operator>
+			<key>rprom_clear_threads</key>
+			<class>org.rapidprom.operators.niek.RapidProMThreadCleanUpOperator</class>
+			<icon>wrench.png</icon>
+		</operator>
 	</group>
 	<group key="padas">
 		<operator>
