@@ -577,6 +577,10 @@
 				<class>org.rapidprom.operators.streams.generators.CPNToEventStreamOperator</class>
 			</operator>
 			<operator>
+				<key>stream_from_event_log</key>
+				<class>org.rapidprom.operators.streams.generators.XLogToEventStreamOperatorImpl</class>
+			</operator>
+			<operator>
 				<key>stream_from_static_event_stream</key>
 				<class>org.rapidprom.operators.streams.generators.StaticEventStreamToEventStreamOperator</class>
 			</operator>

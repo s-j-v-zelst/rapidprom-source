@@ -1056,4 +1056,10 @@
 		<key>rprom_count_pc_size</key>
 	</operator>
 
+	<operator>
+		<name>Generate Event Stream from Event Log</name>
+		<synopsis>Allows us to convert an event log into an event stream</synopsis>
+		<help>Allows us to convert an event log into an event stream. We can use timestamps or simply the ordering as described by the event log for event ordering on the stream. We are also able to include additional event payload.</help>
+		<key>stream_from_event_log</key>
+	</operator>
 </operatorHelp>
