@@ -1,4 +1,8 @@
 buildscript {
+	allprojects { p ->
+	   apply plugin: 'eclipse' 
+	   eclipse.project.name = "${p.name} (svzelst)"
+	}
 	repositories {
 		jcenter()
 		maven { url 'https://maven.rapidminer.com/content/groups/public/' }
@@ -13,7 +17,7 @@ repositories {
     jcenter()
 	maven { url 'https://maven.rapidminer.com/content/groups/public/' }
 	ivy {
-		url "https://github.com/rapidprom/rapidprom-libraries/raw/${project.properties["libs"]}/prom/"
+		url "https://github.com/s-j-v-zelst/rapidprom-libraries/raw/${project.properties["libs"]}/prom/"
 		layout "pattern", {
 			artifact "[module]-[revision]/[module]-[revision].[ext]"
 			artifact "[module]-[revision]/[artifact].[ext]"
@@ -21,14 +25,14 @@ repositories {
 		}
 	}
 	ivy {
-		url "https://github.com/rapidprom/rapidprom-libraries/raw/${project.properties["libs"]}/thirdparty/lib/"
+		url "https://github.com/s-j-v-zelst/rapidprom-libraries/raw/${project.properties["libs"]}/thirdparty/lib/"
 		layout "pattern", {
 			artifact "[module]-[revision]/[module]-[revision].[ext]"
 			ivy "[module]-[revision]/ivy-[module]-[revision].xml"
 		}
 	}
 	ivy {
-		url "https://github.com/rapidprom/rapidprom-libraries/raw/${project.properties["libs"]}/thirdparty/resource/"
+		url "https://github.com/s-j-v-zelst/rapidprom-libraries/raw/${project.properties["libs"]}/thirdparty/resource/"
 		layout "pattern", {
 			artifact "[module]-[revision]/[module]-[revision].[ext]"
 			ivy "[module]-[revision]/ivy-[module]-[revision].xml"
