@@ -20,14 +20,25 @@ import org.rapidprom.ioobjects.streams.XSAuthorIOObject;
 import org.rapidprom.ioobjects.streams.event.XSEventStreamIOObject;
 import org.rapidprom.operators.abstr.AbstractRapidProMEventLogBasedOperator;
 
+import com.rapidminer.example.Attribute;
+import com.rapidminer.example.ExampleSet;
+import com.rapidminer.example.table.AttributeFactory;
+import com.rapidminer.example.table.DataRowFactory;
+import com.rapidminer.example.utils.ExampleSetBuilder;
+import com.rapidminer.example.utils.ExampleSets;
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.UserError;
+import com.rapidminer.operator.io.AbstractDataReader.AttributeColumn;
 import com.rapidminer.operator.ports.OutputPort;
+import com.rapidminer.operator.ports.metadata.AttributeMetaData;
+import com.rapidminer.operator.ports.metadata.ExampleSetMetaData;
 import com.rapidminer.operator.ports.metadata.GenerateNewMDRule;
+import com.rapidminer.operator.ports.metadata.MDInteger;
 import com.rapidminer.parameter.ParameterType;
 import com.rapidminer.parameter.ParameterTypeBoolean;
 import com.rapidminer.parameter.ParameterTypeCategory;
 import com.rapidminer.tools.LogService;
+import com.rapidminer.tools.Ontology;
 
 /**
  * integrates conversion to static stream and subsequent conversion to active
@@ -40,6 +51,7 @@ public class XLogToEventStreamOperatorImpl extends AbstractRapidProMEventLogBase
 
 	private OutputPort outputAuthor = getOutputPorts().createPort("generator");
 	private OutputPort outputStream = getOutputPorts().createPort("stream");
+	private OutputPort outputStatistics = getOutputPorts().createPort("statistics");
 
 	private final String PARAMETER_KEY_EMISSION_ORDER = "Emission ordering";
 	private final String PARAMETER_DESC_EMISSION_ORDER = "Determines the ordering of the events in the stream";
@@ -50,10 +62,21 @@ public class XLogToEventStreamOperatorImpl extends AbstractRapidProMEventLogBase
 	private final String PARAMETER_KEY_ADDITIONAL_DECORATION = "Add all event attributes";
 	private final String PARAMETER_DESC_ADDITIONAL_DECORATION = "If checked, all event attributes are copied into the streamed events.";
 
+	private final String STATISTICS_COLUMN_NAME_NUM_EVENTS = "number_of_events";
+	private final int STATISTICS_COLUMN_TYPE_NUM_EVENTS = Ontology.INTEGER;
+
 	public XLogToEventStreamOperatorImpl(OperatorDescription description) {
 		super(description);
 		getTransformer().addRule(new GenerateNewMDRule(outputAuthor, XSAuthorIOObject.class));
 		getTransformer().addRule(new GenerateNewMDRule(outputStream, XSEventStreamIOObject.class));
+
+		ExampleSetMetaData md = new ExampleSetMetaData();
+		AttributeMetaData amd = new AttributeMetaData(STATISTICS_COLUMN_NAME_NUM_EVENTS,
+				STATISTICS_COLUMN_TYPE_NUM_EVENTS);
+		amd.setRole(AttributeColumn.REGULAR);
+		amd.setNumberOfMissingValues(new MDInteger(0));
+		md.addAttribute(amd);
+		getTransformer().addRule(new GenerateNewMDRule(outputStatistics, md));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -92,6 +115,14 @@ public class XLogToEventStreamOperatorImpl extends AbstractRapidProMEventLogBase
 
 		outputAuthor.deliver(new XSAuthorIOObject<XSEvent>((XSAuthor<XSEvent>) authStream[0], context));
 		outputStream.deliver(new XSEventStreamIOObject((XSEventStream) authStream[1], context));
+
+		Attribute numEvents = AttributeFactory.createAttribute(STATISTICS_COLUMN_NAME_NUM_EVENTS,
+				STATISTICS_COLUMN_TYPE_NUM_EVENTS);
+		ExampleSetBuilder statisticsBuilder = ExampleSets.from(numEvents);
+		Object[] values = new Object[] { staticStream.size() };
+		DataRowFactory dataRowFactory = new DataRowFactory(DataRowFactory.TYPE_DOUBLE_ARRAY, '.');
+		statisticsBuilder.addDataRow(dataRowFactory.create(values, new Attribute[] { numEvents }));
+		outputStatistics.deliver(statisticsBuilder.build());
 		logger.log(Level.INFO, "end do work stream generator (xlog)");
 	}
 
