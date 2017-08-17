@@ -21,7 +21,6 @@ import org.rapidprom.ioobjects.streams.event.XSEventStreamIOObject;
 import org.rapidprom.operators.abstr.AbstractRapidProMEventLogBasedOperator;
 
 import com.rapidminer.example.Attribute;
-import com.rapidminer.example.ExampleSet;
 import com.rapidminer.example.table.AttributeFactory;
 import com.rapidminer.example.table.DataRowFactory;
 import com.rapidminer.example.utils.ExampleSetBuilder;
@@ -49,8 +48,8 @@ import com.rapidminer.tools.Ontology;
  */
 public class XLogToEventStreamOperatorImpl extends AbstractRapidProMEventLogBasedOperator {
 
-	private OutputPort outputAuthor = getOutputPorts().createPort("generator");
 	private OutputPort outputStream = getOutputPorts().createPort("stream");
+	private OutputPort outputAuthor = getOutputPorts().createPort("generator");
 	private OutputPort outputStatistics = getOutputPorts().createPort("statistics");
 
 	private final String PARAMETER_KEY_EMISSION_ORDER = "Emission ordering";
@@ -62,14 +61,13 @@ public class XLogToEventStreamOperatorImpl extends AbstractRapidProMEventLogBase
 	private final String PARAMETER_KEY_ADDITIONAL_DECORATION = "Add all event attributes";
 	private final String PARAMETER_DESC_ADDITIONAL_DECORATION = "If checked, all event attributes are copied into the streamed events.";
 
-	private final String STATISTICS_COLUMN_NAME_NUM_EVENTS = "number_of_events";
+	public static final String STATISTICS_COLUMN_NAME_NUM_EVENTS = "number_of_events";
 	private final int STATISTICS_COLUMN_TYPE_NUM_EVENTS = Ontology.INTEGER;
 
 	public XLogToEventStreamOperatorImpl(OperatorDescription description) {
 		super(description);
-		getTransformer().addRule(new GenerateNewMDRule(outputAuthor, XSAuthorIOObject.class));
 		getTransformer().addRule(new GenerateNewMDRule(outputStream, XSEventStreamIOObject.class));
-
+		getTransformer().addRule(new GenerateNewMDRule(outputAuthor, XSAuthorIOObject.class));		
 		ExampleSetMetaData md = new ExampleSetMetaData();
 		AttributeMetaData amd = new AttributeMetaData(STATISTICS_COLUMN_NAME_NUM_EVENTS,
 				STATISTICS_COLUMN_TYPE_NUM_EVENTS);
