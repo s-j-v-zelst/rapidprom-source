@@ -208,6 +208,11 @@
 		<renderer>org.rapidprom.ioobjectrenderers.streams.XSReaderIOObjectRenderer</renderer>	
 	</ioobject>
 	<ioobject
+		name="Hub"
+		class="org.rapidprom.ioobjects.streams.XSHubIOObject"
+		reportable="false">
+	</ioobject>
+	<ioobject
 		name="Reader"
 		class="org.rapidprom.ioobjects.streams.XSReaderIOObject"
 		reportable="false" >

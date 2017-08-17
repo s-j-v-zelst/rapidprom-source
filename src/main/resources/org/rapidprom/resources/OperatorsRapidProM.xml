@@ -565,6 +565,12 @@
 				<class>org.rapidprom.operators.streams.extract.EventStreamToStaticEventStream</class>
 			</operator>
 		</group>
+		<group key="filtering">
+			<operator>
+				<key>trie_based_spurious_event_filter</key>
+				<class>org.rapidprom.operators.streams.filtering.TrieBasedSpuriousEventFilterOperatorImpl</class>
+			</operator>
+		</group>
 		<group key="generators">
 			<operator>
 				<key>stream_from_cpn</key>
