@@ -40,16 +40,17 @@ public class AddNoiseOperator extends Operator {
 					+ "respectively remove at most the first or second 1/3 of a trace. "
 					+ "The noise type swap randomly swaps two event in a trace. "
 					+ "The noise type remove randomly removes event from a trace. "
-					+ "The add type randomly adds an event to a trace.",
+					+ "The add type randomly adds an event to a trace. "
+					+ "Also a random noise option is provided. This option randomly chooses between add, remove or swap task.",
 
 			PARAMETER_3_KEY = "Seed", PARAMETER_3_DESCR = "This parameter defines the seed used to evaluate noise "
 					+ "probability and apply the noise type.",
 
 			PARAMETER_4_KEY = "Event Percentage",
-			PARAMETER_4_DESCR = "The percentage of events in a trace that noise will be applied to. The default 0 is used as a special value, which indicates that just one event is changed.";
+			PARAMETER_4_DESCR = "The percentage of events in a trace that noise will be applied to. Negative values are used as a special value, which indicates that just one event is changed.";
 
 	private static final String HEAD = "Remove Head", BODY = "Remove Body", EXTRA = "Add Event", SWAP = "Swap Tasks",
-			SWAP_TIME = "Swap Tasks & Time", REMOVE = "Remove Task";
+			SWAP_TIME = "Swap Tasks & Time", REMOVE = "Remove Task", RANDOM = "Random (add/remove/swap task)";
 
 	private InputPort inputXLog = getInputPorts().createPort("event log (ProM Event Log)", XLogIOObject.class);
 	private OutputPort outputEventLog = getOutputPorts().createPort("event log (ProM Event Log)");
@@ -87,20 +88,20 @@ public class AddNoiseOperator extends Operator {
 			XTrace copy = factory.createTrace(t.getAttributes());
 			Random noiseRandom = new Random(getParameterAsInt(PARAMETER_3_KEY) + new Integer(traceCounter).hashCode());
 			double nextDouble = rOverall.nextDouble();
+			double eventPercentage = getParameterAsDouble(PARAMETER_4_KEY);
 			// System.out.println("nextDouble:" + nextDouble);
-			if (nextDouble < getParameterAsDouble(PARAMETER_1_KEY)) {
-				double eventPercentage = getParameterAsDouble(PARAMETER_4_KEY);
-				if (eventPercentage != 0) {
+			if (nextDouble < getParameterAsDouble(PARAMETER_1_KEY) && eventPercentage != 0) {				
+				if (eventPercentage > 0) {
 					int eventsToModify = (int) Math.ceil(t.size() * eventPercentage);
 					for (int k = 0; k < eventsToModify; k++) {
-						applyNoise(log, factory, t, copy, noiseRandom);
+						applyNoise(log, factory, t, copy, noiseRandom, getParameterAsString(PARAMETER_2_KEY));
 						t = copy;
 						if (k < eventsToModify - 1) {
 							copy = factory.createTrace(t.getAttributes());
 						}
 					}
 				} else {
-					applyNoise(log, factory, t, copy, noiseRandom);
+					applyNoise(log, factory, t, copy, noiseRandom, getParameterAsString(PARAMETER_2_KEY));
 				}
 			} else {
 				for (XEvent e : t) {
@@ -114,17 +115,33 @@ public class AddNoiseOperator extends Operator {
 		return result;
 	}
 
-	private void applyNoise(XLog log, XFactory factory, XTrace t, XTrace copy, Random noiseRandom)
+	private void applyNoise(XLog log, XFactory factory, XTrace t, XTrace copy, Random noiseRandom, String noiseType)
 			throws UndefinedParameterError {
 		double oneThird = t.size() / 3.0;
-		if (getParameterAsString(PARAMETER_2_KEY).equals(HEAD)) {
+
+		if(noiseType.equals(RANDOM)){
+			switch(safeNextInt(noiseRandom, 3)){
+			case 0: 
+				noiseType = EXTRA;
+				break;
+			case 1: 
+				noiseType = SWAP;
+				break;
+			case 2:
+			default:
+				noiseType = REMOVE;
+				break;
+			}
+		}
+		
+		if (noiseType.equals(HEAD)) {
 			int start = safeNextInt(noiseRandom, (int) oneThird);
 			for (int i = start; i < t.size(); i++) {
 				XEvent e = t.get(i);
 				XEvent copyEvent = factory.createEvent(e.getAttributes());
 				copy.add(copyEvent);
 			}
-		} else if (getParameterAsString(PARAMETER_2_KEY).equals(BODY)) {
+		} else if (noiseType.equals(BODY)) {
 			int stopFirst = safeNextInt(noiseRandom, (int) oneThird);
 			for (int i = 0; i < stopFirst; i++) {
 				XEvent e = t.get(i);
@@ -138,7 +155,7 @@ public class AddNoiseOperator extends Operator {
 				XEvent copyEvent = factory.createEvent(e.getAttributes());
 				copy.add(copyEvent);
 			}
-		} else if (getParameterAsString(PARAMETER_2_KEY).equals(EXTRA)) {
+		} else if (noiseType.equals(EXTRA)) {
 			for (XEvent e : t) {
 				XEvent copyEvent = factory.createEvent(e.getAttributes());
 				copy.add(copyEvent);
@@ -174,7 +191,7 @@ public class AddNoiseOperator extends Operator {
 				// there is neither a lower or an upper bound
 				copy.add(pos, createEvent(log, log.size(), noiseRandom, null, XTimeExtension.instance()));
 			}
-		} else if (getParameterAsString(PARAMETER_2_KEY).equals(SWAP)) {
+		} else if (noiseType.equals(SWAP)) {
 			int indexFirstTaskToSwap = safeNextInt(noiseRandom, t.size());
 			int indexSecondTaskToSwap = safeNextInt(noiseRandom, t.size());
 			XEvent firstTaskToSwap = null;
@@ -253,7 +270,7 @@ public class AddNoiseOperator extends Operator {
 		ParameterTypeDouble parameterType1 = new ParameterTypeDouble(PARAMETER_1_KEY, PARAMETER_1_DESCR, 0, 1, 0.05);
 		parameterTypes.add(parameterType1);
 
-		String[] par2categories = new String[] { REMOVE, HEAD, BODY, EXTRA, SWAP, SWAP_TIME };
+		String[] par2categories = new String[] { REMOVE, HEAD, BODY, EXTRA, SWAP, SWAP_TIME, RANDOM };
 		ParameterTypeCategory parameterType2 = new ParameterTypeCategory(PARAMETER_2_KEY, PARAMETER_2_DESCR,
 				par2categories, 0);
 		parameterTypes.add(parameterType2);
@@ -262,7 +279,7 @@ public class AddNoiseOperator extends Operator {
 				1);
 		parameterTypes.add(parameterType3);
 
-		ParameterTypeDouble parameterType4 = new ParameterTypeDouble(PARAMETER_4_KEY, PARAMETER_4_DESCR, 0, 1, 0);
+		ParameterTypeDouble parameterType4 = new ParameterTypeDouble(PARAMETER_4_KEY, PARAMETER_4_DESCR, -1, 1, -1);
 		parameterTypes.add(parameterType4);
 		return parameterTypes;
 	}
