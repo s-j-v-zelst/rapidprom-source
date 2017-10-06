@@ -123,7 +123,7 @@ dependencies {
 	compile "org.rapidprom:PetriNetSimulator:6.7.19"
 	compile "org.rapidprom:PNetAlignmentAnalysis:6.7.91"
 	compile "org.rapidprom:PNAnalysis:6.7.128"
-	compile "org.rapidprom:PNetReplayer:6.7.152"
+	compile "org.rapidprom:PNetReplayer:6.8.164"
 	compile "org.rapidprom:PTConversions:6.5.3"
 	compile "org.rapidprom:PTAndLogGenerator:6.7.92"
 	compile "org.rapidprom:PomPomView:6.5.36"
