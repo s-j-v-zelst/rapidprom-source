@@ -9,9 +9,9 @@ import org.processmining.eventstream.core.interfaces.XSEvent;
 import org.processmining.eventstream.core.interfaces.XSEventStream;
 import org.processmining.stream.core.enums.CommunicationType;
 import org.processmining.stream.core.interfaces.XSAuthor;
-import org.processmining.streambasedeventlog.algorithms.TrieBasedSpuriousEventFilterImpl;
-import org.processmining.streambasedeventlog.parameters.StreamBasedEventStorageParametersImpl;
-import org.processmining.streambasedeventlog.parameters.TrieBasedSpurioiusEventFilterParametersImpl;
+import org.processmining.streambasedeventfilter.algorithms.ConditionalProbabilitiesBasedXSEventFilterImpl;
+import org.processmining.streambasedeventfilter.parameters.ConditionalProbabilitiesBasedXSEventFilterParametersImpl;
+import org.processmining.streambasedeventlog.parameters.StreamBasedEventLogParametersImpl;
 import org.processmining.yawl.ext.org.apache.commons.lang.ArrayUtils;
 import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.streams.XSAuthorIOObject;
@@ -129,19 +129,26 @@ public class TrieBasedSpuriousEventFilterOperatorImpl extends Operator {
 	public void doWork() throws UserError {
 		Logger logger = LogService.getRoot();
 		logger.log(Level.INFO, "start do work filter spurious events");
-		StreamBasedEventStorageParametersImpl storageParams = new StreamBasedEventStorageParametersImpl();
+		StreamBasedEventLogParametersImpl storageParams = new StreamBasedEventLogParametersImpl();
 		storageParams.setSlidingWindowSize(getParameterAsInt(PARAM_KEY_WINDOW_SIZE));
-		TrieBasedSpurioiusEventFilterParametersImpl filterParams = new TrieBasedSpurioiusEventFilterParametersImpl();
-		filterParams.setInclusionDecisionThreshold(getParameterAsDouble(PARAM_KEY_INCLUSION_THRESHOLD));
-		filterParams.setMaxLookAhead((byte) getParameterAsInt(PARAM_KEY_MAX_LOOKAHEAD));
-		filterParams
-				.setLookaheadInclusionDecisionThreshold(getParameterAsDouble(PARAM_KEY_LOOKAHEAD_INCLUSION_THRESHOLD));
-		filterParams.setEmissionDelay(getParameterAsInt(PARAM_KEY_EMISSION_DELAY));
+		// TrieBasedSpurioiusEventFilterParametersImpl filterParams = new
+		// TrieBasedSpurioiusEventFilterParametersImpl();
+		// filterParams.setInclusionDecisionThreshold(getParameterAsDouble(PARAM_KEY_INCLUSION_THRESHOLD));
+		// filterParams.setMaxLookAhead((byte)
+		// getParameterAsInt(PARAM_KEY_MAX_LOOKAHEAD));
+		// filterParams.setLookaheadInclusionDecisionThreshold(getParameterAsDouble(PARAM_KEY_LOOKAHEAD_INCLUSION_THRESHOLD));
+		// filterParams.setEmissionDelay(getParameterAsInt(PARAM_KEY_EMISSION_DELAY));
+		ConditionalProbabilitiesBasedXSEventFilterParametersImpl filterParams = new ConditionalProbabilitiesBasedXSEventFilterParametersImpl();
+		filterParams.setMaxPatternLength(getParameterAsInt(PARAM_KEY_MAX_LOOKAHEAD));
+		filterParams.setCutoffThreshold(getParameterAsDouble(PARAM_KEY_INCLUSION_THRESHOLD));
 		filterParams.setExperiment(getParameterAsBoolean(PARAM_KEY_IS_EXPERIMENT));
 		filterParams.setNoiseClassificationLabelKey(getParameterAsString(PARAM_KEY_NOISE_LABEL_KEY));
 		filterParams.setNoiseClassificationLabelValue(getParameterAsString(PARAM_KEY_NOISE_LABEL_VALUE));
 
-		TrieBasedSpuriousEventFilterImpl hub = new TrieBasedSpuriousEventFilterImpl(storageParams, filterParams);
+		// TrieBasedSpuriousEventFilterImpl hub = new
+		// TrieBasedSpuriousEventFilterImpl(storageParams, filterParams);
+		ConditionalProbabilitiesBasedXSEventFilterImpl hub = new ConditionalProbabilitiesBasedXSEventFilterImpl(
+				filterParams, storageParams);
 		XSEventStream out = XSEventStreamFactory.createXSEventStream(CommunicationType.SYNC);
 		out.start();
 		out.connect(hub);

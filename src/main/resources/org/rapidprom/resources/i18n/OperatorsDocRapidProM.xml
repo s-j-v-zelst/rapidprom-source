@@ -1083,4 +1083,12 @@
 		<help>...</help>
 		<key>trie_based_spurious_event_filter</key>
 	</operator>
+	
+	<operator>
+		<name>Generate Spurious Events</name>
+		<synopsis>Adds spurious events to an event log, i.e. events of which we are sure they are not able to be executed at that position</synopsis>
+		<help>TBD</help>	
+		<key>generate_spurious_events</key>
+	</operator>
+	
 </operatorHelp>
