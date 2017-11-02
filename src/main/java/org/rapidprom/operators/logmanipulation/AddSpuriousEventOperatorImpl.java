@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import org.deckfour.xes.classification.XEventClass;
 import org.deckfour.xes.classification.XEventClasses;
@@ -123,12 +124,12 @@ public class AddSpuriousEventOperatorImpl extends AbstractRapidProMEventLogBased
 				index++;
 			}
 			while (index < t.size()) {
+				alignmentIndex = execute(semantics, alignment, alignmentIndex);
 				v = random.nextInt(99) + 1;
 				if (v <= getParameterAsDouble(PARAM_KEY_NOISE_PROBABILITY) * 100) {
 					t.add(index + 1, createNoisyEvent(factory, semantics, spurArr, random));
 					index++;
 				}
-				alignmentIndex = execute(semantics, alignment, alignmentIndex);
 				index++;
 			}
 		}
@@ -164,37 +165,27 @@ public class AddSpuriousEventOperatorImpl extends AbstractRapidProMEventLogBased
 		return null;
 	}
 
-	// private PetrinetSemantics execute(PetrinetSemantics semantics, String
-	// label) throws IllegalTransitionException {
-	// boolean fired = false;
-	// for (Transition t : semantics.getExecutableTransitions()) {
-	// if (t.getLabel().equals(label)) {
-	// semantics.executeExecutableTransition(t);
-	// fired = true;
-	// break;
-	// }
-	// }
-	// if (!fired) {
-	// for (Transition t : semantics.getExecutableTransitions()) {
-	// if (t.isInvisible()) {
-	// semantics.executeExecutableTransition(t);
-	// return execute(semantics, label);
-	// }
-	// }
-	// }
-	// return semantics;
-	// }
-
 	private XEvent createNoisyEvent(final XFactory factory, final PetrinetSemantics semantics,
 			final XEventClass[] spurArr, final Random random) throws UndefinedParameterError {
 		XAttributeMap map = factory.createAttributeMap();
 		int[] spuriousIndices = getNoiseCandidates(semantics, spurArr);
-		String eventName;
-		if (spuriousIndices.length > 0) {
+		String eventName = ARTIFICIAL_LABEL;
+		Set<String> namesTried = new HashSet<>();
+		boolean eventSelected = false;
+		whileLoop: while (spuriousIndices.length > namesTried.size() && !eventSelected) {
 			eventName = spurArr[spuriousIndices[random.nextInt(spuriousIndices.length)]].toString();
-		} else {
-			eventName = ARTIFICIAL_LABEL;
+			if (!namesTried.contains(eventName)) {
+				for (Transition t : semantics.getExecutableTransitions()) {
+					if (t.getLabel().equals(eventName)) { // event is enabled
+						namesTried.add(eventName);
+						continue whileLoop;
+					}
+				}
+				// not enabled so we can use this label!
+				eventSelected = true;
+			}
 		}
+		eventName = eventSelected ? eventName : ARTIFICIAL_LABEL;
 		map.put(XConceptExtension.KEY_NAME,
 				new XAttributeLiteralImpl(XConceptExtension.KEY_NAME, eventName, XConceptExtension.instance()));
 		map.put(getParameterAsString(PARAM_KEY_NOISE_LABEL),
