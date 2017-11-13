@@ -129,7 +129,7 @@ dependencies {
 	compile "org.rapidprom:PNAnalysis:6.7.128"
 	compile "org.rapidprom:PNetReplayer:6.7.152"
 	compile "org.rapidprom:PTConversions:6.5.3"
-	compile "org.rapidprom:PTAndLogGenerator:6.7.92"
+	compile "org.rapidprom:PTAndLogGenerator:6.8.154"
 	compile "org.rapidprom:PomPomView:6.5.36"
 	compile "org.rapidprom:ProcessComparator:6.7.95"
 	compile "org.rapidprom:SocialNetwork:6.5.35"

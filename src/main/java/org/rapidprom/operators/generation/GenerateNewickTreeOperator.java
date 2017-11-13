@@ -23,8 +23,11 @@ import com.rapidminer.parameter.ParameterTypeBoolean;
 import com.rapidminer.parameter.ParameterTypeCategory;
 import com.rapidminer.parameter.ParameterTypeDouble;
 import com.rapidminer.parameter.ParameterTypeInt;
+import com.rapidminer.parameter.ParameterTypeLong;
 import com.rapidminer.parameter.UndefinedParameterError;
+import com.rapidminer.parameter.conditions.BooleanParameterCondition;
 import com.rapidminer.parameter.conditions.EqualStringCondition;
+import com.rapidminer.parameter.conditions.ParameterCondition;
 import com.rapidminer.tools.LogService;
 
 public class GenerateNewickTreeOperator extends Operator {
@@ -113,6 +116,14 @@ public class GenerateNewickTreeOperator extends Operator {
 	private final static String PARAM_DESC_USE_MANUAL_DISTRIBUTION_FOR_SCALING = "If selected, the manual distribution specified will be used for scaling the probability distribution used in the repeated experiment(s)";
 	private final static boolean PARAM_DEFAULT_USE_MANUAL_DISTRIBUTION_FOR_SCALING = true;
 
+	private final static String PARAM_KEY_USE_MANUAL_SEED = "use_manual_seed";
+	private final static String PARAM_DESC_USE_MANUAL_SEED = "Use a manually specified seed for model generation, if set to false, System.currentTimeMillis() will be used as a seed.";
+	private final static boolean PARAM_DEFAULT_USE_MANUAL_SEED = false;
+
+	private final static String PARAM_KEY_SEED = "seed";
+	private final static String PARAM_DESC_SEED = "The seed to use, if manual seed is given.";
+	private final static long PARAM_DEFAULT_SEED = 1337l;
+
 	public GenerateNewickTreeOperator(OperatorDescription description) {
 		super(description);
 		getTransformer().addRule(new GenerateNewMDRule(output, IOObjectCollection.class));
@@ -129,8 +140,7 @@ public class GenerateNewickTreeOperator extends Operator {
 		IOObjectCollection<NewickTreeIOObject> result = new IOObjectCollection<NewickTreeIOObject>();
 		TreeParameters newickTreeParams = constructNewickTreeParameters();
 		for (int i = 0; i < newickTreeParams.getNoTrees(); i++) {
-			NewickTree tree = new NewickTree(treeFactory.createTree(newickTreeParams.getPatternProbabilities(),
-					newickTreeParams.getNoActivities()));
+			NewickTree tree = new NewickTree(treeFactory.createTree(newickTreeParams.getPatternProbabilities()));
 			result.add(new NewickTreeIOObject(tree, pluginContext));
 			treeFactory.cleanupInterpreter();
 		}
@@ -194,8 +204,17 @@ public class GenerateNewickTreeOperator extends Operator {
 		newickArgs += String.valueOf(getParameterAsDouble(PARAM_KEY_PROBABILITY_SILENT)) + ";";
 		newickArgs += String.valueOf(getParameterAsDouble(PARAM_KEY_DUPLICATE_ACTIVITIES)) + ";";
 		newickArgs += String.valueOf(getParameterAsDouble(PARAM_KEY_LONG_TERM)) + ";";
-		newickArgs += (getParameterAsBoolean(PARAM_KEY_INFREQUENT_PATHS) ? "TRUE" : "FALSE") + ";";
-		newickArgs += String.valueOf(getParameterAsInt(PARAM_KEY_COLLECTION_SIZE));
+		newickArgs += (getParameterAsBoolean(PARAM_KEY_INFREQUENT_PATHS) ? "1.0" : "0.0") + ";";
+		newickArgs += String.valueOf(getParameterAsInt(PARAM_KEY_COLLECTION_SIZE)) + ";";
+
+		// TODO: expose these variables to users
+		// note: these are simulation related variables!
+		newickArgs += "0;"; // relates to use loop unfolding, true => 1, false
+							// => 0
+		newickArgs += "0;"; // relates to number of iterations of loops if loop
+							// unfolding is used.
+
+		newickArgs += String.valueOf(fetchSeed());
 		return new TreeParameters(newickArgs);
 	}
 
@@ -287,6 +306,14 @@ public class GenerateNewickTreeOperator extends Operator {
 		}
 	}
 
+	private long fetchSeed() throws UndefinedParameterError {
+		if (getParameterAsBoolean(PARAM_KEY_USE_MANUAL_SEED)) {
+			return getParameterAsLong(PARAM_KEY_SEED);
+		} else {
+			return System.currentTimeMillis();
+		}
+	}
+
 	public List<ParameterType> getParameterTypes() {
 		List<ParameterType> res = super.getParameterTypes();
 
@@ -375,6 +402,15 @@ public class GenerateNewickTreeOperator extends Operator {
 		repeatedManualScaling.registerDependencyCondition(
 				new EqualStringCondition(this, PARAM_KEY_CONFIG, true, PARAM_DEFAULT_VALUE_CONFIG_REPEATED));
 		res.add(repeatedManualScaling);
+
+		ParameterTypeBoolean useSeed = new ParameterTypeBoolean(PARAM_KEY_USE_MANUAL_SEED, PARAM_DESC_USE_MANUAL_SEED,
+				PARAM_DEFAULT_USE_MANUAL_SEED, true);
+		res.add(useSeed);
+
+		ParameterTypeLong seed = new ParameterTypeLong(PARAM_KEY_SEED, PARAM_DESC_SEED, 0, Long.MAX_VALUE,
+				PARAM_DEFAULT_SEED, true);
+		seed.registerDependencyCondition(new BooleanParameterCondition(this, PARAM_KEY_USE_MANUAL_SEED, true, true));
+		res.add(seed);
 
 		return res;
 	}
