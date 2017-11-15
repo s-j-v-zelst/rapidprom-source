@@ -67,7 +67,7 @@ public class XLogToEventStreamOperatorImpl extends AbstractRapidProMEventLogBase
 	public XLogToEventStreamOperatorImpl(OperatorDescription description) {
 		super(description);
 		getTransformer().addRule(new GenerateNewMDRule(outputStream, XSEventStreamIOObject.class));
-		getTransformer().addRule(new GenerateNewMDRule(outputAuthor, XSAuthorIOObject.class));		
+		getTransformer().addRule(new GenerateNewMDRule(outputAuthor, XSAuthorIOObject.class));
 		ExampleSetMetaData md = new ExampleSetMetaData();
 		AttributeMetaData amd = new AttributeMetaData(STATISTICS_COLUMN_NAME_NUM_EVENTS,
 				STATISTICS_COLUMN_TYPE_NUM_EVENTS);
@@ -84,9 +84,9 @@ public class XLogToEventStreamOperatorImpl extends AbstractRapidProMEventLogBase
 		logger.log(Level.INFO, "start do work stream generator (xlog)");
 		XLogToXSStaticXSEventStreamParameters params = new XLogToXSStaticXSEventStreamParameters();
 		XLogToXSStaticXSEventStreamParameters.EmissionOrdering emission = XLogToXSStaticXSEventStreamParameters.EmissionOrdering.TIME_STAMP;
-		if (getParameterAsString(PARAMETER_KEY_EMISSION_ORDER).equals(EmissionOrdering.TIME_STAMP)) {
+		if (getParameterAsString(PARAMETER_KEY_EMISSION_ORDER).equals(EmissionOrdering.TIME_STAMP.toString())) {
 			emission = EmissionOrdering.TIME_STAMP;
-		} else if (getParameterAsString(PARAMETER_KEY_EMISSION_ORDER).equals(EmissionOrdering.LOG)) {
+		} else if (getParameterAsString(PARAMETER_KEY_EMISSION_ORDER).equals(EmissionOrdering.LOG.toString())) {
 			emission = EmissionOrdering.LOG;
 		}
 		params.setEmissionOrdering(emission);

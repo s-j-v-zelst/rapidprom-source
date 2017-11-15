@@ -178,9 +178,10 @@ public class TrieBasedSpuriousEventFilterOperatorImpl extends Operator {
 			// TODO: make statistics generic
 			double maxEvent = stats.getExample(0).getValue(
 					stats.getAttributes().get(XLogToEventStreamOperatorImpl.STATISTICS_COLUMN_NAME_NUM_EVENTS));
-			while (hub.getNumberOfPacketsReceived() < maxEvent) {
+			while (hub.getNumberOfPacketsReceived() < (long) (maxEvent + 0.5)) { // add 0.5 and cast to long to avoid infinite loops
 				try {
 					Thread.sleep(TIME_OUT);
+//					System.out.println("expected: " + maxEvent + ", received: " + hub.getNumberOfPacketsReceived());
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -215,7 +216,7 @@ public class TrieBasedSpuriousEventFilterOperatorImpl extends Operator {
 									+ hub.getFalseNegatives()));
 			values[ArrayUtils.indexOf(QUALITY_METRICS_COLUMN_NAMES, COLUMN_F1_SCORE)] = (2 * recall * precision)
 					/ (recall + precision);
-			
+
 			builder.addDataRow(dataRowFactory.create(values, attributes));
 			outputExperimentResult.deliver(builder.build());
 			// shutdown that shit
