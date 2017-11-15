@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 import org.deckfour.xes.extension.std.XConceptExtension;
 import org.deckfour.xes.factory.XFactory;
 import org.deckfour.xes.factory.XFactoryBufferedImpl;
+import org.deckfour.xes.factory.XFactoryNaiveImpl;
 import org.deckfour.xes.model.XLog;
 import org.deckfour.xes.model.impl.XAttributeLiteralImpl;
 import org.processmining.framework.plugin.PluginContext;
@@ -99,7 +100,8 @@ public class GenerateEventLogFromPetriNetOperator extends Operator {
 
 		Simulator sim;
 		XLog result = null;
-		XFactory factory = new XFactoryBufferedImpl();
+//		XFactory factory = new XFactoryBufferedImpl();
+		XFactory factory = new XFactoryNaiveImpl();
 		try {
 			sim = new Simulator(pNet.getArtifact(), pNet.getInitialMarking(), getSettingsObject(), factory);
 			result = sim.simulate();
