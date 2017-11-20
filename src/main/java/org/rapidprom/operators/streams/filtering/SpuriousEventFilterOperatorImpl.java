@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 import org.processmining.eventstream.core.factories.XSEventStreamFactory;
 import org.processmining.eventstream.core.interfaces.XSEvent;
 import org.processmining.eventstream.core.interfaces.XSEventStream;
+import org.processmining.eventstream.core.interfaces.XSStaticXSEventStream;
 import org.processmining.stream.core.enums.CommunicationType;
 import org.processmining.stream.core.interfaces.XSAuthor;
 import org.processmining.streambasedeventfilter.algorithms.ConditionalProbabilitiesBasedXSEventFilterImpl;
@@ -21,10 +22,10 @@ import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.streams.XSAuthorIOObject;
 import org.rapidprom.ioobjects.streams.XSHubIOObject;
 import org.rapidprom.ioobjects.streams.event.XSEventStreamIOObject;
+import org.rapidprom.ioobjects.streams.event.XSStaticXSEventStreamIOObject;
 import org.rapidprom.operators.streams.generators.XLogToEventStreamOperatorImpl;
 import org.rapidprom.util.ObjectUtils;
 
-import com.kenai.jffi.Array;
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.example.table.AttributeFactory;
@@ -51,16 +52,18 @@ import com.rapidminer.parameter.conditions.BooleanParameterCondition;
 import com.rapidminer.tools.LogService;
 import com.rapidminer.tools.Ontology;
 
-@Deprecated // (temporarily)
-public class TrieBasedSpuriousEventFilterOperatorImpl extends Operator {
+public class SpuriousEventFilterOperatorImpl extends Operator {
 
-	private InputPort inputEventStream = getInputPorts().createPort("event stream", XSEventStreamIOObject.class);
+	private InputPort inputEventStream = getInputPorts().createPort("static event stream",
+			XSStaticXSEventStreamIOObject.class);
 
-	private InputPort inputAuthor = getInputPorts().createPort("author");
-	private InputPort inputStreamStatistics = getInputPorts().createPort("statistics");
+	// private InputPort inputAuthor = getInputPorts().createPort("author");
+	// private InputPort inputStreamStatistics =
+	// getInputPorts().createPort("statistics");
 
-	private OutputPort outputStream = getOutputPorts().createPort("output stream");
-	private OutputPort outputHub = getOutputPorts().createPort("hub");
+	// private OutputPort outputStream = getOutputPorts().createPort("output
+	// stream");
+	// private OutputPort outputHub = getOutputPorts().createPort("hub");
 	private OutputPort outputExperimentResult = getOutputPorts().createPort("experiment result");
 
 	private final static String PARAM_KEY_WINDOW_SIZE = "Sliding Window Size";
@@ -132,10 +135,11 @@ public class TrieBasedSpuriousEventFilterOperatorImpl extends Operator {
 			AttributeColumn.REGULAR, AttributeColumn.REGULAR, AttributeColumn.REGULAR, AttributeColumn.REGULAR,
 			AttributeColumn.REGULAR };
 
-	public TrieBasedSpuriousEventFilterOperatorImpl(OperatorDescription description) {
+	public SpuriousEventFilterOperatorImpl(OperatorDescription description) {
 		super(description);
-		getTransformer().addGenerationRule(outputStream, XSEventStreamIOObject.class);
-		getTransformer().addGenerationRule(outputHub, XSHubIOObject.class);
+		// getTransformer().addGenerationRule(outputStream,
+		// XSEventStreamIOObject.class);
+		// getTransformer().addGenerationRule(outputHub, XSHubIOObject.class);
 		ExampleSetMetaData esmd = new ExampleSetMetaData();
 		for (int attIndex = 0; attIndex < QUALITY_METRICS_COLUMN_NAMES.length; attIndex++) {
 			AttributeMetaData amd = new AttributeMetaData(QUALITY_METRICS_COLUMN_NAMES[attIndex],
@@ -164,71 +168,46 @@ public class TrieBasedSpuriousEventFilterOperatorImpl extends Operator {
 		filterParams.setExperiment(getParameterAsBoolean(PARAM_KEY_IS_EXPERIMENT));
 		filterParams.setNoiseClassificationLabelKey(getParameterAsString(PARAM_KEY_NOISE_LABEL_KEY));
 		filterParams.setNoiseClassificationLabelValue(getParameterAsString(PARAM_KEY_NOISE_LABEL_VALUE));
-		ConditionalProbabilitiesBasedXSEventFilterImpl hub = new ConditionalProbabilitiesBasedXSEventFilterImpl(
+		filterParams.setContextAware(false);
+		ConditionalProbabilitiesBasedXSEventFilterImpl filter = new ConditionalProbabilitiesBasedXSEventFilterImpl(
 				filterParams, storageParams);
-		XSEventStream out = XSEventStreamFactory.createXSEventStream(CommunicationType.SYNC);
-		out.start();
-		out.connect(hub);
-		hub.start();
-		inputEventStream.getData(XSEventStreamIOObject.class).getArtifact().connect(hub);
-		if (getParameterAsBoolean(PARAM_KEY_IS_EXPERIMENT)) {
-			XSAuthor<XSEvent> streamAuthor = (XSAuthor<XSEvent>) inputAuthor.getData(XSAuthorIOObject.class)
-					.getArtifact();
-			streamAuthor.start();
-			ExampleSet stats = inputStreamStatistics.getData(ExampleSet.class);
-			// TODO: make statistics generic
-			double maxEvent = stats.getExample(0).getValue(
-					stats.getAttributes().get(XLogToEventStreamOperatorImpl.STATISTICS_COLUMN_NAME_NUM_EVENTS));
-			while (hub.getNumberOfPacketsReceived() < (long) (maxEvent + 0.5)) { // add 0.5 and cast to long to avoid infinite loops
-				try {
-					Thread.sleep(TIME_OUT);
-//					System.out.println("expected: " + maxEvent + ", received: " + hub.getNumberOfPacketsReceived());
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-
-			Attribute[] attributes = new Attribute[QUALITY_METRICS_COLUMN_NAMES.length];
-			for (int i = 0; i < attributes.length; i++) {
-				attributes[i] = AttributeFactory.createAttribute(QUALITY_METRICS_COLUMN_NAMES[i],
-						QUALITY_METRICS_COLUMN_TYPES[i]);
-			}
-			ExampleSetBuilder builder = ExampleSets.from(attributes);
-			DataRowFactory dataRowFactory = new DataRowFactory(DataRowFactory.TYPE_DOUBLE_ARRAY, '.');
-			Object[] values = new Object[QUALITY_METRICS_COLUMN_NAMES.length];
-			values[ArrayUtils.indexOf(QUALITY_METRICS_COLUMN_NAMES, COLUMN_TRUE_POSITIVE)] = hub.getTruePositives();
-			values[ArrayUtils.indexOf(QUALITY_METRICS_COLUMN_NAMES, COLUMN_FALSE_POSITIVE)] = hub.getFalsePositives();
-			values[ArrayUtils.indexOf(QUALITY_METRICS_COLUMN_NAMES, COLUMN_TRUE_NEGATIVE)] = hub.getTrueNegatives();
-			values[ArrayUtils.indexOf(QUALITY_METRICS_COLUMN_NAMES, COLUMN_FALSE_NEGATIVE)] = hub.getFalseNegatives();
-			final double recall = ((double) hub.getTruePositives())
-					/ ((double) (hub.getTruePositives() + hub.getFalseNegatives()));
-			values[ArrayUtils.indexOf(QUALITY_METRICS_COLUMN_NAMES, COLUMN_RECALL)] = recall;
-			final double precision = ((double) hub.getTruePositives())
-					/ ((double) (hub.getTruePositives() + hub.getFalsePositives()));
-			values[ArrayUtils.indexOf(QUALITY_METRICS_COLUMN_NAMES, COLUMN_PRECISION)] = precision;
-			values[ArrayUtils.indexOf(QUALITY_METRICS_COLUMN_NAMES,
-					COLUMN_SPECIFITY)] = ((double) hub.getTrueNegatives())
-							/ ((double) (hub.getTrueNegatives() + hub.getFalsePositives()));
-			values[ArrayUtils.indexOf(QUALITY_METRICS_COLUMN_NAMES, COLUMN_NPV)] = ((double) hub.getTrueNegatives())
-					/ ((double) (hub.getTrueNegatives() + hub.getFalseNegatives()));
-			values[ArrayUtils.indexOf(QUALITY_METRICS_COLUMN_NAMES,
-					COLUMN_ACCURACY)] = ((double) hub.getTruePositives() + hub.getTrueNegatives())
-							/ ((double) (hub.getTruePositives() + hub.getTrueNegatives() + hub.getFalsePositives()
-									+ hub.getFalseNegatives()));
-			values[ArrayUtils.indexOf(QUALITY_METRICS_COLUMN_NAMES, COLUMN_F1_SCORE)] = (2 * recall * precision)
-					/ (recall + precision);
-
-			builder.addDataRow(dataRowFactory.create(values, attributes));
-			outputExperimentResult.deliver(builder.build());
-			// shutdown that shit
-			streamAuthor.interrupt();
-			((XSEventStreamIOObject) inputEventStream.getAnyDataOrNull()).getArtifact().interrupt();
-			hub.interrupt();
-			out.interrupt();
+		XSStaticXSEventStream stream = inputEventStream.getData(XSStaticXSEventStreamIOObject.class).getArtifact();
+		for (XSEvent e : stream) {
+			filter.processEvent(e);
 		}
-		outputStream.deliver(new XSEventStreamIOObject(out, RapidProMGlobalContext.instance().getPluginContext()));
-		outputHub.deliver(
-				new XSHubIOObject<XSEvent, XSEvent>(hub, RapidProMGlobalContext.instance().getPluginContext()));
+		Attribute[] attributes = new Attribute[QUALITY_METRICS_COLUMN_NAMES.length];
+		for (int i = 0; i < attributes.length; i++) {
+			attributes[i] = AttributeFactory.createAttribute(QUALITY_METRICS_COLUMN_NAMES[i],
+					QUALITY_METRICS_COLUMN_TYPES[i]);
+		}
+		ExampleSetBuilder builder = ExampleSets.from(attributes);
+		DataRowFactory dataRowFactory = new DataRowFactory(DataRowFactory.TYPE_DOUBLE_ARRAY, '.');
+		Object[] values = new Object[QUALITY_METRICS_COLUMN_NAMES.length];
+		values[ArrayUtils.indexOf(QUALITY_METRICS_COLUMN_NAMES, COLUMN_TRUE_POSITIVE)] = filter.getTruePositives();
+		values[ArrayUtils.indexOf(QUALITY_METRICS_COLUMN_NAMES, COLUMN_FALSE_POSITIVE)] = filter.getFalsePositives();
+		values[ArrayUtils.indexOf(QUALITY_METRICS_COLUMN_NAMES, COLUMN_TRUE_NEGATIVE)] = filter.getTrueNegatives();
+		values[ArrayUtils.indexOf(QUALITY_METRICS_COLUMN_NAMES, COLUMN_FALSE_NEGATIVE)] = filter.getFalseNegatives();
+		final double recall = ((double) filter.getTruePositives())
+				/ ((double) (filter.getTruePositives() + filter.getFalseNegatives()));
+		values[ArrayUtils.indexOf(QUALITY_METRICS_COLUMN_NAMES, COLUMN_RECALL)] = recall;
+		final double precision = ((double) filter.getTruePositives())
+				/ ((double) (filter.getTruePositives() + filter.getFalsePositives()));
+		values[ArrayUtils.indexOf(QUALITY_METRICS_COLUMN_NAMES, COLUMN_PRECISION)] = precision;
+		values[ArrayUtils.indexOf(QUALITY_METRICS_COLUMN_NAMES,
+				COLUMN_SPECIFITY)] = ((double) filter.getTrueNegatives())
+						/ ((double) (filter.getTrueNegatives() + filter.getFalsePositives()));
+		values[ArrayUtils.indexOf(QUALITY_METRICS_COLUMN_NAMES, COLUMN_NPV)] = ((double) filter.getTrueNegatives())
+				/ ((double) (filter.getTrueNegatives() + filter.getFalseNegatives()));
+		values[ArrayUtils.indexOf(QUALITY_METRICS_COLUMN_NAMES,
+				COLUMN_ACCURACY)] = ((double) filter.getTruePositives() + filter.getTrueNegatives())
+						/ ((double) (filter.getTruePositives() + filter.getTrueNegatives() + filter.getFalsePositives()
+								+ filter.getFalseNegatives()));
+		values[ArrayUtils.indexOf(QUALITY_METRICS_COLUMN_NAMES, COLUMN_F1_SCORE)] = (2 * recall * precision)
+				/ (recall + precision);
+
+		builder.addDataRow(dataRowFactory.create(values, attributes));
+		outputExperimentResult.deliver(builder.build());
+
 		logger.log(Level.INFO, "end do work filter spurious events");
 	}
 

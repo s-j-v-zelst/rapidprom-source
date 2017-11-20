@@ -801,6 +801,12 @@
 		<key>event_stream_analysis_proj_rec_prec_apn</key>
 	</operator>
 	<operator>
+		<name>Convert XLog to Static Event Stream</name>
+		<synopsis>...</synopsis>
+		<help>...</help>
+		<key>convert_xlog_to_static_stream</key>
+	</operator>
+	<operator>
 		<name>Event Stream Algorithm Analyzer (Alignments, Accepting Petri Net)</name>
 		<synopsis>Calculates alignments of stream based discovery algorithms.</synopsis>
 		<help>Calculates alignments of each generated model of each connected algorithm at each point in time w.r.t. a collection of reference event logs. The reported metrics are: replay-fitness, precision, and, generalization </help>
@@ -1078,10 +1084,18 @@
 	</operator>
 	
 	<operator>
-		<name>Trie Based Spurious Event Filter</name>
+		<name>(Deprecated) Trie Based Spurious Event Filter</name>
 		<synopsis>Filter spurious events from a given event stream</synopsis>
 		<help>...</help>
 		<key>trie_based_spurious_event_filter</key>
+		<deprecation>Since 7.5</deprecation>
+	</operator>
+	
+	<operator>
+		<name>Spurious Event Filter</name>
+		<synopsis>Filter spurious events from a given event stream</synopsis>
+		<help>...</help>
+		<key>spurious_event_filter</key>
 	</operator>
 	
 	<operator>

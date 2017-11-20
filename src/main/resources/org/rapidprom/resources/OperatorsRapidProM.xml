@@ -542,6 +542,12 @@
 				<class>org.rapidprom.operators.streams.analysis.AlignmentAPNAnalyzerOperator</class>
 			</operator>
 		</group>
+		<group key="conversion">
+			<operator>
+				<key>convert_xlog_to_static_stream</key>
+				<class>org.rapidprom.operators.streams.conversion.ConvertXLogToXSStaticEventStreamOperatorImpl</class>
+			</operator>
+		</group>
 		<group key="discovery">
 			<operator>
 				<key>stream_alpha_miner_apn</key>
@@ -572,6 +578,10 @@
 			<operator>
 				<key>trie_based_spurious_event_filter</key>
 				<class>org.rapidprom.operators.streams.filtering.TrieBasedSpuriousEventFilterOperatorImpl</class>
+			</operator>
+			<operator>
+				<key>spurious_event_filter</key>
+				<class>org.rapidprom.operators.streams.filtering.SpuriousEventFilterOperatorImpl</class>
 			</operator>
 		</group>
 		<group key="generators">
