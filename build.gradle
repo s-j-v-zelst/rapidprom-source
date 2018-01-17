@@ -6,6 +6,7 @@ buildscript {
 	repositories {
 		jcenter()
 		maven { url 'https://maven.rapidminer.com/content/groups/public/' }
+		maven { url "https://plugins.gradle.org/m2/" }
 	}	
 }
 
@@ -16,6 +17,7 @@ plugins { id 'com.rapidminer.extension' version '0.8.2' }
 repositories {
     jcenter()
 	maven { url 'https://maven.rapidminer.com/content/groups/public/' }
+	maven { url 'https://plugins.gradle.org/m2/' }
 	ivy {
 		url "https://github.com/s-j-v-zelst/rapidprom-libraries/raw/${project.properties["libs"]}/prom/"
 		layout "pattern", {
@@ -90,6 +92,7 @@ dependencies {
 	
 	compile group:"org.rapidprom", name:"ProM-Framework", version:"34109"
 	compile "org.rapidprom:AcceptingPetriNet:6.7.125"
+	compile "org.rapidprom:Alignment:6.8.37"
 	compile "org.rapidprom:AlphaMiner:6.5.47"
 	compile "org.rapidprom:Animation:6.5.50"
 	compile "org.rapidprom:ApacheUtils:6.7.107"
