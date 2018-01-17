@@ -287,6 +287,12 @@
 		<key>replay_a_log_on_petri_net_for_conformance_analysis</key>
 	</operator>
 	<operator>
+		<name>Conformance Checking (Iterative A*)</name>
+		<synopsis>This operator replays a log into a Petri net and show visual results. Using an iterative A* approach.</synopsis>
+		<help>For using this operator, you need a Petri net and a log. </help>
+		<key>replay_a_log_on_petri_net_for_conformance_analysis_iterative_astar</key>
+	</operator>
+	<operator>
 		<name>Inductive Visual Miner</name>
 		<synopsis>This operator creates a process model using the Inductive Visual Miner as described in: &lt;a href="http://repository.tue.nl/25a7fd81-8bf4-4606-a903-d9b78b95cdd3"&gt;here&lt;/a&gt;.</synopsis>
 		<help>For using this operator, you need an event log. </help>
@@ -833,8 +839,14 @@
 	<operator>
 		<name>Poll Runnable </name>
 		<synopsis> This operator allows to poll a runnable entity from the stream framework (i.e. generator, stream algorithm etc.) </synopsis>
-		<help> This operator allows to poll a runnable entity from the stream framework (i.e. generator, stream algorithm etc.). The operator checks whether the entity is still active. If the entity has become inactive, the operator will pass the entity on as an output object. This operator can be used within repeated experiments of stream related operators</help>
+		<help>This operator allows to poll a runnable entity from the stream framework (i.e. generator, stream algorithm etc.). The operator checks whether the entity is still active. If the entity has become inactive, the operator will pass the entity on as an output object. This operator can be used within repeated experiments of stream related operators</help>
 		<key>poll_xsrunnable</key>
+	</operator>
+	<operator>
+		<name>Store as Event Log (Finite)</name>
+		<synopsis>Allows us to store the data on the event stream as an event log. The storage is finite, so at some point previous behaviour is removed from internal storage and thus from the generated event log!</synopsis>
+		<help>Allows us to store the data on the event stream as an event log. The storage is finite, so at some point previous behaviour is removed from internal storage and thus from the generated event log!</help>
+		<key>infinite_stream_based_event_log</key>
 	</operator>
 
 	<operator>

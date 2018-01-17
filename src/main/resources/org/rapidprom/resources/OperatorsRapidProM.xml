@@ -74,6 +74,11 @@
 			<icon>checks.png</icon>
 		</operator>
 		<operator>
+			<key>replay_a_log_on_petri_net_for_conformance_analysis_iterative_astar</key>
+			<class>org.rapidprom.operators.conformance.ConformanceAnalysisOperatorIterativeAStar</class>
+			<icon>checks.png</icon>
+		</operator>
+		<operator>
 			<key>boolean_conformance_checker</key>
 			<class>org.rapidprom.operators.conformance.BooleanConformanceCheckerOperator</class>
 			<icon>checks.png</icon>
@@ -602,6 +607,12 @@
 			<operator>
 				<key>import_static_event_stream</key>
 				<class>org.rapidprom.operators.io.ImportXSStaticXSEventStreamOperator</class>
+			</operator>
+		</group>
+		<group key="storage">
+			<operator>
+				<key>infinite_stream_based_event_log</key>
+				<class>org.rapidprom.operators.streams.storage.StreamBasedEventLogOperatorImpl</class>
 			</operator>
 		</group>
 		<group key="utility">
