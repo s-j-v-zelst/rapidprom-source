@@ -14,18 +14,25 @@ import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
 import org.rapidprom.ioobjects.XLogIOObject;
 import org.rapidprom.ioobjects.streams.event.XSStaticXSEventStreamIOObject;
 import org.rapidprom.operators.meta.RPAbstractIteratingOperatorChain;
+import org.rapidprom.util.ExampleSetUtils;
 import org.rapidprom.util.ObjectUtils;
 
+import com.rapidminer.example.table.DataRowFactory;
 import com.rapidminer.operator.IOContainer;
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
+import com.rapidminer.operator.io.AbstractDataReader.AttributeColumn;
 import com.rapidminer.operator.ports.InputPort;
 import com.rapidminer.operator.ports.OutputPort;
 import com.rapidminer.operator.ports.Port;
+import com.rapidminer.operator.ports.metadata.ExampleSetMetaData;
+import com.rapidminer.operator.ports.metadata.GenerateNewMDRule;
+import com.rapidminer.operator.ports.metadata.MDInteger;
 import com.rapidminer.parameter.ParameterType;
 import com.rapidminer.parameter.ParameterTypeBoolean;
 import com.rapidminer.parameter.ParameterTypeCategory;
 import com.rapidminer.parameter.ParameterTypeInt;
+import com.rapidminer.tools.Ontology;
 
 public class StreamBasedEventLogOperatorImpl extends RPAbstractIteratingOperatorChain {
 
@@ -68,8 +75,27 @@ public class StreamBasedEventLogOperatorImpl extends RPAbstractIteratingOperator
 	// input port with generated XLog
 	private final OutputPort internalInputEventLog = getSubprocess(0).getInnerSources().createPort("xlog", true);
 
+	private final String COLUMN_EVENT = "event";
+	private final String COLUMN_MEM_REAL = "memory_real";
+	private final String COLUMN_MEM_VIRTUAL = "memory_virtual";
+
+	private final MDInteger[] COLUMNS_MISSING = new MDInteger[] { new MDInteger(0), new MDInteger(0),
+			new MDInteger(0) };
+	private final String[] COLUMNS_NAMES = new String[] { COLUMN_EVENT, COLUMN_MEM_REAL, COLUMN_MEM_VIRTUAL };
+	private final String[] COLUMNS_ROLES = new String[] { AttributeColumn.REGULAR, AttributeColumn.REGULAR,
+			AttributeColumn.REGULAR };
+	private final int[] COLUMNS_TYPES = new int[] { Ontology.INTEGER, Ontology.INTEGER, Ontology.INTEGER };
+
+	private final DataRowFactory dataRowFactory = new DataRowFactory(DataRowFactory.TYPE_DOUBLE_ARRAY, '.');
+
+	private ExampleSetMetaData outputMemoryPerformanceMD = null;
+	private OutputPort outputPortMemoryPerformance = getOutputPorts().createPort("example set with memory performance");
+
 	public StreamBasedEventLogOperatorImpl(OperatorDescription description) {
 		super(description);
+		outputMemoryPerformanceMD = ExampleSetUtils.constructExampleSetMetaData(outputMemoryPerformanceMD,
+				COLUMNS_NAMES, COLUMNS_TYPES, COLUMNS_ROLES, COLUMNS_MISSING);
+		getTransformer().addRule(new GenerateNewMDRule(outputPortMemoryPerformance, outputMemoryPerformanceMD));
 	}
 
 	@Override
