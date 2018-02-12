@@ -39,7 +39,7 @@
 
 	<group>
 		<key>filtering</key>
-		<name>Filtering</name>
+		<name>Log Filtering</name>
 	</group>
 
 	<group>
@@ -323,11 +323,23 @@
 		<key>convert_petrinet_to_bpmn</key>
 	</operator>
 	<operator>
-		<name>Petri Net to Data Petri net</name>
-		<synopsis>This operator transforms a Petri net into a Data Petri net.</synopsis>
-		<help>This operator transforms a Petri net into a Data Petri net. The Data Petri net has the same structure as the Petri net, and, initially no variables and guards.</help>
+		<name>Petri Net to Data Petri Net</name>
+		<synopsis>This operator transforms a Petri Net into a Data Petri Net.</synopsis>
+		<help>This operator transforms a Petri Net into a Data Petri Net. The Data Petri Net has the same structure as the Petri net, and, initially no variables and guards.</help>
 		<key>convert_petrinet_to_datapetrinet</key>
-	</operator>  	
+	</operator>
+	<operator>
+		<name>Data Petri Net to Petri Net</name>
+		<synopsis>This operator transforms a Data Petri Net to a Petri Net.</synopsis>
+		<help>This operator transforms a Data Petri Net into a Petri Net. The Petri Net has the same structure as the Data Petri Net, but is missing all the data perspective.</help>
+		<key>convert_datapetrinet_to_petrinet</key>
+	</operator>	
+	 <operator>
+		<name>Petri Net to RPST</name>
+		<synopsis>This operator transforms a Petri net into a RPST.</synopsis>
+		<help>This operator transforms a Petri net into a RPST based on the approach in: Artem Polyvyanyy, Jussi Vanhatalo, Hagen Volzer: Simplified Computation and Generalization of the Refined Process Structure Tree. WS-FM 2010: 25-41.</help>
+		<key>convert_petri_net_to_rpst</key>
+	</operator>
 	<operator>
 		<name>Transition System to Petri Net </name>
 		<synopsis>This operator transforms a Transition System (Reachability Graph) into a petri net, using &lt;a href="http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.17.8484"&gt;Petrify&lt;/a&gt;.</synopsis>
@@ -368,14 +380,12 @@
 		<help>For using this operator, an event log, and a Fuzzy Graph are necessary as inputs. </help>
 		<key>animate_event_log_in_fuzzy_instance</key>
 	</operator>
-
 	<operator>
 		<name>Import Event Log</name>
 		<synopsis>This operator can be used to import a ProM XES event log from a file.</synopsis>
 		<help>This operator can be used to import a ProM XES event log file. Note that only .xes files can be read.</help>
 		<key>import_xlog</key>
 	</operator>
-
 	<operator>
 		<name>Extract Event Log</name>
 		<synopsis>This operator can be used to read a ProM XES log file from a file object (useful for loops over file collections)</synopsis>
@@ -388,24 +398,21 @@
 		<help>This operator can be used to read a ProM  Pnml petrinet file</help>
 		<key>extract_petrinet_from_file</key>
 	</operator>
-
 	<operator>
-		<name>Sort chronologically</name>
+		<name>Sort Chronologically</name>
 		<synopsis>This operator sorts traces and events within traces by timestamp (increasing).</synopsis>
 		<help>This operator sorts traces and events within traces by timestamp.</help>
 		<key>timestamp_sort</key>
 	</operator>
-
-
 	<operator>
-		<name>Filter Infrequent Behavior (Log Automaton)</name>
-		<synopsis>Event log filter able to filter out infrequent behavior. Based on: Conforti, R., La Rosa, M., and, ter Hofstede, A.; Filtering Out Infrequent Behavior from Business Process Event Logs"; IEEE Transactions on Knowledge and Data Engineering, Vol 29., No 2.</synopsis> 
-		<help> Event log filter able to filter out infrequent behavior. The filter creates an automaton based on the event log and uses the threshold to filter out infrequent transitions within the automaton. Based on: Conforti, R., La Rosa, M., and, ter Hofstede, A.; Filtering Out Infrequent Behavior from Business Process Event Logs"; IEEE Transactions on Knowledge and Data Engineering, Vol 29., No 2.</help>
-		<key>filter_log_automaton</key> 
+      <name>Filter Infrequent Behavior (Log Automaton)</name>
+      <synopsis>Event log filter able to filter out infrequent behavior. Based on: Conforti, R., La Rosa, M., and, ter Hofstede, A.; Filtering Out Infrequent Behavior from Business Process Event Logs"; IEEE Transactions on Knowledge and Data Engineering, Vol 29., No 2.</synopsis> 
+      <help> Event log filter able to filter out infrequent behavior. The filter creates an automaton based on the event log and uses the threshold to filter out infrequent transitions within the automaton. Based on: Conforti, R., La Rosa, M., and, ter Hofstede, A.; Filtering Out Infrequent Behavior from Business Process Event Logs"; IEEE Transactions on Knowledge and Data Engineering, Vol 29., No 2.</help>
+      <key>filter_log_automaton</key> 
 	</operator>
 	<operator> 
 		<name>Matrix Filter</name>
-		<synopsis>...</synopsis>
+		<synopsis>This operator is helpful to separate outliers from the event log based on conditional behavioural probabilities</synopsis>
 		<help>LONGER HELP</help>
 		<key>matrix_filter</key>
 	</operator>
@@ -415,36 +422,30 @@
 		<help>LONGER HELP</help>
 		<key>sequence_filter</key>
 	</operator>
-
-
 	<operator>
 		<name>Alpha Miner (Petri Net)</name>
 		<synopsis>This operator can be used to execute the Alpha algorithm.</synopsis>
 		<help>This operator can be used to execute the Alpha algorithm which provides a Petri Net and a Marking. As input a log file is needed.</help>
 		<key>alpha_miner</key>
 	</operator>
-
 	<operator>
 		<name>Causal Graph (Flexible Heuristics Miner)</name>
 		<synopsis>This operator discovers a causal graph, based on the Flexible Heuristics Miner.</synopsis>
 		<help>This operator discovers a causal graph, based on the Flexible Heuristics Miner as described in:  Weijters, A. J. M. M., and J. T. S. Ribeiro. "Flexible heuristics miner (FHM)." Computational Intelligence and Data Mining (CIDM), 2011 IEEE Symposium on. IEEE, 2011. </help>
 		<key>discover_causal_graph_fhm</key>
 	</operator>
-
 	<operator>
 		<name>Data-aware Heuristic Miner (Causal net)</name>
 		<synopsis>This operator discovers a causal net (C-net), based on the Data-aware Heuristic Miner.</synopsis>
 		<help>This operator discovers a causal net (C-net), based on the Data-aware Heuristic Miner as described in: TODO </help>
 		<key>dataaware_heuristic_miner</key>
 	</operator>  
-
 	<operator>
 		<name>ILP Miner (Petri Net)</name>
 		<synopsis>This operator can be used to execute the ILP Miner discovery algorithm.</synopsis>
 		<help>This operator can be used to execute the ILP Miner algorithm which provides a Petri Net and a marking. As input a log file is needed.</help>
 		<key>ilp_miner</key>
 	</operator>
-
 	<operator>
 		<name>Local Process Model Discovery</name>
 		<synopsis>This operator mines a collection of Petri Nets that describe local behavior in the process, using the algorithm described in: https://arxiv.org/abs/1606.06066.</synopsis>
@@ -463,28 +464,24 @@
 		<help>This operator re-ranks out the Local Process Models by taking into account a new diversity score as well as the old LPM score</help>
 		<key>rerank_lpms_for_diversity</key>
 	</operator>
-
 	<operator>
 		<name>Genetic Miner (Heuristics Net)</name>
 		<synopsis>This operator can be used to execute the Genetic Miner discovery algorithm.</synopsis>
 		<help>This operator can be used to execute the Genetic Miner algorithm which provides a Heuristics Net. As input a log file is needed.</help>
 		<key>genetic_miner</key>
 	</operator>
-
 	<operator>
 		<name>Repair Model (Petri Net)</name>
 		<synopsis>This operator can be used to execute the repair model algorithm as defined in &lt;a href="http://dx.doi.org/10.1016/j.is.2013.12.007"&gt;here&lt;/a&gt;.  </synopsis>
 		<help>This operator can be used to execute the repair model algorithm which provides a repaired Petri net as result. As input an event log and a Petri Net are needed.</help>
 		<key>repair_model</key>
 	</operator>
-
 	<operator>
 		<name>Reduce Silent Transitions (Petri Net)</name>
 		<synopsis>This operator can be used to reduce silent transitions using the Murata rules, as defined in &lt;a href="http://dx.doi.org/10.1109/5.24143"&gt;here&lt;/a&gt;. </synopsis>
 		<help>This operator can be used to execute the reduce silent transitions algorithm which returns a Petri net. As input a Petri Net is needed.</help>
 		<key>reduce_silent_transitions</key>
 	</operator>
-
 	<operator>
 		<name>Export Petri net</name>
 		<synopsis>This operator can be used to export a Petri Net to a (E)PNML file.</synopsis>
@@ -909,15 +906,8 @@
 		<name>GED between Petri nets</name>
 		<synopsis>Compute the graph edit distance between two Petri nets.</synopsis>
 		<help>Compute the graph edit distance between two Petri nets based on the approach published in: Dijkman, Remco, Marlon Dumas, and Luciano Garcia-Banuelos. Graph matching algorithms for business process model similarity search. BPM 2009</help>
-		<key>ged_causal_net</key>
+		<key>ged_petri_net</key>
 	</operator>    
-
-	<operator>
-		<name>GED between Petri nets</name>
-		<synopsis>Compute the graph edit distance between two Petri nets.</synopsis>
-		<help>Compute the graph edit distance between two Petri nets based on the approach published in: Dijkman, Remco, Marlon Dumas, and Luciano Garcia-Banuelos. Graph matching algorithms for business process model similarity search. BPM 2009</help>
-		<key>ged_causal_net</key>
-	</operator>
 
 	<operator>
 		<name>Causal net to Petri net</name>
@@ -925,6 +915,7 @@
 		<help>Converts a Causal net into a Petri net representation.</help>
 		<key>convert_causal_net_into_petri_net</key>
 	</operator>
+	
 	<operator>
 		<name>Clean up Threads (RapidProM)</name>
 		<synopsis>This operator kills all threads which seems to be spawned by RapidProM operators that were not killed properly. WARNING: might kill too much leading to unexpected behavior.</synopsis>
@@ -1055,5 +1046,26 @@
 		<help>The output is an exampleset with the size of both.</help>
 		<key>rprom_count_pc_size</key>
 	</operator>
+	
+	<operator>
+		<name>Filter RPST</name>
+		<synopsis>Filters the RPST by collapsing node until a specified minimum size of each RPST fragment is reached.</synopsis>
+		<help>Filters the RPST by collapsing node until a specified minimum size of each RPST fragment is reached.</help>
+		<key>filter_rpst</key>
+	</operator>	
+	
+	<operator>
+		<name>Extract Leafs from RPST</name>
+		<synopsis>Extracts the leafs of a (possibly filtered) RPST as Petri Nets.</synopsis>
+		<help>Extracts the leafs of a (possibly filtered) RPST as Petri Nets</help>
+		<key>extract_leafs_from_rpst</key>
+	</operator>		
 
+	<operator>
+		<name>Repair the Data Types of a XES Event Log</name>
+		<synopsis>Repairs the data type of event attributes in the log. For each attribute the correct XES datatype is guessed and applied.</synopsis>
+		<help>Repairs the data type of event attributes in the log. For each attribute the correct XES datatype is guessed and applied.</help>
+		<key>repair_log_data_types</key>
+	</operator>		
+	
 </operatorHelp>
