@@ -47,7 +47,7 @@ public class ExtractLocalProcessModelsFromRankingOperator extends Operator {
 		
 		LocalProcessModelRanking ranking = input.getData(LocalProcessModelRankingIOObject.class).getArtifact();
 		IOObjectCollection<PetriNetIOObject> collection = new IOObjectCollection<PetriNetIOObject>();
-		for(int i=0; i<Integer.min(getParameterAsInt(PARAMETER_1_KEY), ranking.getSize()); i++){
+		for(int i=0; i<Math.min(getParameterAsInt(PARAMETER_1_KEY), ranking.getSize()); i++){
 			AcceptingPetriNet apn = ranking.getNet(i).getAcceptingPetriNet();
 			Marking finalMarking = apn.getFinalMarkings().toArray(new Marking[1])[0];
 			collection.add(new PetriNetIOObject(apn.getNet(), apn.getInitialMarking(), finalMarking, pluginContext));
