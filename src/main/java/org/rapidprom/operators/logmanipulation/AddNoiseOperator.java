@@ -43,7 +43,8 @@ public class AddNoiseOperator extends Operator {
 					+ "The add type randomly adds an event to a trace. "
 					+ "Also a random noise option is provided. This option randomly chooses between add, remove or swap task.",
 
-			PARAMETER_3_KEY = "Seed", PARAMETER_3_DESCR = "This parameter defines the seed used to evaluate noise "
+			PARAMETER_3_KEY = "Seed",
+			PARAMETER_3_DESCR = "This parameter defines the seed used to evaluate noise "
 					+ "probability and apply the noise type.",
 
 			PARAMETER_4_KEY = "Event Percentage",
@@ -60,6 +61,18 @@ public class AddNoiseOperator extends Operator {
 		getTransformer().addRule(new GenerateNewMDRule(outputEventLog, XLogIOObject.class));
 	}
 
+	private boolean logIsEmpty(final XLog log) {
+		if (log.isEmpty()) {
+			return true;
+		}
+		for (XTrace t : log) {
+			if (!t.isEmpty()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	public void doWork() throws OperatorException {
 		Logger logger = LogService.getRoot();
 		logger.log(Level.INFO, "Start: add noise");
@@ -69,6 +82,9 @@ public class AddNoiseOperator extends Operator {
 
 		XLogIOObject xLogIOObject = inputXLog.getData(XLogIOObject.class);
 		XLog logOriginal = xLogIOObject.getArtifact();
+		if (logIsEmpty(logOriginal)) {
+			throw new OperatorException("Operator does not support completely empty logs");
+		}
 		XLogIOObject result = new XLogIOObject(filterLog(logOriginal), xLogIOObject.getPluginContext());
 
 		outputEventLog.deliverMD(md);
@@ -90,7 +106,7 @@ public class AddNoiseOperator extends Operator {
 			double nextDouble = rOverall.nextDouble();
 			double eventPercentage = getParameterAsDouble(PARAMETER_4_KEY);
 			// System.out.println("nextDouble:" + nextDouble);
-			if (nextDouble < getParameterAsDouble(PARAMETER_1_KEY) && eventPercentage != 0) {				
+			if (nextDouble < getParameterAsDouble(PARAMETER_1_KEY) && eventPercentage != 0) {
 				if (eventPercentage > 0) {
 					int eventsToModify = (int) Math.ceil(t.size() * eventPercentage);
 					for (int k = 0; k < eventsToModify; k++) {
@@ -119,12 +135,12 @@ public class AddNoiseOperator extends Operator {
 			throws UndefinedParameterError {
 		double oneThird = t.size() / 3.0;
 
-		if(noiseType.equals(RANDOM)){
-			switch(safeNextInt(noiseRandom, 3)){
-			case 0: 
+		if (noiseType.equals(RANDOM)) {
+			switch (safeNextInt(noiseRandom, 3)) {
+			case 0:
 				noiseType = EXTRA;
 				break;
-			case 1: 
+			case 1:
 				noiseType = SWAP;
 				break;
 			case 2:
@@ -133,7 +149,7 @@ public class AddNoiseOperator extends Operator {
 				break;
 			}
 		}
-		
+
 		if (noiseType.equals(HEAD)) {
 			int start = safeNextInt(noiseRandom, (int) oneThird);
 			for (int i = start; i < t.size(); i++) {
@@ -250,6 +266,10 @@ public class AddNoiseOperator extends Operator {
 	protected XEvent createEvent(XLog log, int logSize, Random rand, Date date, XTimeExtension xTime) {
 		// both date are null
 		XTrace tr = log.get(Math.abs(rand.nextInt()) % logSize);
+		while (tr.isEmpty()) { // works because dowork first checks if log is
+								// not completely empty
+			tr = log.get(Math.abs(rand.nextInt()) % logSize);
+		}
 		int pos = safeNextInt(rand, tr.size());
 
 		if (pos == 0 && pos < tr.size() - 1) // so it does not create "start"

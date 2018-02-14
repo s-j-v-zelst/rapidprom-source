@@ -1,6 +1,7 @@
 package org.rapidprom.operators.generation;
 
 import java.util.List;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -127,10 +128,11 @@ public class GenerateNewickTreeOperator extends Operator {
 
 		TreeFactory treeFactory = new TreeFactory();
 		IOObjectCollection<NewickTreeIOObject> result = new IOObjectCollection<NewickTreeIOObject>();
-		TreeParameters newickTreeParams = constructNewickTreeParameters();
-		for (int i = 0; i < newickTreeParams.getNoTrees(); i++) {
-			NewickTree tree = new NewickTree(treeFactory.createTree(newickTreeParams.getPatternProbabilities(),
-					newickTreeParams.getNoActivities()));
+		Random r = new Random(fetchSeed());
+		int numTrees= getParameterAsInt(PARAM_KEY_COLLECTION_SIZE);
+		for (int i = 0; i < numTrees; i++) {
+			TreeParameters newickTreeParams = constructNewickTreeParameters(r.nextLong());
+			NewickTree tree = new NewickTree(treeFactory.createTree(newickTreeParams.getPatternProbabilities()));
 			result.add(new NewickTreeIOObject(tree, pluginContext));
 			treeFactory.cleanupInterpreter();
 		}
@@ -144,7 +146,7 @@ public class GenerateNewickTreeOperator extends Operator {
 		logger.log(Level.INFO, "end: generating newick trees (" + (System.currentTimeMillis() - time) / 1000 + " sec)");
 	}
 
-	private TreeParameters constructNewickTreeParameters() throws OperatorException {
+	private TreeParameters constructNewickTreeParameters(final long seed) throws OperatorException {
 		String experimentConfig = getParameterAsString(PARAM_KEY_CONFIG);
 		String newickArgs = String.valueOf(getParameterAsInt(PARAM_KEY_MODE_ACTIVITIES)) + ";"
 				+ String.valueOf(getParameterAsInt(PARAM_KEY_MIN_ACTIVITIES)) + ";"
@@ -194,8 +196,17 @@ public class GenerateNewickTreeOperator extends Operator {
 		newickArgs += String.valueOf(getParameterAsDouble(PARAM_KEY_PROBABILITY_SILENT)) + ";";
 		newickArgs += String.valueOf(getParameterAsDouble(PARAM_KEY_DUPLICATE_ACTIVITIES)) + ";";
 		newickArgs += String.valueOf(getParameterAsDouble(PARAM_KEY_LONG_TERM)) + ";";
-		newickArgs += (getParameterAsBoolean(PARAM_KEY_INFREQUENT_PATHS) ? "TRUE" : "FALSE") + ";";
-		newickArgs += String.valueOf(getParameterAsInt(PARAM_KEY_COLLECTION_SIZE));
+		newickArgs += (getParameterAsBoolean(PARAM_KEY_INFREQUENT_PATHS) ? "1.0" : "0.0") + ";";
+		newickArgs += String.valueOf(getParameterAsInt(PARAM_KEY_COLLECTION_SIZE)) + ";";
+
+		// TODO: expose these variables to users
+		// note: these are simulation related variables!
+		newickArgs += "0;"; // relates to use loop unfolding, true => 1, false
+							// => 0
+		newickArgs += "0;"; // relates to number of iterations of loops if loop
+							// unfolding is used.
+
+		newickArgs += String.valueOf(seed);
 		return new TreeParameters(newickArgs);
 	}
 
