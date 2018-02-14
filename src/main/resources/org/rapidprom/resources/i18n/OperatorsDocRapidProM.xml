@@ -993,13 +993,6 @@
 	</operator>
 
 	<operator>
-		<name>Generate Noisy Log (Event Level)</name>
-		<synopsis>This operator creates a log with noise: each trace of the original log is modified until it no longer fits the given petri net.</synopsis>
-		<help> </help>
-		<key>generate_noisy_log_event</key>      
-	</operator>
-
-	<operator>
 		<name>Generate Noisy Log (Trace Level)</name>
 		<synopsis>This operator creates a log with noise: each trace of the original log is modified until it no longer fits the given petri net.</synopsis>
 		<help> </help>
