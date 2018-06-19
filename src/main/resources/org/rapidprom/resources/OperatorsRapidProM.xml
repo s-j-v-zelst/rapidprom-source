@@ -67,6 +67,13 @@
 			<icon>magnifying_glass.png</icon>
 		</operator>
 	</group>
+	<group key="comparison">
+		<operator>
+			<key>compare_alpha_relations</key>
+			<class>org.rapidprom.operators.comparison.CompareAlphaRelationsOperatorImpl</class>
+			<icon>microscope.png</icon>
+		</operator>
+	</group>
 	<group key="conformance">
 		<operator>
 			<key>replay_a_log_on_petri_net_for_conformance_analysis</key>

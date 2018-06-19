@@ -6,6 +6,11 @@
 		<key>analysis</key>
 		<name>Analysis</name>
 	</group>
+	
+	<group>
+		<key>comparison</key>
+		<name>Comparison</name>
+	</group>
 
 	<group>
 		<key>concept_drift</key>
@@ -114,7 +119,14 @@
 		</help>
 		<key>filter_high_frequency_traces</key>
 	</operator>
-
+	
+	<operator>
+		<name>Compare Alpha Relations </name>
+		<synopsis>Compares the directly follows relation of two logs</synopsis>
+		<help>Compares the directly follows relation of two logs. The first log is used as a reference, the second log is used to determine true/false positives/negatives</help>
+		<key>compare_alpha_relations</key>
+	</operator>
+	
 	<operator>
 		<name>Project Alignment on DPN</name>
 		<Synopyis>Projects an aligned log on a Data Petri net.</Synopyis>
