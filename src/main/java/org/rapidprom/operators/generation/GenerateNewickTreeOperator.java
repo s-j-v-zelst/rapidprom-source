@@ -1,7 +1,6 @@
 package org.rapidprom.operators.generation;
 
 import java.util.List;
-import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -62,7 +61,7 @@ public class GenerateNewickTreeOperator extends Operator {
 
 	private final static String PARAM_KEY_INFREQUENT_PATHS = "include_infrequent_paths";
 	private final static String PARAM_DESC_INFREQUENT_PATHS = "Indicates whether or not the process tree should contain infrequent paths.";
-	private final static boolean PARAM_DEFAULT_INFREQUENT_PATHS = false;
+	private final static double PARAM_DEFAULT_INFREQUENT_PATHS = 0;
 
 	private final static String PARAM_DEFAULT_VALUE_CONFIG_MANUAL = "Manual";
 	private final static String PARAM_DEFAULT_VALUE_CONFIG_REPEATED = "Repeated Experiment";
@@ -113,6 +112,10 @@ public class GenerateNewickTreeOperator extends Operator {
 	private final static String PARAM_KEY_USE_MANUAL_DISTRIBUTION_FOR_SCALING = "use_manual_distribution_for_experimental_distribution_scaling";
 	private final static String PARAM_DESC_USE_MANUAL_DISTRIBUTION_FOR_SCALING = "If selected, the manual distribution specified will be used for scaling the probability distribution used in the repeated experiment(s)";
 	private final static boolean PARAM_DEFAULT_USE_MANUAL_DISTRIBUTION_FOR_SCALING = true;
+	
+	private final static String PARAM_KEY_SEED = "seed";
+	private final static String PARAM_DESC_SEED = "Seed used for random number generation";
+	private final static int PARAM_DEFAULT_SEED = 1;
 
 	public GenerateNewickTreeOperator(OperatorDescription description) {
 		super(description);
@@ -128,10 +131,8 @@ public class GenerateNewickTreeOperator extends Operator {
 
 		TreeFactory treeFactory = new TreeFactory();
 		IOObjectCollection<NewickTreeIOObject> result = new IOObjectCollection<NewickTreeIOObject>();
-		Random r = new Random(fetchSeed());
-		int numTrees= getParameterAsInt(PARAM_KEY_COLLECTION_SIZE);
-		for (int i = 0; i < numTrees; i++) {
-			TreeParameters newickTreeParams = constructNewickTreeParameters(r.nextLong());
+		TreeParameters newickTreeParams = constructNewickTreeParameters();
+		for (int i = 0; i < newickTreeParams.getNoTrees(); i++) {
 			NewickTree tree = new NewickTree(treeFactory.createTree(newickTreeParams.getPatternProbabilities()));
 			result.add(new NewickTreeIOObject(tree, pluginContext));
 			treeFactory.cleanupInterpreter();
@@ -146,7 +147,7 @@ public class GenerateNewickTreeOperator extends Operator {
 		logger.log(Level.INFO, "end: generating newick trees (" + (System.currentTimeMillis() - time) / 1000 + " sec)");
 	}
 
-	private TreeParameters constructNewickTreeParameters(final long seed) throws OperatorException {
+	private TreeParameters constructNewickTreeParameters() throws OperatorException {
 		String experimentConfig = getParameterAsString(PARAM_KEY_CONFIG);
 		String newickArgs = String.valueOf(getParameterAsInt(PARAM_KEY_MODE_ACTIVITIES)) + ";"
 				+ String.valueOf(getParameterAsInt(PARAM_KEY_MIN_ACTIVITIES)) + ";"
@@ -196,17 +197,12 @@ public class GenerateNewickTreeOperator extends Operator {
 		newickArgs += String.valueOf(getParameterAsDouble(PARAM_KEY_PROBABILITY_SILENT)) + ";";
 		newickArgs += String.valueOf(getParameterAsDouble(PARAM_KEY_DUPLICATE_ACTIVITIES)) + ";";
 		newickArgs += String.valueOf(getParameterAsDouble(PARAM_KEY_LONG_TERM)) + ";";
-		newickArgs += (getParameterAsBoolean(PARAM_KEY_INFREQUENT_PATHS) ? "1.0" : "0.0") + ";";
+		newickArgs += String.valueOf(getParameterAsDouble(PARAM_KEY_INFREQUENT_PATHS)) + ";";
 		newickArgs += String.valueOf(getParameterAsInt(PARAM_KEY_COLLECTION_SIZE)) + ";";
-
-		// TODO: expose these variables to users
-		// note: these are simulation related variables!
-		newickArgs += "0;"; // relates to use loop unfolding, true => 1, false
-							// => 0
-		newickArgs += "0;"; // relates to number of iterations of loops if loop
-							// unfolding is used.
-
-		newickArgs += String.valueOf(seed);
+		newickArgs += "0;1;"; //no unfolding (not needed here)
+		newickArgs += String.valueOf(getParameterAsInt(PARAM_KEY_SEED));
+		
+		
 		return new TreeParameters(newickArgs);
 	}
 
@@ -329,8 +325,8 @@ public class GenerateNewickTreeOperator extends Operator {
 				PARAM_DESC_DUPLICATE_ACTIVITIES, 0, 1, PARAM_DEFAULT_DUPLICATE_ACTIVITIES, false);
 		res.add(duplicates);
 
-		ParameterTypeBoolean infrequentPaths = new ParameterTypeBoolean(PARAM_KEY_INFREQUENT_PATHS,
-				PARAM_DESC_INFREQUENT_PATHS, PARAM_DEFAULT_INFREQUENT_PATHS, false);
+		ParameterTypeDouble infrequentPaths = new ParameterTypeDouble(PARAM_KEY_INFREQUENT_PATHS,
+				PARAM_DESC_INFREQUENT_PATHS, 0, 1, PARAM_DEFAULT_INFREQUENT_PATHS, false);
 		res.add(infrequentPaths);
 
 		ParameterTypeCategory config = new ParameterTypeCategory(PARAM_KEY_CONFIG, PARAM_DESC_CONFIG, PARAM_VAL_CONFIG,
@@ -386,6 +382,11 @@ public class GenerateNewickTreeOperator extends Operator {
 		repeatedManualScaling.registerDependencyCondition(
 				new EqualStringCondition(this, PARAM_KEY_CONFIG, true, PARAM_DEFAULT_VALUE_CONFIG_REPEATED));
 		res.add(repeatedManualScaling);
+		
+		ParameterTypeInt seed = new ParameterTypeInt(PARAM_KEY_SEED, PARAM_DESC_SEED, 0,
+				Integer.MAX_VALUE, PARAM_DEFAULT_SEED, false);
+		res.add(seed);
+
 
 		return res;
 	}

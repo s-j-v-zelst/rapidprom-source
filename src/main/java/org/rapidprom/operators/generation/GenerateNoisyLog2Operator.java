@@ -63,7 +63,7 @@ public class GenerateNoisyLog2Operator extends AbstractRapidProMEventLogBasedOpe
 
 		XLog log = getXLog();
 		PetriNetIOObject petriNet = inputNet.getData(PetriNetIOObject.class);
-		PluginContext pluginContext = RapidProMGlobalContext.instance().getPluginContext();
+		PluginContext pluginContext = RapidProMGlobalContext.instance().getFutureResultAwarePluginContext(Alfredo_GenerateNoisyLog.class);
 
 		Alfredo_GenerateNoisyLog noiseGenerator = new Alfredo_GenerateNoisyLog();
 
