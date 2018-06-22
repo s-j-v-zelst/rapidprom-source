@@ -6,6 +6,7 @@ buildscript {
 	repositories {
 		jcenter()
 		maven { url 'https://maven.rapidminer.com/content/groups/public/' }
+		maven { url "https://plugins.gradle.org/m2/" }
 	}	
 }
 
@@ -16,6 +17,7 @@ plugins { id 'com.rapidminer.extension' version '0.8.2' }
 repositories {
     jcenter()
 	maven { url 'https://maven.rapidminer.com/content/groups/public/' }
+	maven { url 'https://plugins.gradle.org/m2/' }
 	ivy {
 		url "https://github.com/s-j-v-zelst/rapidprom-libraries/raw/${project.properties["libs"]}/prom/"
 		layout "pattern", {
@@ -90,6 +92,7 @@ dependencies {
 	
 	compile group:"org.rapidprom", name:"ProM-Framework", version:"34109"
 	compile "org.rapidprom:AcceptingPetriNet:6.7.125"
+	compile "org.rapidprom:Alignment:6.8.37"
 	compile "org.rapidprom:AlphaMiner:6.5.47"
 	compile "org.rapidprom:Animation:6.5.50"
 	compile "org.rapidprom:ApacheUtils:6.7.107"
@@ -104,7 +107,7 @@ dependencies {
 	compile "org.rapidprom:DataPetriNets:6.7.421"
 	compile "org.rapidprom:DottedChart:6.5.17"
 	compile "org.rapidprom:EvolutionaryTreeMiner:6.7.154"
-	compile "org.rapidprom:EventStream:6.5.72"
+	compile "org.rapidprom:EventStream:6.8.116"
 	compile "org.rapidprom:FeaturePrediction:6.5.61"
 	compile "org.rapidprom:Fuzzy:6.5.33"
 	compile "org.rapidprom:GraphViz:6.7.185"
@@ -127,14 +130,17 @@ dependencies {
 	compile "org.rapidprom:PetriNetSimulator:6.7.19"
 	compile "org.rapidprom:PNetAlignmentAnalysis:6.7.91"
 	compile "org.rapidprom:PNAnalysis:6.7.128"
-	compile "org.rapidprom:PNetReplayer:6.8.164"
+	compile "org.rapidprom:PNetReplayer:6.7.152"
 	compile "org.rapidprom:PTConversions:6.5.3"
-	compile "org.rapidprom:PTAndLogGenerator:6.8.163"
+	compile "org.rapidprom:PTAndLogGenerator:6.8.165"
 	compile "org.rapidprom:PomPomView:6.5.36"
 	compile "org.rapidprom:ProcessComparator:6.7.95"
 	compile "org.rapidprom:SocialNetwork:6.5.35"
 	compile "org.rapidprom:StreamAlphaMiner:6.5.15"
 	compile "org.rapidprom:StreamAnalysis:6.5.38"
+	compile "org.rapidprom:StreamBasedEventFilter:6.8.14"
+	compile "org.rapidprom:StreamBasedEventLog:6.8.29"
+	compile "org.rapidprom:StreamBasedEventStorage:6.8.8"
 	compile "org.rapidprom:StreamInductiveMiner:6.5.42"
 	compile "org.rapidprom:TransitionSystems:6.7.71"
 	compile "org.rapidprom:TSPetriNet:6.5.35"
@@ -143,8 +149,7 @@ dependencies {
 	compile "org.rapidprom:VariantFinder:6.7.9"
 	compile "org.rapidprom:XESLite:6.7.319"
 	compile "org.rapidprom:Weka:6.7.25"
-	compile "org.processmining:OpenSLEX:0.8"
-	compile "org.processmining:DAPOQ-Lang:0.8"
+	
 	compile 'com.github.fommil.netlib:all:1.1.2'
 	compile 'com.googlecode.matrix-toolkits-java:mtj:1.0.3'
 }

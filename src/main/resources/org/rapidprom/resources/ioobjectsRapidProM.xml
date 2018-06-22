@@ -86,7 +86,6 @@
 		class="org.rapidprom.ioobjects.PetriNetIOObject"
 		reportable="true">
 		<renderer>org.rapidprom.ioobjectrenderers.PetriNetIOObjectRenderer</renderer>
-		<renderer>org.rapidprom.ioobjectrenderers.PetriNetIOGraphvizObjectRenderer</renderer>
 	</ioobject>
 	<ioobject
 		name="Petri Net List"
@@ -206,6 +205,11 @@
 		class="org.rapidprom.ioobjects.streams.event.XSEventStreamToAcceptingPetriNetReaderIOObject"
 		reportable="false" >
 		<renderer>org.rapidprom.ioobjectrenderers.streams.XSReaderIOObjectRenderer</renderer>	
+	</ioobject>
+	<ioobject
+		name="Hub"
+		class="org.rapidprom.ioobjects.streams.XSHubIOObject"
+		reportable="false">
 	</ioobject>
 	<ioobject
 		name="Reader"

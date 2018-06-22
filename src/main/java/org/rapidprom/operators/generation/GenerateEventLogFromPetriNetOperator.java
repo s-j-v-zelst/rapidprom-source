@@ -5,9 +5,12 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.deckfour.xes.extension.std.XConceptExtension;
 import org.deckfour.xes.factory.XFactory;
 import org.deckfour.xes.factory.XFactoryBufferedImpl;
+import org.deckfour.xes.factory.XFactoryNaiveImpl;
 import org.deckfour.xes.model.XLog;
+import org.deckfour.xes.model.impl.XAttributeLiteralImpl;
 import org.processmining.framework.plugin.PluginContext;
 import org.processmining.petrinetsimulator.algorithms.Simulator;
 import org.processmining.petrinetsimulator.constants.SettingsConstants;
@@ -97,10 +100,13 @@ public class GenerateEventLogFromPetriNetOperator extends Operator {
 
 		Simulator sim;
 		XLog result = null;
-		XFactory factory = new XFactoryBufferedImpl();
+//		XFactory factory = new XFactoryBufferedImpl();
+		XFactory factory = new XFactoryNaiveImpl();
 		try {
 			sim = new Simulator(pNet.getArtifact(), pNet.getInitialMarking(), getSettingsObject(), factory);
 			result = sim.simulate();
+			result.getAttributes().put(XConceptExtension.KEY_NAME, new XAttributeLiteralImpl(XConceptExtension.KEY_NAME,
+					"generated_log_" + System.currentTimeMillis(), XConceptExtension.instance()));
 		} catch (ObjectNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
