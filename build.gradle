@@ -138,7 +138,7 @@ dependencies {
 	compile "org.rapidprom:SocialNetwork:6.5.35"
 	compile "org.rapidprom:StreamAlphaMiner:6.5.15"
 	compile "org.rapidprom:StreamAnalysis:6.5.38"
-	compile "org.rapidprom:StreamBasedEventFilter:6.8.14"
+	compile "org.rapidprom:StreamBasedEventFilter:6.9.23"
 	compile "org.rapidprom:StreamBasedEventLog:6.8.29"
 	compile "org.rapidprom:StreamBasedEventStorage:6.8.8"
 	compile "org.rapidprom:StreamInductiveMiner:6.5.42"

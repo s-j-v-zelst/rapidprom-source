@@ -5,29 +5,19 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.processmining.eventstream.core.factories.XSEventStreamFactory;
 import org.processmining.eventstream.core.interfaces.XSEvent;
-import org.processmining.eventstream.core.interfaces.XSEventStream;
 import org.processmining.eventstream.core.interfaces.XSStaticXSEventStream;
-import org.processmining.stream.core.enums.CommunicationType;
-import org.processmining.stream.core.interfaces.XSAuthor;
 import org.processmining.streambasedeventfilter.algorithms.ConditionalProbabilitiesBasedXSEventFilterImpl;
 import org.processmining.streambasedeventfilter.parameters.ConditionalProbabilitiesBasedXSEventFilterParametersImpl;
 import org.processmining.streambasedeventfilter.parameters.ConditionalProbabilitiesBasedXSEventFilterParametersImpl.Abstraction;
 import org.processmining.streambasedeventfilter.parameters.ConditionalProbabilitiesBasedXSEventFilterParametersImpl.AdjustmentMethod;
 import org.processmining.streambasedeventfilter.parameters.ConditionalProbabilitiesBasedXSEventFilterParametersImpl.FilteringMethod;
-import org.processmining.streambasedeventlog.parameters.StreamBasedEventLogParametersImpl;
+import org.processmining.streambasedeventstorage.parameters.XSEventStoreSlidingWindowParametersImpl;
 import org.processmining.yawl.ext.org.apache.commons.lang.ArrayUtils;
-import org.rapidprom.external.connectors.prom.RapidProMGlobalContext;
-import org.rapidprom.ioobjects.streams.XSAuthorIOObject;
-import org.rapidprom.ioobjects.streams.XSHubIOObject;
-import org.rapidprom.ioobjects.streams.event.XSEventStreamIOObject;
 import org.rapidprom.ioobjects.streams.event.XSStaticXSEventStreamIOObject;
-import org.rapidprom.operators.streams.generators.XLogToEventStreamOperatorImpl;
 import org.rapidprom.util.ObjectUtils;
 
 import com.rapidminer.example.Attribute;
-import com.rapidminer.example.ExampleSet;
 import com.rapidminer.example.table.AttributeFactory;
 import com.rapidminer.example.table.DataRowFactory;
 import com.rapidminer.example.utils.ExampleSetBuilder;
@@ -151,13 +141,12 @@ public class SpuriousEventFilterOperatorImpl extends Operator {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void doWork() throws UserError {
 		Logger logger = LogService.getRoot();
 		logger.log(Level.INFO, "start do work filter spurious events");
-		StreamBasedEventLogParametersImpl storageParams = new StreamBasedEventLogParametersImpl();
-		storageParams.setSlidingWindowSize(getParameterAsInt(PARAM_KEY_WINDOW_SIZE));
+		XSEventStoreSlidingWindowParametersImpl storageParams = new XSEventStoreSlidingWindowParametersImpl();
+		storageParams.setSize(getParameterAsInt(PARAM_KEY_WINDOW_SIZE));
 		ConditionalProbabilitiesBasedXSEventFilterParametersImpl filterParams = new ConditionalProbabilitiesBasedXSEventFilterParametersImpl();
 		filterParams.setAbstraction(PARAM_VALUES_ABSTRACTION[getParameterAsInt(PARAM_KEY_ABSTRACTION)]);
 		filterParams.setFiltermethod(PARAM_VALUES_FILTER_TECHNIQUE[getParameterAsInt(PARAM_KEY_FILTER_TECHNIQUE)]);
